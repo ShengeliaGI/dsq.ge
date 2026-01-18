@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 
 dotenv.config()
 
-const app = express();
+export const app = express()
 const port = process.env.PORT || 4000
 const mongoUri = process.env.MONGODB_URI
 const jwtSecret = process.env.JWT_SECRET
@@ -20,12 +20,7 @@ if (!jwtSecret) {
   console.warn('Missing JWT_SECRET in environment variables.')
 }
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  }),
-);
+app.use(cors())
 app.use(express.json())
 
 const connectToDatabase = async () => {
@@ -328,4 +323,3 @@ if (!process.env.VERCEL) {
       process.exit(1)
     })
 }
-export default app;
