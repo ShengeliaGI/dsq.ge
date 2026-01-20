@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 
 dotenv.config()
 
-const app = express()
+const app = express();
 const port = process.env.PORT || 4000
 const mongoUri = process.env.MONGODB_URI
 const jwtSecret = process.env.JWT_SECRET
@@ -20,8 +20,144 @@ if (!jwtSecret) {
   console.warn('Missing JWT_SECRET in environment variables.')
 }
 
-app.use(cors())
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
 app.use(express.json())
+
+const connectToDatabase = async () => {
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is not configured.')
+  }
+  if (mongoose.connection.readyState === 1) {
+    return
+  }
+  await mongoose.connect(mongoUri)
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase()
+    next()
+  } catch (error) {
+    console.error('MongoDB connection error:', error)
+    res.status(500).json({ message: 'Database connection failed.' })
+  }
+})
+
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    passwordHash: { type: String, required: true },
+  },
+  { timestamps: true },
+)
+
+const User = mongoose.model('User', userSchema)
+
+const resultSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true },
+    submittedAt: { type: String, required: true },
+    score: { type: Number, required: true },
+    total: { type: Number, required: true },
+    questions: { type: [String], default: [] },
+    answers: { type: [String], default: [] },
+    candidateEmail: { type: String, default: 'anonymous' },
+    candidateName: { type: String, default: 'Candidate' },
+  },
+  { _id: false },
+)
+
+const vacancySchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
+    company: { type: String, required: true },
+    location: { type: String, default: 'Remote' },
+    type: { type: String, default: 'Not specified' },
+    salary: { type: String, default: 'Not specified' },
+    description: { type: String, default: '' },
+    testMode: { type: String, default: 'ai' },
+    questionSets: { type: [[String]], default: [] },
+    status: { type: String, default: 'open' },
+    tryAgain: { type: Boolean, default: false },
+    minScore: { type: Number, default: 0 },
+    testResults: { type: [resultSchema], default: [] },
+  },
+  { timestamps: true },
+)
+
+const Vacancy = mongoose.model('Vacancy', vacancySchema)
+
+const cvSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true, unique: true },
+    fileName: { type: String, default: 'No file uploaded' },
+... (232 lines left)
+Collapse
+message.js
+10 KB
+[22:48]
+Gio
+
+:
+import app from "../server.js";
+export default app;
+﻿
+import express from 'express'
+import cors from 'cors'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+
+dotenv.config()
+
+const app = express();
+const port = process.env.PORT || 4000
+const mongoUri = process.env.MONGODB_URI
+const jwtSecret = process.env.JWT_SECRET
+
+if (!mongoUri) {
+  console.warn('Missing MONGODB_URI in environment variables.')
+}
+
+if (!jwtSecret) {
+  console.warn('Missing JWT_SECRET in environment variables.')
+}
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
+app.use(express.json())
+
+const connectToDatabase = async () => {
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is not configured.')
+  }
+  if (mongoose.connection.readyState === 1) {
+    return
+  }
+  await mongoose.connect(mongoUri)
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase()
+    next()
+  } catch (error) {
+    console.error('MongoDB connection error:', error)
+    res.status(500).json({ message: 'Database connection failed.' })
+  }
+})
 
 const userSchema = new mongoose.Schema(
   {
@@ -290,15 +426,17 @@ app.delete('/api/cvs/:id', async (req, res) => {
   }
 })
 
-mongoose
-  .connect(mongoUri)
-  .then(() => {
-    console.log('Connected to MongoDB')
-    app.listen(port, () => {
-      console.log(`Auth server running on port ${port}`)
+if (!process.env.VERCEL) {
+  connectToDatabase()
+    .then(() => {
+      console.log('Connected to MongoDB')
+      app.listen(port, () => {
+        console.log(`Auth server running on port ${port}`)
+      })
     })
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error)
-    process.exit(1)
-  })
+    .catch((error) => {
+      console.error('MongoDB connection error:', error)
+      process.exit(1)
+    })
+}
+export default app;
