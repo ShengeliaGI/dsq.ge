@@ -155,6 +155,13 @@ function App() {
           : job,
       ),
     )
+    fetch(`/api/vacancies/${selectedJobId}/results`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ result: resultEntry, status: 'waiting', tryAgain: false }),
+    }).catch((error) => {
+      console.error('Failed to save test result', error)
+    })
     setPage('vacancies')
   }
 
@@ -169,12 +176,19 @@ function App() {
           job.id === selectedJobId ? { ...job, tryAgain: true } : job,
         ),
       )
+      fetch(`/api/vacancies/${selectedJobId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tryAgain: true }),
+      }).catch((error) => {
+        console.error('Failed to update vacancy', error)
+      })
     }
     setShowTimeUp(false)
     setPage('vacancies')
   }
 
-  const handleSaveCv = () => {
+  const handleSaveCv = async () => {
     const parts = [
       personalInfo,
       workExperience,
@@ -208,12 +222,39 @@ function App() {
       socialNetworks: socialNetworks.trim(),
     }
 
-    setCvSubmissions((prev) => [submission, ...prev])
+    try {
+      const response = await fetch('/api/cvs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submission),
+      })
+      const saved = await response.json().catch(() => null)
+      if (response.ok && saved) {
+        setCvSubmissions((prev) => [saved, ...prev])
+      } else {
+        setCvSubmissions((prev) => [submission, ...prev])
+      }
+    } catch (error) {
+      console.error('Failed to save CV', error)
+      setCvSubmissions((prev) => [submission, ...prev])
+    }
     setPage('cvs')
   }
 
   const handleDeleteCv = (cvId) => {
-    setCvSubmissions((prev) => prev.filter((cv) => cv.id !== cvId))
+    const removeCv = async () => {
+      try {
+        const response = await fetch(`/api/cvs/${cvId}`, { method: 'DELETE' })
+        if (!response.ok) {
+          throw new Error('Failed to delete CV')
+        }
+        setCvSubmissions((prev) => prev.filter((cv) => cv.id !== cvId))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    removeCv()
   }
 
   const handleDeleteResult = (jobId, resultId) => {
@@ -229,9 +270,15 @@ function App() {
           : job,
       ),
     )
+
+    fetch(`/api/vacancies/${jobId}/results/${resultId}`, {
+      method: 'DELETE',
+    }).catch((error) => {
+      console.error('Failed to delete result', error)
+    })
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const manualQuestions = manualTest
       .split('\n')
       .map((item) => item.trim())
@@ -258,8 +305,25 @@ function App() {
       tryAgain: false,
     }
 
-    setVacancies((prev) => [newVacancy, ...prev])
-    setSelectedJobId(newVacancy.id)
+    try {
+      const response = await fetch('/api/vacancies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newVacancy),
+      })
+      const saved = await response.json().catch(() => null)
+      if (response.ok && saved) {
+        setVacancies((prev) => [saved, ...prev])
+        setSelectedJobId(saved.id)
+      } else {
+        setVacancies((prev) => [newVacancy, ...prev])
+        setSelectedJobId(newVacancy.id)
+      }
+    } catch (error) {
+      console.error('Failed to publish vacancy', error)
+      setVacancies((prev) => [newVacancy, ...prev])
+      setSelectedJobId(newVacancy.id)
+    }
     setPage('vacancies')
   }
 
