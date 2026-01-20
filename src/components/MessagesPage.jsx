@@ -1,6 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) => {
+const MessagesPage = ({
+  userRole,
+  authUser,
+  threads,
+  applications = [],
+  vacancies = [],
+  onStartThread,
+  onSendMessage,
+  onBack,
+}) => {
   const [activeThreadId, setActiveThreadId] = useState(threads[0]?.id ?? null)
   const [draft, setDraft] = useState('')
 
@@ -32,6 +41,46 @@ const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) =>
     setDraft('')
   }
 
+  const availableConversations = useMemo(() => {
+    if (userRole === 'company') {
+      return vacancies.flatMap((job) =>
+        (job.testResults ?? []).map((result) => ({
+          key: `${job.id}-${result.candidateEmail}`,
+          jobId: job.id,
+          jobTitle: job.title,
+          company: job.company,
+          companyEmail: job.createdBy?.email,
+          candidateEmail: result.candidateEmail,
+          label: result.candidateEmail,
+        })),
+      )
+    }
+
+    return applications.map((application) => ({
+      key: `${application.jobId}-${application.id}`,
+      jobId: application.jobId,
+      jobTitle: application.title,
+      company: application.company,
+      companyEmail:
+        vacancies.find((job) => job.id === application.jobId)?.createdBy?.email,
+      candidateEmail: authUser?.email,
+      label: application.company,
+    }))
+  }, [applications, authUser?.email, userRole, vacancies])
+
+  const handleStartThread = async (conversation) => {
+    const thread = await onStartThread({
+      jobId: conversation.jobId,
+      jobTitle: conversation.jobTitle,
+      company: conversation.company,
+      candidateEmail: conversation.candidateEmail,
+      companyEmail: conversation.companyEmail,
+    })
+    if (thread?.id) {
+      setActiveThreadId(thread.id)
+    }
+  }
+
   return (
     <div className="page">
       <header className="page-header">
@@ -45,7 +94,7 @@ const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) =>
         </button>
       </header>
 
-      {visibleThreads.length === 0 ? (
+      {availableConversations.length === 0 ? (
         <div className="empty-state">
           <h3>No conversations yet</h3>
           <p className="muted">Messages will appear after a company responds.</p>
@@ -53,26 +102,34 @@ const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) =>
       ) : (
         <div className="messages-layout">
           <aside className="thread-list">
-            {visibleThreads.map((thread) => {
-              const counterparty =
-                userRole === 'company' ? thread.candidateEmail : thread.company
+            {availableConversations.map((conversation) => {
+              const existingThread = visibleThreads.find(
+                (thread) =>
+                  thread.jobId === conversation.jobId &&
+                  thread.candidateEmail?.toLowerCase() ===
+                    conversation.candidateEmail?.toLowerCase(),
+              )
               return (
                 <div
-                  key={thread.id}
+                  key={conversation.key}
                   className={
-                    thread.id === activeThread?.id
+                    existingThread?.id === activeThread?.id
                       ? 'thread-card active'
                       : 'thread-card'
                   }
                 >
                   <div>
-                    <h4>{thread.jobTitle}</h4>
-                    <p className="muted">{counterparty}</p>
+                    <h4>{conversation.jobTitle}</h4>
+                    <p className="muted">{conversation.label}</p>
                   </div>
                   <button
                     className="ghost"
                     type="button"
-                    onClick={() => setActiveThreadId(thread.id)}
+                    onClick={() =>
+                      existingThread
+                        ? setActiveThreadId(existingThread.id)
+                        : handleStartThread(conversation)
+                    }
                   >
                     Message
                   </button>

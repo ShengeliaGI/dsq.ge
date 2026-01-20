@@ -109,17 +109,7 @@ function App() {
       return []
     }
   })
-  const [messageThreads, setMessageThreads] = useState(() => {
-    const stored = localStorage.getItem('message_threads')
-    if (!stored) {
-      return []
-    }
-    try {
-      return JSON.parse(stored)
-    } catch {
-      return []
-    }
-  })
+  const [messageThreads, setMessageThreads] = useState([])
 
   const selectedJob = useMemo(
     () => vacancies.find((job) => job.id === selectedJobId) ?? null,
@@ -160,8 +150,26 @@ function App() {
   }, [notifications])
 
   useEffect(() => {
-    localStorage.setItem('message_threads', JSON.stringify(messageThreads))
-  }, [messageThreads])
+    if (!isAuthed) {
+      setMessageThreads([])
+      return
+    }
+    const loadThreads = async () => {
+      try {
+        const response = await fetch('/api/messages/threads', {
+          headers: getAuthHeaders(),
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setMessageThreads(data)
+        }
+      } catch (error) {
+        console.error('Failed to load threads', error)
+      }
+    }
+
+    loadThreads()
+  }, [isAuthed])
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('auth_token')
@@ -751,7 +759,13 @@ function App() {
     ])
   }
 
-  const ensureThread = ({ jobId, jobTitle, company, candidateEmail }) => {
+  const ensureThread = async ({
+    jobId,
+    jobTitle,
+    company,
+    candidateEmail,
+    companyEmail,
+  }) => {
     const existing = messageThreads.find(
       (thread) =>
         thread.jobId === jobId &&
@@ -760,43 +774,49 @@ function App() {
     if (existing) {
       return existing
     }
-    const created = {
-      id: `thread-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      jobId,
-      jobTitle,
-      company,
-      candidateEmail,
-      messages: [],
+
+    const response = await fetch('/api/messages/threads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify({ jobId, jobTitle, company, candidateEmail, companyEmail }),
+    })
+
+    const thread = await response.json().catch(() => null)
+    if (!thread) {
+      return null
     }
-    setMessageThreads((prev) => [created, ...prev])
-    return created
+
+    setMessageThreads((prev) => {
+      const filtered = prev.filter((item) => item.id !== thread.id)
+      return [thread, ...filtered]
+    })
+    return thread
   }
 
-  const handleSendMessage = (threadId, message, sender) => {
+  const handleSendMessage = async (threadId, message, sender) => {
     if (!message.trim()) {
       return
     }
-    setMessageThreads((prev) =>
-      prev.map((thread) =>
-        thread.id === threadId
-          ? {
-              ...thread,
-              messages: [
-                {
-                  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-                  sender,
-                  body: message.trim(),
-                  sentAt: new Date().toISOString(),
-                },
-                ...thread.messages,
-              ],
-            }
-          : thread,
-      ),
-    )
+
+    try {
+      const response = await fetch(`/api/messages/threads/${threadId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        body: JSON.stringify({ sender, body: message.trim() }),
+      })
+      const updated = await response.json().catch(() => null)
+      if (response.ok && updated) {
+        setMessageThreads((prev) => {
+          const filtered = prev.filter((item) => item.id !== updated.id)
+          return [updated, ...filtered]
+        })
+      }
+    } catch (error) {
+      console.error('Failed to send message', error)
+    }
   }
 
-  const handleUpdateResultStatus = (jobId, resultId, status) => {
+  const handleUpdateResultStatus = async (jobId, resultId, status) => {
     const job = vacancies.find((item) => item.id === jobId)
     const result = job?.testResults?.find((item) => item.id === resultId)
 
@@ -828,20 +848,23 @@ function App() {
         `Your application for ${job?.title ?? 'a role'} has been ${status}.`,
       )
 
-      const thread = ensureThread({
+      const thread = await ensureThread({
         jobId,
         jobTitle: job?.title ?? 'Role',
         company: job?.company ?? 'Company',
         candidateEmail: result.candidateEmail,
+        companyEmail: job?.createdBy?.email,
       })
 
-      handleSendMessage(
-        thread.id,
-        status === 'accepted'
-          ? `Congrats! We have accepted you for ${job?.title ?? 'the role'}. Let's discuss next steps.`
-          : `We would like to invite you to an interview for ${job?.title ?? 'the role'}.`,
-        'company',
-      )
+      if (thread) {
+        handleSendMessage(
+          thread.id,
+          status === 'accepted'
+            ? `Congrats! We have accepted you for ${job?.title ?? 'the role'}. Let's discuss next steps.`
+            : `We would like to invite you to an interview for ${job?.title ?? 'the role'}.`,
+          'company',
+        )
+      }
     }
   }
 
@@ -977,6 +1000,9 @@ function App() {
           userRole={userRole}
           authUser={authUser}
           threads={messageThreads}
+          applications={applications}
+          vacancies={vacancies}
+          onStartThread={ensureThread}
           onSendMessage={handleSendMessage}
           onBack={() => setPage('vacancies')}
         />
@@ -1012,8 +1038,8 @@ function App() {
                 jobTitle: job.title,
                 company: job.company,
                 candidateEmail: result.candidateEmail,
-              })
-              setPage('messages')
+                companyEmail: job?.createdBy?.email,
+              }).then(() => setPage('messages'))
             })
           }
           selectedJobType={selectedJobType}
