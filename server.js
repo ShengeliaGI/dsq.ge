@@ -73,6 +73,10 @@ const vacancySchema = new mongoose.Schema(
     id: { type: String, required: true, unique: true },
     title: { type: String, required: true },
     company: { type: String, required: true },
+    createdBy: {
+      id: { type: String },
+      email: { type: String },
+    },
     location: { type: String, default: 'Remote' },
     type: { type: String, default: 'Not specified' },
     salary: { type: String, default: 'Not specified' },
@@ -93,6 +97,10 @@ const cvSchema = new mongoose.Schema(
   {
     id: { type: String, required: true, unique: true },
     fileName: { type: String, default: 'No file uploaded' },
+    createdBy: {
+      id: { type: String },
+      email: { type: String },
+    },
     summary: { type: String, default: '' },
     personalInfo: { type: String, default: '' },
     workExperience: { type: String, default: '' },
@@ -113,6 +121,54 @@ const signToken = (user) => {
     throw new Error('JWT_SECRET is not configured.')
   }
   return jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '7d' })
+}
+
+const adminEmail = (process.env.ADMIN_EMAIL || 'dtbkyroxxx@gmail.com').toLowerCase()
+
+const getTokenFromHeader = (req) => {
+  const header = req.headers.authorization
+  if (!header) {
+    return null
+  }
+  const [type, token] = header.split(' ')
+  if (type !== 'Bearer' || !token) {
+    return null
+  }
+  return token
+}
+
+const isAdminUser = (user) => user?.email?.toLowerCase() === adminEmail
+
+const requireAuth = async (req, res, next) => {
+  try {
+    const token = getTokenFromHeader(req)
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized.' })
+    }
+    const payload = jwt.verify(token, jwtSecret)
+    const user = await User.findById(payload.id)
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized.' })
+    }
+    req.user = {
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      isAdmin: isAdminUser(user),
+    }
+    return next()
+  } catch (error) {
+    console.error('Auth error:', error)
+    return res.status(401).json({ message: 'Unauthorized.' })
+  }
+}
+
+const isOwnerOrAdmin = (doc, user) => {
+  if (user?.isAdmin) {
+    return true
+  }
+  const ownerId = doc?.createdBy?.id
+  return ownerId && user?.id && ownerId.toString() === user.id.toString()
 }
 
 app.get('/api/health', (req, res) => {
@@ -185,9 +241,15 @@ app.get('/api/vacancies', async (req, res) => {
   }
 })
 
-app.post('/api/vacancies', async (req, res) => {
+app.post('/api/vacancies', requireAuth, async (req, res) => {
   try {
-    const vacancy = await Vacancy.create(req.body)
+    const vacancy = await Vacancy.create({
+      ...req.body,
+      createdBy: {
+        id: req.user.id,
+        email: req.user.email,
+      },
+    })
     res.status(201).json(vacancy)
   } catch (error) {
     console.error('Create vacancy error:', error)
@@ -195,34 +257,55 @@ app.post('/api/vacancies', async (req, res) => {
   }
 })
 
-app.patch('/api/vacancies/:id', async (req, res) => {
+app.patch('/api/vacancies/:id', requireAuth, async (req, res) => {
   try {
-    const vacancy = await Vacancy.findOneAndUpdate(
-      { id: req.params.id },
-      { $set: req.body },
-      { new: true },
-    )
+    const vacancy = await Vacancy.findOne({ id: req.params.id })
 
     if (!vacancy) {
       return res.status(404).json({ message: 'Vacancy not found.' })
     }
 
-    return res.json(vacancy)
+    if (!isOwnerOrAdmin(vacancy, req.user)) {
+      return res.status(403).json({ message: 'Forbidden.' })
+    }
+
+    const { createdBy, ...updatePayload } = req.body || {}
+    const updated = await Vacancy.findOneAndUpdate(
+      { id: req.params.id },
+      { $set: updatePayload },
+      { new: true },
+    )
+
+    return res.json(updated)
   } catch (error) {
     console.error('Update vacancy error:', error)
     return res.status(500).json({ message: 'Failed to update vacancy.' })
   }
 })
 
-app.patch('/api/vacancies/:id/results', async (req, res) => {
+app.patch('/api/vacancies/:id/results', requireAuth, async (req, res) => {
   try {
     const { result, status, tryAgain } = req.body
-    const vacancy = await Vacancy.findOneAndUpdate(
+    if (!result) {
+      return res.status(400).json({ message: 'Result payload is required.' })
+    }
+
+    const vacancy = await Vacancy.findOne({ id: req.params.id })
+
+    if (!vacancy) {
+      return res.status(404).json({ message: 'Vacancy not found.' })
+    }
+
+    const canManage = isOwnerOrAdmin(vacancy, req.user)
+    const nextStatus = canManage ? status ?? 'waiting' : 'waiting'
+    const nextTryAgain = canManage ? tryAgain ?? false : false
+
+    const updated = await Vacancy.findOneAndUpdate(
       { id: req.params.id },
       {
         $set: {
-          status: status ?? 'waiting',
-          tryAgain: tryAgain ?? false,
+          status: nextStatus,
+          tryAgain: nextTryAgain,
         },
         $push: {
           testResults: {
@@ -234,42 +317,50 @@ app.patch('/api/vacancies/:id/results', async (req, res) => {
       { new: true },
     )
 
-    if (!vacancy) {
-      return res.status(404).json({ message: 'Vacancy not found.' })
-    }
-
-    return res.json(vacancy)
+    return res.json(updated)
   } catch (error) {
     console.error('Append result error:', error)
     return res.status(500).json({ message: 'Failed to save results.' })
   }
 })
 
-app.delete('/api/vacancies/:id/results/:resultId', async (req, res) => {
+app.delete('/api/vacancies/:id/results/:resultId', requireAuth, async (req, res) => {
   try {
-    const vacancy = await Vacancy.findOneAndUpdate(
-      { id: req.params.id },
-      { $pull: { testResults: { id: req.params.resultId } } },
-      { new: true },
-    )
+    const vacancy = await Vacancy.findOne({ id: req.params.id })
 
     if (!vacancy) {
       return res.status(404).json({ message: 'Vacancy not found.' })
     }
 
-    return res.json(vacancy)
+    if (!isOwnerOrAdmin(vacancy, req.user)) {
+      return res.status(403).json({ message: 'Forbidden.' })
+    }
+
+    const updated = await Vacancy.findOneAndUpdate(
+      { id: req.params.id },
+      { $pull: { testResults: { id: req.params.resultId } } },
+      { new: true },
+    )
+
+    return res.json(updated)
   } catch (error) {
     console.error('Delete result error:', error)
     return res.status(500).json({ message: 'Failed to delete result.' })
   }
 })
 
-app.delete('/api/vacancies/:id', async (req, res) => {
+app.delete('/api/vacancies/:id', requireAuth, async (req, res) => {
   try {
-    const vacancy = await Vacancy.findOneAndDelete({ id: req.params.id })
+    const vacancy = await Vacancy.findOne({ id: req.params.id })
     if (!vacancy) {
       return res.status(404).json({ message: 'Vacancy not found.' })
     }
+
+    if (!isOwnerOrAdmin(vacancy, req.user)) {
+      return res.status(403).json({ message: 'Forbidden.' })
+    }
+
+    await Vacancy.findOneAndDelete({ id: req.params.id })
     return res.json({ ok: true })
   } catch (error) {
     console.error('Delete vacancy error:', error)
@@ -287,9 +378,15 @@ app.get('/api/cvs', async (req, res) => {
   }
 })
 
-app.post('/api/cvs', async (req, res) => {
+app.post('/api/cvs', requireAuth, async (req, res) => {
   try {
-    const cv = await CvSubmission.create(req.body)
+    const cv = await CvSubmission.create({
+      ...req.body,
+      createdBy: {
+        id: req.user.id,
+        email: req.user.email,
+      },
+    })
     res.status(201).json(cv)
   } catch (error) {
     console.error('Create CV error:', error)
@@ -297,12 +394,18 @@ app.post('/api/cvs', async (req, res) => {
   }
 })
 
-app.delete('/api/cvs/:id', async (req, res) => {
+app.delete('/api/cvs/:id', requireAuth, async (req, res) => {
   try {
-    const cv = await CvSubmission.findOneAndDelete({ id: req.params.id })
+    const cv = await CvSubmission.findOne({ id: req.params.id })
     if (!cv) {
       return res.status(404).json({ message: 'CV not found.' })
     }
+
+    if (!isOwnerOrAdmin(cv, req.user)) {
+      return res.status(403).json({ message: 'Forbidden.' })
+    }
+
+    await CvSubmission.findOneAndDelete({ id: req.params.id })
     return res.json({ ok: true })
   } catch (error) {
     console.error('Delete CV error:', error)
