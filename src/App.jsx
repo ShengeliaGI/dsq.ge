@@ -118,6 +118,20 @@ function App() {
 
   const currentUserEmail = authUser?.email?.toLowerCase() ?? ''
 
+  const fetchThreads = async () => {
+    try {
+      const response = await fetch('/api/messages/threads', {
+        headers: getAuthHeaders(),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setMessageThreads(data)
+      }
+    } catch (error) {
+      console.error('Failed to load threads', error)
+    }
+  }
+
   const applications = useMemo(() => {
     if (!currentUserEmail) {
       return []
@@ -154,22 +168,18 @@ function App() {
       setMessageThreads([])
       return
     }
-    const loadThreads = async () => {
-      try {
-        const response = await fetch('/api/messages/threads', {
-          headers: getAuthHeaders(),
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setMessageThreads(data)
-        }
-      } catch (error) {
-        console.error('Failed to load threads', error)
-      }
+    fetchThreads()
+  }, [isAuthed])
+
+  useEffect(() => {
+    if (!isAuthed || page !== 'messages') {
+      return undefined
     }
 
-    loadThreads()
-  }, [isAuthed])
+    fetchThreads()
+    const interval = setInterval(fetchThreads, 5000)
+    return () => clearInterval(interval)
+  }, [isAuthed, page])
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('auth_token')
