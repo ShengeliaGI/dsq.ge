@@ -38,14 +38,56 @@ function App() {
   const [activeQuestions, setActiveQuestions] = useState([])
   const [cvFileName, setCvFileName] = useState('')
   const [cvSubmissions, setCvSubmissions] = useState([])
-  const [personalInfo, setPersonalInfo] = useState('')
-  const [workExperience, setWorkExperience] = useState('')
-  const [education, setEducation] = useState('')
-  const [languages, setLanguages] = useState('')
-  const [skills, setSkills] = useState('')
-  const [certificates, setCertificates] = useState('')
-  const [trainings, setTrainings] = useState('')
-  const [socialNetworks, setSocialNetworks] = useState('')
+  const [cvProfile, setCvProfile] = useState({
+    firstName: '',
+    lastName: '',
+    profession: '',
+    phone: '',
+    email: '',
+    address: '',
+    country: '',
+    city: '',
+    about: '',
+  })
+  const [socialLinkInput, setSocialLinkInput] = useState('')
+  const [socialLinks, setSocialLinks] = useState([])
+  const [workEntry, setWorkEntry] = useState({
+    position: '',
+    company: '',
+    startDate: '',
+    endDate: '',
+    current: false,
+    description: '',
+  })
+  const [workEntries, setWorkEntries] = useState([])
+  const [educationEntry, setEducationEntry] = useState({
+    degree: '',
+    school: '',
+    faculty: '',
+    startDate: '',
+    endDate: '',
+  })
+  const [educationEntries, setEducationEntries] = useState([])
+  const [languageEntry, setLanguageEntry] = useState({
+    name: '',
+    level: '',
+  })
+  const [languageEntries, setLanguageEntries] = useState([])
+  const [skillInput, setSkillInput] = useState('')
+  const [skillsList, setSkillsList] = useState([])
+  const [certificateEntry, setCertificateEntry] = useState({
+    title: '',
+    organization: '',
+    issueDate: '',
+  })
+  const [certificateEntries, setCertificateEntries] = useState([])
+  const [trainingEntry, setTrainingEntry] = useState({
+    title: '',
+    organization: '',
+    startDate: '',
+    endDate: '',
+  })
+  const [trainingEntries, setTrainingEntries] = useState([])
 
   const selectedJob = useMemo(
     () => vacancies.find((job) => job.id === selectedJobId) ?? null,
@@ -196,19 +238,189 @@ function App() {
     setPage('vacancies')
   }
 
+  const addSocialLink = () => {
+    const value = socialLinkInput.trim()
+    if (!value) {
+      return
+    }
+    setSocialLinks((prev) => [value, ...prev])
+    setSocialLinkInput('')
+  }
+
+  const addWorkEntry = () => {
+    const hasContent =
+      workEntry.position.trim() || workEntry.company.trim() || workEntry.description.trim()
+    if (!hasContent) {
+      return
+    }
+    setWorkEntries((prev) => [workEntry, ...prev])
+    setWorkEntry({
+      position: '',
+      company: '',
+      startDate: '',
+      endDate: '',
+      current: false,
+      description: '',
+    })
+  }
+
+  const clearWorkEntry = () => {
+    setWorkEntry({
+      position: '',
+      company: '',
+      startDate: '',
+      endDate: '',
+      current: false,
+      description: '',
+    })
+  }
+
+  const addEducationEntry = () => {
+    const hasContent =
+      educationEntry.degree.trim() || educationEntry.school.trim() || educationEntry.faculty.trim()
+    if (!hasContent) {
+      return
+    }
+    setEducationEntries((prev) => [educationEntry, ...prev])
+    setEducationEntry({
+      degree: '',
+      school: '',
+      faculty: '',
+      startDate: '',
+      endDate: '',
+    })
+  }
+
+  const clearEducationEntry = () => {
+    setEducationEntry({
+      degree: '',
+      school: '',
+      faculty: '',
+      startDate: '',
+      endDate: '',
+    })
+  }
+
+  const addLanguageEntry = () => {
+    if (!languageEntry.name.trim() || !languageEntry.level.trim()) {
+      return
+    }
+    setLanguageEntries((prev) => [languageEntry, ...prev])
+    setLanguageEntry({ name: '', level: '' })
+  }
+
+  const addSkill = () => {
+    const value = skillInput.trim()
+    if (!value) {
+      return
+    }
+    setSkillsList((prev) => [value, ...prev])
+    setSkillInput('')
+  }
+
+  const addCertificateEntry = () => {
+    const hasContent =
+      certificateEntry.title.trim() || certificateEntry.organization.trim() || certificateEntry.issueDate.trim()
+    if (!hasContent) {
+      return
+    }
+    setCertificateEntries((prev) => [certificateEntry, ...prev])
+    setCertificateEntry({ title: '', organization: '', issueDate: '' })
+  }
+
+  const clearCertificateEntry = () => {
+    setCertificateEntry({ title: '', organization: '', issueDate: '' })
+  }
+
+  const addTrainingEntry = () => {
+    const hasContent =
+      trainingEntry.title.trim() || trainingEntry.organization.trim() || trainingEntry.startDate.trim()
+    if (!hasContent) {
+      return
+    }
+    setTrainingEntries((prev) => [trainingEntry, ...prev])
+    setTrainingEntry({ title: '', organization: '', startDate: '', endDate: '' })
+  }
+
+  const clearTrainingEntry = () => {
+    setTrainingEntry({ title: '', organization: '', startDate: '', endDate: '' })
+  }
+
   const handleSaveCv = async () => {
-    const parts = [
-      personalInfo,
-      workExperience,
-      education,
-      languages,
-      skills,
-      certificates,
-      trainings,
-      socialNetworks,
+    const personalParts = [
+      `${cvProfile.firstName} ${cvProfile.lastName}`.trim(),
+      cvProfile.profession,
+      cvProfile.phone,
+      cvProfile.email,
+      cvProfile.address,
+      [cvProfile.city, cvProfile.country].filter(Boolean).join(', '),
     ]
       .map((item) => item.trim())
       .filter(Boolean)
+
+    const workText = workEntries
+      .map((entry) => {
+        const dates = entry.current
+          ? `${entry.startDate || 'Start'} - Present`
+          : [entry.startDate, entry.endDate].filter(Boolean).join(' - ')
+        return [entry.position, entry.company, dates, entry.description]
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .join(' • ')
+      })
+      .filter(Boolean)
+      .join('\n')
+
+    const educationText = educationEntries
+      .map((entry) => {
+        const dates = [entry.startDate, entry.endDate].filter(Boolean).join(' - ')
+        return [entry.degree, entry.school, entry.faculty, dates]
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .join(' • ')
+      })
+      .filter(Boolean)
+      .join('\n')
+
+    const languageText = languageEntries
+      .map((entry) => `${entry.name} ${entry.level}`.trim())
+      .filter(Boolean)
+      .join(', ')
+
+    const skillsText = skillsList.join(', ')
+
+    const certificatesText = certificateEntries
+      .map((entry) => [entry.title, entry.organization, entry.issueDate]
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .join(' • '))
+      .filter(Boolean)
+      .join('\n')
+
+    const trainingsText = trainingEntries
+      .map((entry) => {
+        const dates = [entry.startDate, entry.endDate].filter(Boolean).join(' - ')
+        return [entry.title, entry.organization, dates]
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .join(' • ')
+      })
+      .filter(Boolean)
+      .join('\n')
+
+    const socialText = socialLinks.join(', ')
+
+    const parts = [
+      personalParts.join(' • '),
+      cvProfile.about.trim(),
+      workText,
+      educationText,
+      languageText,
+      skillsText,
+      certificatesText,
+      trainingsText,
+      socialText,
+    ].filter(Boolean)
 
     if (parts.length === 0 && !cvFileName) {
       return
@@ -220,14 +432,14 @@ function App() {
       id: `cv-${Date.now()}`,
       fileName: cvFileName || 'No file uploaded',
       summary: summaryText.slice(0, 160) || 'No details provided.',
-      personalInfo: personalInfo.trim(),
-      workExperience: workExperience.trim(),
-      education: education.trim(),
-      languages: languages.trim(),
-      skills: skills.trim(),
-      certificates: certificates.trim(),
-      trainings: trainings.trim(),
-      socialNetworks: socialNetworks.trim(),
+      personalInfo: personalParts.join(' • '),
+      workExperience: workText,
+      education: educationText,
+      languages: languageText,
+      skills: skillsText,
+      certificates: certificatesText,
+      trainings: trainingsText,
+      socialNetworks: socialText,
     }
 
     try {
@@ -514,22 +726,40 @@ function App() {
           onFileChange={(event) =>
             setCvFileName(event.target.files?.[0]?.name ?? '')
           }
-          personalInfo={personalInfo}
-          setPersonalInfo={setPersonalInfo}
-          workExperience={workExperience}
-          setWorkExperience={setWorkExperience}
-          education={education}
-          setEducation={setEducation}
-          languages={languages}
-          setLanguages={setLanguages}
-          skills={skills}
-          setSkills={setSkills}
-          certificates={certificates}
-          setCertificates={setCertificates}
-          trainings={trainings}
-          setTrainings={setTrainings}
-          socialNetworks={socialNetworks}
-          setSocialNetworks={setSocialNetworks}
+          cvProfile={cvProfile}
+          setCvProfile={setCvProfile}
+          socialLinkInput={socialLinkInput}
+          setSocialLinkInput={setSocialLinkInput}
+          socialLinks={socialLinks}
+          onAddSocialLink={addSocialLink}
+          workEntry={workEntry}
+          setWorkEntry={setWorkEntry}
+          workEntries={workEntries}
+          onAddWorkEntry={addWorkEntry}
+          onClearWorkEntry={clearWorkEntry}
+          educationEntry={educationEntry}
+          setEducationEntry={setEducationEntry}
+          educationEntries={educationEntries}
+          onAddEducationEntry={addEducationEntry}
+          onClearEducationEntry={clearEducationEntry}
+          languageEntry={languageEntry}
+          setLanguageEntry={setLanguageEntry}
+          languageEntries={languageEntries}
+          onAddLanguageEntry={addLanguageEntry}
+          skillInput={skillInput}
+          setSkillInput={setSkillInput}
+          skillsList={skillsList}
+          onAddSkill={addSkill}
+          certificateEntry={certificateEntry}
+          setCertificateEntry={setCertificateEntry}
+          certificateEntries={certificateEntries}
+          onAddCertificateEntry={addCertificateEntry}
+          onClearCertificateEntry={clearCertificateEntry}
+          trainingEntry={trainingEntry}
+          setTrainingEntry={setTrainingEntry}
+          trainingEntries={trainingEntries}
+          onAddTrainingEntry={addTrainingEntry}
+          onClearTrainingEntry={clearTrainingEntry}
           onSave={handleSaveCv}
         />
       )}
