@@ -14,7 +14,7 @@ const ProfilePage = ({
   )
 
   return (
-    <div className="page">
+    <div className="page profile-page">
       <header className="page-header">
         <div>
           <p className="eyebrow">Profile</p>

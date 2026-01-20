@@ -1056,6 +1056,22 @@ input::placeholder {
   border: 1px solid rgba(120, 160, 255, 0.2);
 }
 
+.profile-page,
+.profile-page .muted,
+.profile-page p,
+.profile-page h1,
+.profile-page h2,
+.profile-page h3,
+.profile-page h4,
+.profile-page h5,
+.profile-page h6,
+.profile-page span,
+.profile-page strong,
+.profile-page li,
+.profile-page label {
+  color: #ffffff;
+}
+
 .notification-list {
   list-style: none;
   padding: 0;
