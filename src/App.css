@@ -1143,11 +1143,15 @@ input::placeholder {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(220px, 280px) 1fr;
+  align-items: stretch;
 }
 
 .thread-list {
   display: grid;
   gap: 10px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .thread-card {
@@ -1160,6 +1164,7 @@ input::placeholder {
   gap: 12px;
   align-items: center;
   justify-content: space-between;
+  min-height: 72px;
 }
 
 .thread-card.active {
@@ -1194,11 +1199,16 @@ input::placeholder {
   background: rgba(8, 16, 35, 0.6);
   display: grid;
   gap: 14px;
+  max-height: 520px;
+  overflow: hidden;
 }
 
 .message-list {
   display: grid;
   gap: 12px;
+  overflow-y: auto;
+  padding-right: 6px;
+  max-height: 320px;
 }
 
 .message-bubble {
@@ -1207,14 +1217,19 @@ input::placeholder {
   background: rgba(90, 140, 255, 0.15);
   display: grid;
   gap: 6px;
+  max-width: min(70%, 520px);
 }
 
 .message-bubble.company {
   border: 1px solid rgba(120, 160, 255, 0.35);
+  background: rgba(90, 140, 255, 0.18);
+  justify-self: flex-start;
 }
 
 .message-bubble.applicant {
   border: 1px solid rgba(90, 255, 170, 0.35);
+  background: rgba(90, 255, 170, 0.12);
+  justify-self: flex-end;
 }
 
 .message-bubble span {
@@ -1229,6 +1244,24 @@ input::placeholder {
 
 .message-composer input {
   flex: 1;
+}
+
+.thread-list::-webkit-scrollbar,
+.message-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.thread-list::-webkit-scrollbar-track,
+.message-list::-webkit-scrollbar-track {
+  background: rgba(8, 16, 35, 0.6);
+  border-radius: 999px;
+}
+
+.thread-list::-webkit-scrollbar-thumb,
+.message-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(120deg, rgba(90, 140, 255, 0.6), rgba(92, 225, 255, 0.6));
+  border-radius: 999px;
+  border: 2px solid rgba(8, 16, 35, 0.6);
 }
 
 .result-status-actions {
