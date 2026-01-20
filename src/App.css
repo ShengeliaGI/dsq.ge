@@ -1139,6 +1139,47 @@ input::placeholder {
 }
 
 
+.messages-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+}
+
+.thread-list {
+  display: grid;
+  gap: 10px;
+}
+
+.thread-card {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(10, 18, 40, 0.6);
+  text-align: left;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.thread-card.active {
+  border-color: rgba(120, 160, 255, 0.6);
+  background: rgba(90, 140, 255, 0.2);
+}
+
+.thread-card h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.thread-card p {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: rgba(214, 228, 255, 0.7);
+  word-break: break-word;
+}
+
 .thread-header {
   display: flex;
   align-items: center;

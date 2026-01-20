@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) => {
-  const [activeThreadId] = useState(threads[0]?.id ?? null)
+  const [activeThreadId, setActiveThreadId] = useState(threads[0]?.id ?? null)
   const [draft, setDraft] = useState('')
 
   const visibleThreads = threads.filter((thread) => {
@@ -17,6 +17,12 @@ const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) =>
     visibleThreads.find((thread) => thread.id === activeThreadId) ??
     visibleThreads[0] ??
     null
+
+  useEffect(() => {
+    if (!activeThreadId && visibleThreads[0]?.id) {
+      setActiveThreadId(visibleThreads[0].id)
+    }
+  }, [activeThreadId, visibleThreads])
 
   const handleSend = () => {
     if (!activeThread) {
@@ -45,47 +51,78 @@ const MessagesPage = ({ userRole, authUser, threads, onSendMessage, onBack }) =>
           <p className="muted">Messages will appear after a company responds.</p>
         </div>
       ) : (
-        <section className="thread-panel">
-          {activeThread ? (
-            <>
-              <header className="thread-header">
-                <div>
-                  <h3>{activeThread.jobTitle}</h3>
-                  <p className="muted">
-                    {userRole === 'company'
-                      ? activeThread.candidateEmail
-                      : activeThread.company}
-                  </p>
+        <div className="messages-layout">
+          <aside className="thread-list">
+            {visibleThreads.map((thread) => {
+              const counterparty =
+                userRole === 'company' ? thread.candidateEmail : thread.company
+              return (
+                <div
+                  key={thread.id}
+                  className={
+                    thread.id === activeThread?.id
+                      ? 'thread-card active'
+                      : 'thread-card'
+                  }
+                >
+                  <div>
+                    <h4>{thread.jobTitle}</h4>
+                    <p className="muted">{counterparty}</p>
+                  </div>
+                  <button
+                    className="ghost"
+                    type="button"
+                    onClick={() => setActiveThreadId(thread.id)}
+                  >
+                    Message
+                  </button>
                 </div>
-              </header>
-              <div className="message-list">
-                {activeThread.messages.length === 0 ? (
-                  <p className="muted">Start the conversation.</p>
-                ) : (
-                  activeThread.messages.map((message) => (
-                    <div key={message.id} className={`message-bubble ${message.sender}`}>
-                      <p>{message.body}</p>
-                      <span>{new Date(message.sentAt).toLocaleString()}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="message-composer">
-                <input
-                  type="text"
-                  placeholder="Write a message..."
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                />
-                <button className="primary" type="button" onClick={handleSend}>
-                  Send
-                </button>
-              </div>
-            </>
-          ) : (
-            <p className="muted">Select a thread to begin.</p>
-          )}
-        </section>
+              )
+            })}
+          </aside>
+
+          <section className="thread-panel">
+            {activeThread ? (
+              <>
+                <header className="thread-header">
+                  <div>
+                    <h3>{activeThread.jobTitle}</h3>
+                    <p className="muted">
+                      {userRole === 'company'
+                        ? activeThread.candidateEmail
+                        : activeThread.company}
+                    </p>
+                  </div>
+                </header>
+                <div className="message-list">
+                  {activeThread.messages.length === 0 ? (
+                    <p className="muted">Start the conversation.</p>
+                  ) : (
+                    activeThread.messages.map((message) => (
+                      <div key={message.id} className={`message-bubble ${message.sender}`}>
+                        <p>{message.body}</p>
+                        <span>{new Date(message.sentAt).toLocaleString()}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="message-composer">
+                  <input
+                    type="text"
+                    placeholder="Write a message..."
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                  />
+                  <button className="primary" type="button" onClick={handleSend}>
+                    Send
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="muted">Select a thread to begin.</p>
+            )}
+          </section>
+        </div>
       )}
     </div>
   )
