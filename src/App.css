@@ -1156,11 +1156,32 @@ input::placeholder {
   background: rgba(10, 18, 40, 0.6);
   text-align: left;
   cursor: pointer;
+  display: grid;
+  gap: 6px;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .thread-card.active {
   border-color: rgba(120, 160, 255, 0.6);
   background: rgba(90, 140, 255, 0.2);
+}
+
+.thread-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(120, 160, 255, 0.45);
+}
+
+.thread-card h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.thread-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(214, 228, 255, 0.7);
+  word-break: break-word;
 }
 
 .thread-panel {
