@@ -155,7 +155,9 @@ const MessagesPage = ({
                   {activeThread.messages.length === 0 ? (
                     <p className="muted">Start the conversation.</p>
                   ) : (
-                    activeThread.messages.map((message) => (
+                    [...activeThread.messages]
+                      .sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt))
+                      .map((message) => (
                       <div key={message.id} className={`message-bubble ${message.sender}`}>
                         <p>{message.body}</p>
                         <span>{new Date(message.sentAt).toLocaleString()}</span>

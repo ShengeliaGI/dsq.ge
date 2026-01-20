@@ -537,7 +537,7 @@ app.post('/api/messages/threads/:id/messages', requireAuth, async (req, res) => 
       return res.status(403).json({ message: 'Forbidden.' })
     }
 
-    thread.messages.unshift({
+    thread.messages.push({
       id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       sender: sender || (thread.companyEmail === email ? 'company' : 'applicant'),
       body: body.trim(),
