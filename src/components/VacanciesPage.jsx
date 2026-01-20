@@ -1,11 +1,18 @@
-const VacanciesPage = ({ vacancies, onOpenJobTest, onDeleteVacancy, onGoCompany, onLogout }) => (
+const VacanciesPage = ({
+  vacancies,
+  onOpenJobTest,
+  onDeleteVacancy,
+  onGoCompany,
+  onLogout,
+  currentUserEmail,
+}) => (
   <div className="page">
     <header className="page-header">
       <div className="header-left">
         <div>
           <p className="eyebrow">Vacancies</p>
           <h1>Explore open roles</h1>
-          <p className="muted">Tap a role to start the company test.</p>
+          <p className="muted">Tap a role to start the multiple-choice test.</p>
         </div>
       </div>
       <div className="header-actions">
@@ -24,8 +31,14 @@ const VacanciesPage = ({ vacancies, onOpenJobTest, onDeleteVacancy, onGoCompany,
       </div>
     ) : (
       <div className="grid">
-        {vacancies.map((job) => (
-          <div key={job.id} className="job-card">
+        {vacancies.map((job) => {
+          const applicantResult = (job.testResults ?? []).find(
+            (result) =>
+              result.candidateEmail?.toLowerCase() === currentUserEmail?.toLowerCase(),
+          )
+
+          return (
+            <div key={job.id} className="job-card">
             <button
               className="job-main"
               type="button"
@@ -43,6 +56,11 @@ const VacanciesPage = ({ vacancies, onOpenJobTest, onDeleteVacancy, onGoCompany,
               </div>
               <span className="cta">Start test →</span>
             </button>
+            {applicantResult?.status && (
+              <div className={`status-chip ${applicantResult.status}`}>
+                {applicantResult.status}
+              </div>
+            )}
             {job.status === 'waiting' && (
               <div className="status-chip waiting" aria-label="Waiting for answer">
                 Waiting for answer
@@ -61,7 +79,8 @@ const VacanciesPage = ({ vacancies, onOpenJobTest, onDeleteVacancy, onGoCompany,
               Delete vacancy
             </button>
           </div>
-        ))}
+          )
+        })}
       </div>
     )}
   </div>

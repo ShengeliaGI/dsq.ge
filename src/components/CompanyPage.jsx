@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { COMPANY_JOB_TYPES } from '../utils/testUtils'
+import { COMPANY_JOB_TYPES, parseManualQuestions } from '../utils/testUtils'
 
 const CompanyPage = ({
   vacancies,
@@ -24,11 +24,10 @@ const CompanyPage = ({
   setManualTest,
   onPublish,
   onBack,
+  onUpdateResultStatus,
+  onOpenMessages,
 }) => {
-  const manualCount = manualTest
-    .split('\n')
-    .map((item) => item.trim())
-    .filter(Boolean).length
+  const manualCount = parseManualQuestions(manualTest).length
 
   const hasResults = vacancies.some((job) => (job.testResults ?? []).length > 0)
   const [expandedResultId, setExpandedResultId] = useState(null)
@@ -157,7 +156,7 @@ const CompanyPage = ({
                 <textarea
                   rows="8"
                   placeholder={
-                    'Write 15 questions, one per line. Example:\n1. Explain your approach to...'
+                    'Write 15 questions, one per line. Format:\nQuestion | Option A | Option B | Option C | Correct (A/B/C)'
                   }
                   value={manualTest}
                   onChange={(event) => setManualTest(event.target.value)}
@@ -222,6 +221,9 @@ const CompanyPage = ({
                         >
                           {result.score}/{result.total}
                         </span>
+                        <span className={`status-chip ${result.status || 'submitted'}`}>
+                          {result.status || 'submitted'}
+                        </span>
                         <div className="result-actions">
                           <button
                             className="ghost"
@@ -239,26 +241,91 @@ const CompanyPage = ({
                           >
                             Delete
                           </button>
+                          <button
+                            className="ghost"
+                            type="button"
+                            onClick={() => onOpenMessages(job.id, result)}
+                          >
+                            Message
+                          </button>
+                        </div>
+                        <div className="result-status-actions">
+                          <button
+                            className="ghost"
+                            type="button"
+                            onClick={() => onUpdateResultStatus(job.id, result.id, 'pending')}
+                          >
+                            Pending
+                          </button>
+                          <button
+                            className="ghost"
+                            type="button"
+                            onClick={() =>
+                              onUpdateResultStatus(job.id, result.id, 'interview')
+                            }
+                          >
+                            Interview
+                          </button>
+                          <button
+                            className="ghost"
+                            type="button"
+                            onClick={() =>
+                              onUpdateResultStatus(job.id, result.id, 'accepted')
+                            }
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="danger"
+                            type="button"
+                            onClick={() =>
+                              onUpdateResultStatus(job.id, result.id, 'rejected')
+                            }
+                          >
+                            Reject
+                          </button>
                         </div>
                         {expandedResultId === result.id && (
                           <div className="result-details">
                             <h4>Question breakdown</h4>
                             <ol>
                               {(result.questions ?? []).map((question, index) => {
-                                const answer = result.answers?.[index] ?? ''
-                                const answered = answer.trim().length > 0
+                                const prompt = question?.prompt ?? question
+                                const options = question?.options ?? []
+                                const correctIndex = question?.correctIndex ?? null
+                                const selectedIndex = result.answers?.[index] ?? null
+                                const answered = Number.isFinite(selectedIndex)
                                 return (
                                   <li key={`${result.id}-${index}`}>
-                                    <p>{question}</p>
-                                    <p
-                                      className={
-                                        answered
-                                          ? 'muted'
-                                          : 'muted result-answer-missing'
-                                      }
-                                    >
-                                      {answered ? answer : 'No answer provided.'}
-                                    </p>
+                                    <p>{prompt}</p>
+                                    {options.length > 0 ? (
+                                      <ul className="answer-options">
+                                        {options.map((option, optionIndex) => (
+                                          <li
+                                            key={`${result.id}-${index}-${optionIndex}`}
+                                            className={
+                                              optionIndex === correctIndex
+                                                ? 'answer-option correct'
+                                                : optionIndex === selectedIndex
+                                                  ? 'answer-option selected'
+                                                  : 'answer-option'
+                                            }
+                                          >
+                                            {option}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    ) : (
+                                      <p
+                                        className={
+                                          answered
+                                            ? 'muted'
+                                            : 'muted result-answer-missing'
+                                        }
+                                      >
+                                        {answered ? 'Answered' : 'No answer provided.'}
+                                      </p>
+                                    )}
                                   </li>
                                 )
                               })}

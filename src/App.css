@@ -953,6 +953,259 @@ input::placeholder {
   flex-wrap: wrap;
 }
 
+.nav-badge {
+  margin-left: 8px;
+  background: rgba(255, 95, 110, 0.85);
+  color: #0b1024;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.nav-role {
+  align-self: center;
+  color: rgba(214, 228, 255, 0.7);
+  font-size: 0.85rem;
+  margin-left: 8px;
+}
+
+.hero {
+  align-items: flex-start;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.hero-card {
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(10, 18, 40, 0.7);
+  border: 1px solid rgba(120, 160, 255, 0.25);
+  max-width: 320px;
+}
+
+.hero-card ol {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+  margin: 0;
+}
+
+.role-section {
+  display: grid;
+  gap: 16px;
+}
+
+.role-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.role-card {
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(8, 16, 35, 0.6);
+  cursor: pointer;
+  text-align: left;
+}
+
+.role-card.active {
+  border-color: rgba(120, 160, 255, 0.6);
+  background: rgba(90, 140, 255, 0.15);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.feature-card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(10, 18, 40, 0.6);
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.profile-card {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(10, 18, 40, 0.7);
+  border: 1px solid rgba(120, 160, 255, 0.2);
+}
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.notification-item {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(8, 16, 35, 0.7);
+  border: 1px solid rgba(120, 160, 255, 0.15);
+}
+
+.applications-section {
+  display: grid;
+  gap: 16px;
+}
+
+.status-chip.submitted {
+  background: rgba(90, 140, 255, 0.25);
+  color: #c7dbff;
+}
+
+.status-chip.pending {
+  background: rgba(255, 200, 90, 0.2);
+  color: #ffe3a6;
+}
+
+.status-chip.interview {
+  background: rgba(90, 210, 255, 0.2);
+  color: #bfeeff;
+}
+
+.status-chip.accepted {
+  background: rgba(90, 255, 170, 0.2);
+  color: #bdf7d8;
+}
+
+.status-chip.rejected {
+  background: rgba(255, 95, 110, 0.2);
+  color: #ffb3bd;
+}
+
+.option-list {
+  display: grid;
+  gap: 8px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(6, 12, 28, 0.6);
+}
+
+.messages-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+}
+
+.thread-list {
+  display: grid;
+  gap: 10px;
+}
+
+.thread-card {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(10, 18, 40, 0.6);
+  text-align: left;
+  cursor: pointer;
+}
+
+.thread-card.active {
+  border-color: rgba(120, 160, 255, 0.6);
+  background: rgba(90, 140, 255, 0.2);
+}
+
+.thread-panel {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(8, 16, 35, 0.6);
+  display: grid;
+  gap: 14px;
+}
+
+.message-list {
+  display: grid;
+  gap: 12px;
+}
+
+.message-bubble {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(90, 140, 255, 0.15);
+  display: grid;
+  gap: 6px;
+}
+
+.message-bubble.company {
+  border: 1px solid rgba(120, 160, 255, 0.35);
+}
+
+.message-bubble.applicant {
+  border: 1px solid rgba(90, 255, 170, 0.35);
+}
+
+.message-bubble span {
+  font-size: 0.75rem;
+  color: rgba(214, 228, 255, 0.6);
+}
+
+.message-composer {
+  display: flex;
+  gap: 10px;
+}
+
+.message-composer input {
+  flex: 1;
+}
+
+.result-status-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.answer-options {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.answer-option {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 160, 255, 0.2);
+  background: rgba(8, 16, 35, 0.5);
+}
+
+.answer-option.correct {
+  border-color: rgba(90, 255, 170, 0.5);
+  background: rgba(90, 255, 170, 0.12);
+}
+
+.answer-option.selected {
+  border-color: rgba(90, 140, 255, 0.5);
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

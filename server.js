@@ -60,10 +60,11 @@ const resultSchema = new mongoose.Schema(
     submittedAt: { type: String, required: true },
     score: { type: Number, required: true },
     total: { type: Number, required: true },
-    questions: { type: [String], default: [] },
-    answers: { type: [String], default: [] },
+    questions: { type: [mongoose.Schema.Types.Mixed], default: [] },
+    answers: { type: [mongoose.Schema.Types.Mixed], default: [] },
     candidateEmail: { type: String, default: 'anonymous' },
     candidateName: { type: String, default: 'Candidate' },
+    status: { type: String, default: 'submitted' },
   },
   { _id: false },
 )
@@ -82,7 +83,7 @@ const vacancySchema = new mongoose.Schema(
     salary: { type: String, default: 'Not specified' },
     description: { type: String, default: '' },
     testMode: { type: String, default: 'ai' },
-    questionSets: { type: [[String]], default: [] },
+    questionSets: { type: [[mongoose.Schema.Types.Mixed]], default: [] },
     status: { type: String, default: 'open' },
     tryAgain: { type: Boolean, default: false },
     minScore: { type: Number, default: 0 },
@@ -321,6 +322,35 @@ app.patch('/api/vacancies/:id/results', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Append result error:', error)
     return res.status(500).json({ message: 'Failed to save results.' })
+  }
+})
+
+app.patch('/api/vacancies/:id/results/:resultId', requireAuth, async (req, res) => {
+  try {
+    const vacancy = await Vacancy.findOne({ id: req.params.id })
+
+    if (!vacancy) {
+      return res.status(404).json({ message: 'Vacancy not found.' })
+    }
+
+    if (!isOwnerOrAdmin(vacancy, req.user)) {
+      return res.status(403).json({ message: 'Forbidden.' })
+    }
+
+    const { status } = req.body || {}
+    const result = vacancy.testResults.find((entry) => entry.id === req.params.resultId)
+
+    if (!result) {
+      return res.status(404).json({ message: 'Result not found.' })
+    }
+
+    result.status = status || result.status
+    await vacancy.save()
+
+    return res.json(vacancy)
+  } catch (error) {
+    console.error('Update result error:', error)
+    return res.status(500).json({ message: 'Failed to update result.' })
   }
 })
 

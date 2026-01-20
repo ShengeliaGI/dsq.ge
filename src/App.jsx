@@ -8,10 +8,15 @@ import TestPage from './components/TestPage'
 import CvListPage from './components/CvListPage'
 import CvFormPage from './components/CvFormPage'
 import AdminPage from './components/AdminPage'
+import HomePage from './components/HomePage'
+import ProfilePage from './components/ProfilePage'
+import MessagesPage from './components/MessagesPage'
+import TestsPage from './components/TestsPage'
 import {
   TEST_DURATION_SECONDS,
   generateManualQuestionSets,
   generateQuestionSets,
+  parseManualQuestions,
 } from './utils/testUtils'
 
 function App() {
@@ -20,7 +25,7 @@ function App() {
   const [authError, setAuthError] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
   const [authUser, setAuthUser] = useState(null)
-  const [page, setPage] = useState('vacancies')
+  const [page, setPage] = useState('home')
   const [selectedJobId, setSelectedJobId] = useState(null)
   const [selectedJobType, setSelectedJobType] = useState('Frontend Developer')
   const [vacancies, setVacancies] = useState([])
@@ -88,11 +93,74 @@ function App() {
     endDate: '',
   })
   const [trainingEntries, setTrainingEntries] = useState([])
+  const [userRole, setUserRole] = useState(() => {
+    const stored = localStorage.getItem('user_role')
+    return stored || 'applicant'
+  })
+  const [notifications, setNotifications] = useState(() => {
+    const stored = localStorage.getItem('notifications')
+    if (!stored) {
+      return []
+    }
+    try {
+      return JSON.parse(stored)
+    } catch {
+      return []
+    }
+  })
+  const [messageThreads, setMessageThreads] = useState(() => {
+    const stored = localStorage.getItem('message_threads')
+    if (!stored) {
+      return []
+    }
+    try {
+      return JSON.parse(stored)
+    } catch {
+      return []
+    }
+  })
 
   const selectedJob = useMemo(
     () => vacancies.find((job) => job.id === selectedJobId) ?? null,
     [selectedJobId, vacancies],
   )
+
+  const currentUserEmail = authUser?.email?.toLowerCase() ?? ''
+
+  const applications = useMemo(() => {
+    if (!currentUserEmail) {
+      return []
+    }
+
+    return vacancies.flatMap((job) =>
+      (job.testResults ?? [])
+        .filter(
+          (result) => result.candidateEmail?.toLowerCase() === currentUserEmail,
+        )
+        .map((result) => ({
+          id: result.id,
+          jobId: job.id,
+          title: job.title,
+          company: job.company,
+          status: result.status || 'submitted',
+          score: result.score,
+          total: result.total,
+          submittedAt: result.submittedAt,
+        })),
+    )
+  }, [currentUserEmail, vacancies])
+
+  useEffect(() => {
+    localStorage.setItem('user_role', userRole)
+  }, [userRole])
+
+  useEffect(() => {
+    localStorage.setItem('notifications', JSON.stringify(notifications))
+  }, [notifications])
+
+  useEffect(() => {
+    localStorage.setItem('message_threads', JSON.stringify(messageThreads))
+  }, [messageThreads])
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('auth_token')
@@ -127,7 +195,7 @@ function App() {
       }
 
       setIsAuthed(true)
-      setPage('vacancies')
+      setPage('home')
     } catch (error) {
       setAuthError(error?.message || 'Authentication failed.')
     } finally {
@@ -179,9 +247,14 @@ function App() {
     }
 
     const normalizedAnswers = activeQuestions.map((_, index) =>
-      (answers[index] ?? '').trim(),
+      typeof answers[index] === 'number' ? answers[index] : null,
     )
-    const score = normalizedAnswers.filter(Boolean).length
+    const score = activeQuestions.reduce((total, question, index) => {
+      if (normalizedAnswers[index] === question.correctIndex) {
+        return total + 1
+      }
+      return total
+    }, 0)
     const resultEntry = {
       id: `result-${Date.now()}`,
       submittedAt: new Date().toISOString(),
@@ -191,6 +264,7 @@ function App() {
       answers: normalizedAnswers,
       candidateEmail: authUser?.email ?? 'anonymous',
       candidateName: authUser?.name ?? 'Candidate',
+      status: 'submitted',
     }
 
     setVacancies((prev) =>
@@ -503,10 +577,7 @@ function App() {
   }
 
   const handlePublish = async () => {
-    const manualQuestions = manualTest
-      .split('\n')
-      .map((item) => item.trim())
-      .filter(Boolean)
+    const manualQuestions = parseManualQuestions(manualTest)
     const normalizedMinScore = Number.parseInt(minScore, 10)
     const companyLabel = companyName.trim() || 'Company'
     const questionSets =
@@ -651,12 +722,157 @@ function App() {
     )
   }
 
-  const hideTopNav = page === 'cv' || page === 'company'
+  const unreadNotifications = notifications.filter(
+    (item) =>
+      !item.read && item.recipientEmail?.toLowerCase() === currentUserEmail,
+  )
+
+  const handleNotificationRead = () => {
+    if (!currentUserEmail) {
+      return
+    }
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.recipientEmail?.toLowerCase() === currentUserEmail
+          ? { ...item, read: true }
+          : item,
+      ),
+    )
+  }
+
+  const addNotification = (recipientEmail, title, message) => {
+    setNotifications((prev) => [
+      {
+        id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        recipientEmail,
+        title,
+        message,
+        createdAt: new Date().toISOString(),
+        read: false,
+      },
+      ...prev,
+    ])
+  }
+
+  const ensureThread = ({ jobId, jobTitle, company, candidateEmail }) => {
+    const existing = messageThreads.find(
+      (thread) =>
+        thread.jobId === jobId &&
+        thread.candidateEmail?.toLowerCase() === candidateEmail?.toLowerCase(),
+    )
+    if (existing) {
+      return existing
+    }
+    const created = {
+      id: `thread-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      jobId,
+      jobTitle,
+      company,
+      candidateEmail,
+      messages: [],
+    }
+    setMessageThreads((prev) => [created, ...prev])
+    return created
+  }
+
+  const handleSendMessage = (threadId, message, sender) => {
+    if (!message.trim()) {
+      return
+    }
+    setMessageThreads((prev) =>
+      prev.map((thread) =>
+        thread.id === threadId
+          ? {
+              ...thread,
+              messages: [
+                {
+                  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                  sender,
+                  body: message.trim(),
+                  sentAt: new Date().toISOString(),
+                },
+                ...thread.messages,
+              ],
+            }
+          : thread,
+      ),
+    )
+  }
+
+  const handleUpdateResultStatus = (jobId, resultId, status) => {
+    const job = vacancies.find((item) => item.id === jobId)
+    const result = job?.testResults?.find((item) => item.id === resultId)
+
+    setVacancies((prev) =>
+      prev.map((item) =>
+        item.id === jobId
+          ? {
+              ...item,
+              testResults: (item.testResults ?? []).map((entry) =>
+                entry.id === resultId ? { ...entry, status } : entry,
+              ),
+            }
+          : item,
+      ),
+    )
+
+    fetch(`/api/vacancies/${jobId}/results/${resultId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify({ status }),
+    }).catch((error) => {
+      console.error('Failed to update result', error)
+    })
+
+    if (result?.candidateEmail && (status === 'accepted' || status === 'interview')) {
+      addNotification(
+        result.candidateEmail,
+        status === 'accepted' ? 'Application accepted' : 'Interview requested',
+        `Your application for ${job?.title ?? 'a role'} has been ${status}.`,
+      )
+
+      const thread = ensureThread({
+        jobId,
+        jobTitle: job?.title ?? 'Role',
+        company: job?.company ?? 'Company',
+        candidateEmail: result.candidateEmail,
+      })
+
+      handleSendMessage(
+        thread.id,
+        status === 'accepted'
+          ? `Congrats! We have accepted you for ${job?.title ?? 'the role'}. Let's discuss next steps.`
+          : `We would like to invite you to an interview for ${job?.title ?? 'the role'}.`,
+        'company',
+      )
+    }
+  }
+
+  const hideTopNav = page === 'cv'
 
   return (
     <div className="app-shell">
       {!hideTopNav && (
-        <TopNav page={page} onNavigate={setPage} showAdmin={isAdmin} />
+        <TopNav
+          page={page}
+          onNavigate={(next) => {
+            if (next === 'messages') {
+              handleNotificationRead()
+            }
+            setPage(next)
+          }}
+          showAdmin={isAdmin}
+          userRole={userRole}
+          notificationCount={unreadNotifications.length}
+        />
+      )}
+      {page === 'home' && (
+        <HomePage
+          userRole={userRole}
+          onRoleChange={setUserRole}
+          onStart={() => setPage('vacancies')}
+          onViewProfile={() => setPage('profile')}
+        />
       )}
       {page === 'vacancies' && (
         <VacanciesPage
@@ -669,7 +885,37 @@ function App() {
             localStorage.removeItem('auth_user')
             setIsAuthed(false)
             setAuthUser(null)
+            setPage('home')
           }}
+          currentUserEmail={currentUserEmail}
+        />
+      )}
+      {page === 'tests' && (
+        <TestsPage
+          vacancies={vacancies}
+          applications={applications}
+          onOpenJobTest={openJobTest}
+          currentUserEmail={currentUserEmail}
+          onBack={() => setPage('vacancies')}
+        />
+      )}
+      {page === 'profile' && (
+        <ProfilePage
+          authUser={authUser}
+          userRole={userRole}
+          applications={applications}
+          notifications={notifications}
+          onViewMessages={() => setPage('messages')}
+          onBrowseJobs={() => setPage('vacancies')}
+        />
+      )}
+      {page === 'messages' && (
+        <MessagesPage
+          userRole={userRole}
+          authUser={authUser}
+          threads={messageThreads}
+          onSendMessage={handleSendMessage}
+          onBack={() => setPage('vacancies')}
         />
       )}
       {page === 'admin' && isAdmin && (
@@ -683,6 +929,20 @@ function App() {
         <CompanyPage
           vacancies={vacancies}
           onDeleteResult={handleDeleteResult}
+          onUpdateResultStatus={handleUpdateResultStatus}
+          onOpenMessages={(jobId, result) => {
+            const job = vacancies.find((item) => item.id === jobId)
+            if (!job || !result?.candidateEmail) {
+              return
+            }
+            ensureThread({
+              jobId,
+              jobTitle: job.title,
+              company: job.company,
+              candidateEmail: result.candidateEmail,
+            })
+            setPage('messages')
+          }}
           selectedJobType={selectedJobType}
           setSelectedJobType={setSelectedJobType}
           companyName={companyName}

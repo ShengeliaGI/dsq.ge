@@ -36,18 +36,25 @@ const TestPage = ({
       <div className="answer-grid">
         <ol className="question-list">
           {activeQuestions.map((question, index) => (
-            <li key={`${selectedJob?.id}-${index}`}>
-              <p>{question}</p>
-              <textarea
-                rows="3"
-                placeholder="Write your answer here"
-                value={answers[index] ?? ''}
-                onChange={(event) => {
-                  const next = [...answers]
-                  next[index] = event.target.value
-                  setAnswers(next)
-                }}
-              />
+            <li key={`${selectedJob?.id}-${question.id ?? index}`}>
+              <p>{question.prompt ?? question}</p>
+              <div className="option-list">
+                {(question.options ?? []).map((option, optionIndex) => (
+                  <label key={`${question.id}-${optionIndex}`} className="option-item">
+                    <input
+                      type="radio"
+                      name={`question-${index}`}
+                      checked={answers[index] === optionIndex}
+                      onChange={() => {
+                        const next = [...answers]
+                        next[index] = optionIndex
+                        setAnswers(next)
+                      }}
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
             </li>
           ))}
         </ol>

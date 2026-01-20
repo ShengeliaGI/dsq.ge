@@ -13,6 +13,27 @@ export const COMPANY_JOB_TYPES = [
 
 export const TEST_DURATION_SECONDS = 60 * 60
 
+const shuffleArray = (items) => [...items].sort(() => Math.random() - 0.5)
+
+const buildOptions = (jobType) => {
+  const correct = `Break the ${jobType} task into clear steps, validate assumptions, and deliver measurable outcomes.`
+  const wrongOne = 'Skip planning and jump directly into execution without alignment.'
+  const wrongTwo = 'Wait for perfect information before taking any action.'
+  const options = shuffleArray([correct, wrongOne, wrongTwo])
+  const correctIndex = options.indexOf(correct)
+  return { options, correctIndex }
+}
+
+const buildQuestion = (prompt, jobType) => {
+  const { options, correctIndex } = buildOptions(jobType)
+  return {
+    id: `q-${Math.random().toString(36).slice(2, 10)}`,
+    prompt,
+    options,
+    correctIndex,
+  }
+}
+
 export const generateAiQuestions = (jobType, companyLabel) => {
   const pool = [
     `Explain how you would scope and deliver a ${jobType} project under a tight deadline.`,
@@ -35,12 +56,37 @@ export const generateAiQuestions = (jobType, companyLabel) => {
     `Describe how you would mentor a junior teammate as a ${jobType}.`,
   ]
 
-  const shuffled = [...pool].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, 15)
+  return shuffleArray(pool).slice(0, 15).map((prompt) => buildQuestion(prompt, jobType))
 }
+
+export const parseManualQuestions = (raw) =>
+  raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.split('|').map((part) => part.trim()))
+    .map((parts) => {
+      if (parts.length < 5) {
+        return null
+      }
+      const [prompt, optionA, optionB, optionC, correctToken] = parts
+      const options = [optionA, optionB, optionC]
+      const normalized = correctToken.toLowerCase()
+      const correctIndex = ['a', 'b', 'c'].includes(normalized)
+        ? ['a', 'b', 'c'].indexOf(normalized)
+        : Math.max(0, Math.min(2, Number.parseInt(correctToken, 10) - 1 || 0))
+
+      return {
+        id: `q-${Math.random().toString(36).slice(2, 10)}`,
+        prompt,
+        options,
+        correctIndex,
+      }
+    })
+    .filter(Boolean)
 
 export const generateQuestionSets = (jobType, companyLabel) =>
   Array.from({ length: 10 }, () => generateAiQuestions(jobType, companyLabel))
 
 export const generateManualQuestionSets = (questions) =>
-  Array.from({ length: 10 }, () => [...questions].sort(() => Math.random() - 0.5))
+  Array.from({ length: 10 }, () => shuffleArray([...questions]))
