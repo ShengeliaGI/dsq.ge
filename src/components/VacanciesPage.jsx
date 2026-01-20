@@ -5,6 +5,7 @@ const VacanciesPage = ({
   onGoCompany,
   onLogout,
   currentUserEmail,
+  isAuthed,
 }) => (
   <div className="page">
     <header className="page-header">
@@ -19,9 +20,11 @@ const VacanciesPage = ({
         <button className="ghost" type="button" onClick={onGoCompany}>
           My Page
         </button>
-        <button className="ghost" type="button" onClick={onLogout}>
-          Log out
-        </button>
+        {isAuthed && (
+          <button className="ghost" type="button" onClick={onLogout}>
+            Log out
+          </button>
+        )}
       </div>
     </header>
     {vacancies.length === 0 ? (

@@ -1,4 +1,4 @@
-const HomePage = ({ onStart, onViewProfile }) => (
+const HomePage = ({ onStart, onViewProfile, onRegister }) => (
   <div className="page">
     <header className="page-header hero">
       <div>
@@ -15,12 +15,15 @@ const HomePage = ({ onStart, onViewProfile }) => (
           <button className="ghost" type="button" onClick={onViewProfile}>
             View profile
           </button>
+          <button className="ghost" type="button" onClick={onRegister}>
+            Register
+          </button>
         </div>
       </div>
       <div className="hero-card">
         <h3>How it works</h3>
         <ol>
-          <li>Pick your role: applicant or company.</li>
+          <li>Browse vacancies and learn how the platform works.</li>
           <li>Applicants take a 15-question multiple-choice test.</li>
           <li>Companies review results and move candidates to next stages.</li>
           <li>Messages and notifications keep everyone aligned.</li>

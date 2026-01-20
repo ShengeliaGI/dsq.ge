@@ -26,6 +26,7 @@ function App() {
   const [authLoading, setAuthLoading] = useState(false)
   const [authUser, setAuthUser] = useState(null)
   const [page, setPage] = useState('home')
+  const [authModal, setAuthModal] = useState({ open: false, message: '' })
   const [selectedJobId, setSelectedJobId] = useState(null)
   const [selectedJobType, setSelectedJobType] = useState('Frontend Developer')
   const [vacancies, setVacancies] = useState([])
@@ -712,20 +713,11 @@ function App() {
     }
   }, [page, isAdmin])
 
-  if (!isAuthed) {
-    return (
-      <AuthScreen
-        authMode={authMode}
-        isSubmitting={authLoading}
-        errorMessage={authError}
-        onSubmit={handleAuthSubmit}
-        onToggleMode={() => {
-          setAuthError('')
-          setAuthMode(authMode === 'login' ? 'register' : 'login')
-        }}
-      />
-    )
-  }
+  useEffect(() => {
+    if (!isAuthed && !['home', 'vacancies', 'auth'].includes(page)) {
+      setPage('home')
+    }
+  }, [isAuthed, page])
 
   const unreadNotifications = notifications.filter(
     (item) =>
@@ -855,34 +847,91 @@ function App() {
 
   const hideTopNav = page === 'cv'
 
+  const requireAuth = (message, action) => {
+    if (!isAuthed) {
+      setAuthModal({
+        open: true,
+        message: message || 'Please register to use this feature.',
+      })
+      return
+    }
+    action?.()
+  }
+
+  const handleNavigate = (next) => {
+    if (!isAuthed && !['home', 'vacancies', 'auth'].includes(next)) {
+      setAuthModal({
+        open: true,
+        message: 'Please register to access this area.',
+      })
+      return
+    }
+    if (next === 'messages') {
+      handleNotificationRead()
+    }
+    setPage(next)
+  }
+
   return (
     <div className="app-shell">
       {!hideTopNav && (
         <TopNav
           page={page}
-          onNavigate={(next) => {
-            if (next === 'messages') {
-              handleNotificationRead()
-            }
-            setPage(next)
-          }}
+          onNavigate={handleNavigate}
           showAdmin={isAdmin}
           userRole={userRole}
           notificationCount={unreadNotifications.length}
+          isAuthed={isAuthed}
+          onAuthRegister={() => {
+            setAuthMode('register')
+            setPage('auth')
+          }}
+          onAuthLogin={() => {
+            setAuthMode('login')
+            setPage('auth')
+          }}
         />
       )}
       {page === 'home' && (
         <HomePage
           onStart={() => setPage('vacancies')}
-          onViewProfile={() => setPage('profile')}
+          onViewProfile={() =>
+            requireAuth('Register to view your profile.', () => setPage('profile'))
+          }
+          onRegister={() => {
+            setAuthMode('register')
+            setPage('auth')
+          }}
+        />
+      )}
+      {page === 'auth' && (
+        <AuthScreen
+          authMode={authMode}
+          isSubmitting={authLoading}
+          errorMessage={authError}
+          onSubmit={handleAuthSubmit}
+          onToggleMode={() => {
+            setAuthError('')
+            setAuthMode(authMode === 'login' ? 'register' : 'login')
+          }}
         />
       )}
       {page === 'vacancies' && (
         <VacanciesPage
           vacancies={vacancies}
-          onOpenJobTest={openJobTest}
-          onDeleteVacancy={handleDeleteVacancy}
-          onGoCompany={() => setPage('company')}
+          onOpenJobTest={(jobId) =>
+            requireAuth('Register to start the test.', () => openJobTest(jobId))
+          }
+          onDeleteVacancy={(jobId) =>
+            requireAuth('Register to manage vacancies.', () =>
+              handleDeleteVacancy(jobId),
+            )
+          }
+          onGoCompany={() =>
+            requireAuth('Register to access company tools.', () =>
+              setPage('company'),
+            )
+          }
           onLogout={() => {
             localStorage.removeItem('auth_token')
             localStorage.removeItem('auth_user')
@@ -891,13 +940,16 @@ function App() {
             setPage('home')
           }}
           currentUserEmail={currentUserEmail}
+          isAuthed={isAuthed}
         />
       )}
       {page === 'tests' && (
         <TestsPage
           vacancies={vacancies}
           applications={applications}
-          onOpenJobTest={openJobTest}
+          onOpenJobTest={(jobId) =>
+            requireAuth('Register to take a test.', () => openJobTest(jobId))
+          }
           currentUserEmail={currentUserEmail}
           onBack={() => setPage('vacancies')}
         />
@@ -939,21 +991,31 @@ function App() {
       {page === 'company' && (
         <CompanyPage
           vacancies={vacancies}
-          onDeleteResult={handleDeleteResult}
-          onUpdateResultStatus={handleUpdateResultStatus}
-          onOpenMessages={(jobId, result) => {
-            const job = vacancies.find((item) => item.id === jobId)
-            if (!job || !result?.candidateEmail) {
-              return
-            }
-            ensureThread({
-              jobId,
-              jobTitle: job.title,
-              company: job.company,
-              candidateEmail: result.candidateEmail,
+          onDeleteResult={(jobId, resultId) =>
+            requireAuth('Register to manage results.', () =>
+              handleDeleteResult(jobId, resultId),
+            )
+          }
+          onUpdateResultStatus={(jobId, resultId, status) =>
+            requireAuth('Register to update statuses.', () =>
+              handleUpdateResultStatus(jobId, resultId, status),
+            )
+          }
+          onOpenMessages={(jobId, result) =>
+            requireAuth('Register to use messaging.', () => {
+              const job = vacancies.find((item) => item.id === jobId)
+              if (!job || !result?.candidateEmail) {
+                return
+              }
+              ensureThread({
+                jobId,
+                jobTitle: job.title,
+                company: job.company,
+                candidateEmail: result.candidateEmail,
+              })
+              setPage('messages')
             })
-            setPage('messages')
-          }}
+          }
           selectedJobType={selectedJobType}
           setSelectedJobType={setSelectedJobType}
           companyName={companyName}
@@ -1037,10 +1099,42 @@ function App() {
       {page === 'cvs' && (
         <CvListPage
           cvSubmissions={cvSubmissions}
-          onAddCv={() => setPage('cv')}
+          onAddCv={() =>
+            requireAuth('Register to add your CV.', () => setPage('cv'))
+          }
           onBackVacancies={() => setPage('vacancies')}
-          onDeleteCv={handleDeleteCv}
+          onDeleteCv={(cvId) =>
+            requireAuth('Register to manage CVs.', () => handleDeleteCv(cvId))
+          }
         />
+      )}
+      {authModal.open && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal">
+            <h3>Registration required</h3>
+            <p className="muted">{authModal.message}</p>
+            <div className="test-actions">
+              <button
+                className="primary"
+                type="button"
+                onClick={() => {
+                  setAuthModal({ open: false, message: '' })
+                  setAuthMode('register')
+                  setPage('auth')
+                }}
+              >
+                Register
+              </button>
+              <button
+                className="ghost"
+                type="button"
+                onClick={() => setAuthModal({ open: false, message: '' })}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
