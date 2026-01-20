@@ -167,7 +167,7 @@ function App() {
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
 
-  const handleAuthSubmit = async ({ name, email, password }) => {
+  const handleAuthSubmit = async ({ name, email, password, role }) => {
     setAuthError('')
     setAuthLoading(true)
     const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register'
@@ -192,6 +192,11 @@ function App() {
       if (data?.user) {
         localStorage.setItem('auth_user', JSON.stringify(data.user))
         setAuthUser(data.user)
+      }
+
+      if (authMode === 'register' && role) {
+        localStorage.setItem('user_role', role)
+        setUserRole(role)
       }
 
       setIsAuthed(true)
@@ -868,8 +873,6 @@ function App() {
       )}
       {page === 'home' && (
         <HomePage
-          userRole={userRole}
-          onRoleChange={setUserRole}
           onStart={() => setPage('vacancies')}
           onViewProfile={() => setPage('profile')}
         />
@@ -907,6 +910,14 @@ function App() {
           notifications={notifications}
           onViewMessages={() => setPage('messages')}
           onBrowseJobs={() => setPage('vacancies')}
+          onRoleChange={setUserRole}
+          onLogout={() => {
+            localStorage.removeItem('auth_token')
+            localStorage.removeItem('auth_user')
+            setIsAuthed(false)
+            setAuthUser(null)
+            setPage('home')
+          }}
         />
       )}
       {page === 'messages' && (

@@ -5,6 +5,8 @@ const ProfilePage = ({
   notifications,
   onViewMessages,
   onBrowseJobs,
+  onLogout,
+  onRoleChange,
 }) => {
   const userNotifications = notifications.filter(
     (item) =>
@@ -26,6 +28,9 @@ const ProfilePage = ({
           <button className="ghost" type="button" onClick={onViewMessages}>
             Messages
           </button>
+          <button className="danger" type="button" onClick={onLogout}>
+            Log out
+          </button>
         </div>
       </header>
 
@@ -34,6 +39,31 @@ const ProfilePage = ({
           <h3>Account</h3>
           <p className="muted">{authUser?.email}</p>
           <p className="muted">Role mode: {userRole}</p>
+        </div>
+        <div className="profile-card">
+          <h3>Change account type</h3>
+          <div className="role-grid">
+            <button
+              className={userRole === 'applicant' ? 'role-card active' : 'role-card'}
+              type="button"
+              onClick={() => onRoleChange('applicant')}
+            >
+              <h4>Employee / Applicant</h4>
+              <p className="muted">
+                Employee perks: take tests, track status, get interview updates.
+              </p>
+            </button>
+            <button
+              className={userRole === 'company' ? 'role-card active' : 'role-card'}
+              type="button"
+              onClick={() => onRoleChange('company')}
+            >
+              <h4>Company</h4>
+              <p className="muted">
+                Company perks: publish roles, review tests, message applicants.
+              </p>
+            </button>
+          </div>
         </div>
         <div className="profile-card">
           <h3>Notifications</h3>

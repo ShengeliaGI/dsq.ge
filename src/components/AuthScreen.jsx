@@ -10,6 +10,7 @@ const AuthScreen = ({
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState('applicant')
 
   useEffect(() => {
     setPassword('')
@@ -17,7 +18,7 @@ const AuthScreen = ({
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    onSubmit({ name: fullName.trim(), email: email.trim(), password })
+    onSubmit({ name: fullName.trim(), email: email.trim(), password, role })
   }
 
   return (
@@ -41,6 +42,23 @@ const AuthScreen = ({
                 onChange={(event) => setFullName(event.target.value)}
                 required
               />
+            </label>
+          )}
+          {authMode === 'register' && (
+            <label>
+              Account type
+              <select
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+              >
+                <option value="applicant">Employee / Applicant</option>
+                <option value="company">Company</option>
+              </select>
+              <span className="helper">
+                {role === 'company'
+                  ? 'Company perks: publish roles, review tests, message applicants.'
+                  : 'Employee perks: take tests, track status, get interview updates.'}
+              </span>
             </label>
           )}
           <label>

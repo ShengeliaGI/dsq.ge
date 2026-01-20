@@ -1,4 +1,4 @@
-const HomePage = ({ userRole, onRoleChange, onStart, onViewProfile }) => (
+const HomePage = ({ onStart, onViewProfile }) => (
   <div className="page">
     <header className="page-header hero">
       <div>
@@ -27,31 +27,6 @@ const HomePage = ({ userRole, onRoleChange, onStart, onViewProfile }) => (
         </ol>
       </div>
     </header>
-
-    <section className="role-section">
-      <div>
-        <h2>Applicant or company?</h2>
-        <p className="muted">Choose the workspace that matches your goals.</p>
-      </div>
-      <div className="role-grid">
-        <button
-          className={userRole === 'applicant' ? 'role-card active' : 'role-card'}
-          type="button"
-          onClick={() => onRoleChange('applicant')}
-        >
-          <h3>Applicant</h3>
-          <p className="muted">Browse roles, take tests, track application status.</p>
-        </button>
-        <button
-          className={userRole === 'company' ? 'role-card active' : 'role-card'}
-          type="button"
-          onClick={() => onRoleChange('company')}
-        >
-          <h3>Company</h3>
-          <p className="muted">Publish vacancies, review tests, move candidates forward.</p>
-        </button>
-      </div>
-    </section>
 
     <section className="feature-grid">
       <article className="feature-card">
