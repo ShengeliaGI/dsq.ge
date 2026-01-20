@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
   },
   { timestamps: true },
+)
 
 const User = mongoose.model('User', userSchema)
 
@@ -323,4 +324,3 @@ if (!process.env.VERCEL) {
     })
 }
 export default app;
->>>>>>> 8675d07 (first commit)
