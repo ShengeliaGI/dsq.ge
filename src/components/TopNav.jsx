@@ -17,6 +17,16 @@ const TopNav = ({
     setIsOpen(false)
   }
 
+  const handleAuthLogin = () => {
+    onAuthLogin()
+    setIsOpen(false)
+  }
+
+  const handleAuthRegister = () => {
+    onAuthRegister()
+    setIsOpen(false)
+  }
+
   return (
     <nav className="top-nav">
       <div className="nav-header">
@@ -25,6 +35,7 @@ const TopNav = ({
           className="nav-burger"
           type="button"
           aria-label="Toggle navigation"
+          aria-controls="nav-menu"
           aria-expanded={isOpen}
           onClick={() => setIsOpen((prev) => !prev)}
         >
@@ -33,7 +44,10 @@ const TopNav = ({
           <span />
         </button>
       </div>
-      <div className={isOpen ? 'nav-content nav-open' : 'nav-content'}>
+      <div
+        id="nav-menu"
+        className={isOpen ? 'nav-content nav-open' : 'nav-content'}
+      >
         <button
           className={page === 'home' ? 'nav-button active' : 'nav-button'}
           type="button"
@@ -107,10 +121,14 @@ const TopNav = ({
           </>
         ) : (
           <div className="nav-auth">
-            <button className="ghost" type="button" onClick={onAuthLogin}>
+            <button className="ghost" type="button" onClick={handleAuthLogin}>
               Log in
             </button>
-            <button className="primary" type="button" onClick={onAuthRegister}>
+            <button
+              className="primary"
+              type="button"
+              onClick={handleAuthRegister}
+            >
               Register
             </button>
           </div>
