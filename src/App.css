@@ -1314,10 +1314,106 @@ input::placeholder {
   gap: 12px;
 }
 
+@media (max-width: 900px) {
+  .app-shell {
+    padding: 32px clamp(16px, 4vw, 36px) 48px;
+  }
+  .top-nav {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .nav-auth {
+    flex-wrap: wrap;
+  }
+  .nav-button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+  .company-panel {
+    padding: 20px;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .messages-layout {
+    grid-template-columns: 1fr;
+  }
+  .thread-list,
+  .thread-panel {
+    max-height: none;
+  }
+}
+
 @media (max-width: 720px) {
   .page-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+  .app-shell {
+    padding: 24px 16px 40px;
+  }
+  .top-nav {
+    position: static;
+    margin-bottom: 16px;
+  }
+  .page {
+    gap: 20px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .toggle-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .result-actions,
+  .result-status-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .result-score {
+    align-self: flex-start;
+  }
+  .message-bubble {
+    max-width: 100%;
+  }
+  .message-composer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-card,
+  .company-panel,
+  .result-card,
+  .test-panel,
+  .cv-hero-card,
+  .hero-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .chip-grid,
+  .hero-actions,
+  .test-actions,
+  .header-actions {
+    gap: 8px;
+  }
+  .nav-button,
+  .chip,
+  .primary,
+  .ghost,
+  .danger {
+    width: 100%;
+    justify-content: center;
+  }
+  .thread-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .modal {
+    padding: 18px;
   }
 }
 
