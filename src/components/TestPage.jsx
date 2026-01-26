@@ -9,29 +9,36 @@ const TestPage = ({
   onAbandon,
   onTimeUpOk,
   onBack,
+  t,
+  getJobTitleLabel,
+  formatTime,
 }) => (
   <div className="page">
     <header className="page-header">
       <div>
-        <p className="eyebrow">Test</p>
-        <h1>{selectedJob ? selectedJob.title : 'Role test'}</h1>
-        <p className="muted">Company test assignment</p>
+        <p className="eyebrow">{t('test.eyebrow')}</p>
+        <h1>
+          {selectedJob ? getJobTitleLabel(selectedJob.title) : t('test.titleFallback')}
+        </h1>
+        <p className="muted">{t('test.subtitle')}</p>
       </div>
       <button className="ghost" type="button" onClick={onBack}>
-        Back to vacancies
+        {t('test.backToVacancies')}
       </button>
     </header>
     <div className="test-panel">
       <div className="test-header">
-        <p className="muted">Company: {selectedJob?.company ?? 'Unknown'}</p>
+        <p className="muted">
+          {t('test.company', { company: selectedJob?.company ?? 'Unknown' })}
+        </p>
         <span className="timer">
-          Time left: {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+          {t('test.timeLeft', { time: formatTime(timeLeft) })}
         </span>
       </div>
       <p className="test-copy">
         {selectedJob?.testMode === 'ai'
-          ? 'AI generated test tailored to this role.'
-          : 'Company written test.'}
+          ? t('test.aiCopy')
+          : t('test.manualCopy')}
       </p>
       <div className="answer-grid">
         <ol className="question-list">
@@ -61,20 +68,20 @@ const TestPage = ({
       </div>
       <div className="test-actions">
         <button className="primary" type="button" onClick={onFinish}>
-          Finish test
+          {t('test.finish')}
         </button>
         <button className="ghost" type="button" onClick={onAbandon}>
-          Abandon
+          {t('test.abandon')}
         </button>
       </div>
     </div>
     {showTimeUp && (
       <div className="modal-backdrop" role="dialog" aria-modal="true">
         <div className="modal">
-          <h3>Time is up</h3>
-          <p className="muted">Sorry, the test time has expired.</p>
+          <h3>{t('test.timeUpTitle')}</h3>
+          <p className="muted">{t('test.timeUpText')}</p>
           <button className="primary" type="button" onClick={onTimeUpOk}>
-            OK
+            {t('test.ok')}
           </button>
         </div>
       </div>

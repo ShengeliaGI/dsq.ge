@@ -56,10 +56,39 @@
 }
 
 .nav-content {
-  display: inline-flex;
+  display: flex;
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.nav-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.language-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 160, 255, 0.4);
+  background: rgba(8, 16, 36, 0.85);
+  color: #eaf0ff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(5, 10, 30, 0.3);
+}
+
+.language-toggle:hover {
+  box-shadow: 0 10px 22px rgba(5, 10, 30, 0.4);
+  transform: translateY(-1px);
+}
+
+.language-flag {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .nav-auth {

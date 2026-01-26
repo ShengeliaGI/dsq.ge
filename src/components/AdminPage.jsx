@@ -1,4 +1,4 @@
-const AdminPage = ({ vacancies, cvSubmissions, onBack }) => {
+const AdminPage = ({ vacancies, cvSubmissions, onBack, t, getJobTitleLabel }) => {
   const totalVacancies = vacancies.length
   const activeVacancies = vacancies.filter((job) => job.status === 'open').length
   const waitingVacancies = vacancies.filter((job) => job.status === 'waiting').length
@@ -9,14 +9,14 @@ const AdminPage = ({ vacancies, cvSubmissions, onBack }) => {
       <header className="page-header">
         <div className="header-left">
           <div>
-            <p className="eyebrow">Admin panel</p>
-            <h1>Activity overview</h1>
-            <p className="muted">Monitor recent activity across the platform.</p>
+            <p className="eyebrow">{t('admin.eyebrow')}</p>
+            <h1>{t('admin.title')}</h1>
+            <p className="muted">{t('admin.subtitle')}</p>
           </div>
         </div>
         <div className="header-actions">
           <button className="ghost" type="button" onClick={onBack}>
-            Back to vacancies
+            {t('admin.backToVacancies')}
           </button>
         </div>
       </header>
@@ -24,32 +24,32 @@ const AdminPage = ({ vacancies, cvSubmissions, onBack }) => {
       <section className="admin-metrics">
         <div className="metric-card">
           <h3>{totalVacancies}</h3>
-          <p className="muted">Total vacancies</p>
+          <p className="muted">{t('admin.totalVacancies')}</p>
         </div>
         <div className="metric-card">
           <h3>{activeVacancies}</h3>
-          <p className="muted">Open vacancies</p>
+          <p className="muted">{t('admin.openVacancies')}</p>
         </div>
         <div className="metric-card">
           <h3>{waitingVacancies}</h3>
-          <p className="muted">Waiting for response</p>
+          <p className="muted">{t('admin.waitingVacancies')}</p>
         </div>
         <div className="metric-card">
           <h3>{totalCvSubmissions}</h3>
-          <p className="muted">CV submissions</p>
+          <p className="muted">{t('admin.cvSubmissions')}</p>
         </div>
       </section>
 
       <section className="admin-split">
         <div className="admin-panel">
-          <h2>Recent vacancies</h2>
+          <h2>{t('admin.recentVacancies')}</h2>
           {vacancies.length === 0 ? (
-            <p className="muted">No vacancies created yet.</p>
+            <p className="muted">{t('admin.noVacancies')}</p>
           ) : (
             <ul className="admin-list">
               {vacancies.slice(0, 5).map((job) => (
                 <li key={job.id}>
-                  <strong>{job.title}</strong> · {job.company}
+                  <strong>{getJobTitleLabel(job.title)}</strong> · {job.company}
                   <span className="muted"> · {job.location}</span>
                 </li>
               ))}
@@ -57,9 +57,9 @@ const AdminPage = ({ vacancies, cvSubmissions, onBack }) => {
           )}
         </div>
         <div className="admin-panel">
-          <h2>Recent CV submissions</h2>
+          <h2>{t('admin.recentCvs')}</h2>
           {cvSubmissions.length === 0 ? (
-            <p className="muted">No CV submissions yet.</p>
+            <p className="muted">{t('admin.noCvs')}</p>
           ) : (
             <ul className="admin-list">
               {cvSubmissions.slice(0, 5).map((cv) => (

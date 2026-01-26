@@ -9,6 +9,8 @@ const MessagesPage = ({
   onStartThread,
   onSendMessage,
   onBack,
+  t,
+  getJobTitleLabel,
 }) => {
   const [activeThreadId, setActiveThreadId] = useState(threads[0]?.id ?? null)
   const [draft, setDraft] = useState('')
@@ -85,19 +87,19 @@ const MessagesPage = ({
     <div className="page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Messages</p>
-          <h1>Messaging portal</h1>
-          <p className="muted">Connect applicants and companies in one place.</p>
+          <p className="eyebrow">{t('messages.eyebrow')}</p>
+          <h1>{t('messages.title')}</h1>
+          <p className="muted">{t('messages.subtitle')}</p>
         </div>
         <button className="ghost" type="button" onClick={onBack}>
-          Back
+          {t('messages.back')}
         </button>
       </header>
 
       {availableConversations.length === 0 ? (
         <div className="empty-state">
-          <h3>No conversations yet</h3>
-          <p className="muted">Messages will appear after a company responds.</p>
+          <h3>{t('messages.emptyTitle')}</h3>
+          <p className="muted">{t('messages.emptySubtitle')}</p>
         </div>
       ) : (
         <div className="messages-layout">
@@ -119,7 +121,7 @@ const MessagesPage = ({
                   }
                 >
                   <div>
-                    <h4>{conversation.jobTitle}</h4>
+                    <h4>{getJobTitleLabel(conversation.jobTitle)}</h4>
                     <p className="muted">{conversation.label}</p>
                   </div>
                   <button
@@ -131,7 +133,7 @@ const MessagesPage = ({
                         : handleStartThread(conversation)
                     }
                   >
-                    Message
+                    {t('messages.message')}
                   </button>
                 </div>
               )
@@ -143,7 +145,7 @@ const MessagesPage = ({
               <>
                 <header className="thread-header">
                   <div>
-                    <h3>{activeThread.jobTitle}</h3>
+                    <h3>{getJobTitleLabel(activeThread.jobTitle)}</h3>
                     <p className="muted">
                       {userRole === 'company'
                         ? activeThread.candidateEmail
@@ -153,7 +155,7 @@ const MessagesPage = ({
                 </header>
                 <div className="message-list">
                   {activeThread.messages.length === 0 ? (
-                    <p className="muted">Start the conversation.</p>
+                    <p className="muted">{t('messages.startConversation')}</p>
                   ) : (
                     [...activeThread.messages]
                       .sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt))
@@ -168,17 +170,17 @@ const MessagesPage = ({
                 <div className="message-composer">
                   <input
                     type="text"
-                    placeholder="Write a message..."
+                    placeholder={t('messages.writePlaceholder')}
                     value={draft}
                     onChange={(event) => setDraft(event.target.value)}
                   />
                   <button className="primary" type="button" onClick={handleSend}>
-                    Send
+                    {t('messages.send')}
                   </button>
                 </div>
               </>
             ) : (
-              <p className="muted">Select a thread to begin.</p>
+              <p className="muted">{t('messages.selectThread')}</p>
             )}
           </section>
         </div>

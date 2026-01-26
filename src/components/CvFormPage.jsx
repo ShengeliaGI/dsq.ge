@@ -37,18 +37,17 @@ const CvFormPage = ({
   onAddTrainingEntry,
   onClearTrainingEntry,
   onSave,
+  t,
 }) => (
   <div className="page cv-page">
     <header className="page-header">
       <div>
-        <p className="eyebrow">Candidate profile</p>
-        <h1>Publish your CV</h1>
-        <p className="muted">
-          Create a professional candidate profile recruiters can review in seconds.
-        </p>
+        <p className="eyebrow">{t('cvForm.eyebrow')}</p>
+        <h1>{t('cvForm.title')}</h1>
+        <p className="muted">{t('cvForm.subtitle')}</p>
       </div>
       <button className="ghost" type="button" onClick={onBack}>
-        Back
+        {t('cvForm.back')}
       </button>
     </header>
 
@@ -56,23 +55,21 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Social links</h2>
+            <h2>{t('cvForm.socialTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
           </div>
-          <p className="muted">
-            You can add links to websites you want hiring managers to see.
-          </p>
+          <p className="muted">{t('cvForm.socialDesc')}</p>
           <div className="cv-inline">
             <input
               type="text"
-              placeholder="LinkedIn, GitHub, portfolio"
+              placeholder={t('cvForm.socialPlaceholder')}
               value={socialLinkInput}
               onChange={(event) => setSocialLinkInput(event.target.value)}
             />
             <button className="primary" type="button" onClick={onAddSocialLink}>
-              Add link
+              {t('cvForm.addLink')}
             </button>
           </div>
           {socialLinks.length > 0 && (
@@ -90,7 +87,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Personal Information</h2>
+            <h2>{t('cvForm.personalTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -99,14 +96,14 @@ const CvFormPage = ({
             <div className="cv-avatar">
               <div className="cv-avatar-circle" />
               <label className="file-button" htmlFor="cv-upload">
-                Upload
+                {t('cvForm.upload')}
               </label>
               <input id="cv-upload" type="file" onChange={onFileChange} />
             </div>
             <div className="cv-form-grid">
               <input
                 type="text"
-                placeholder="Name"
+                placeholder={t('cvForm.namePlaceholder')}
                 value={cvProfile.firstName}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, firstName: event.target.value }))
@@ -114,7 +111,7 @@ const CvFormPage = ({
               />
               <input
                 type="text"
-                placeholder="Surname"
+                placeholder={t('cvForm.surnamePlaceholder')}
                 value={cvProfile.lastName}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, lastName: event.target.value }))
@@ -123,7 +120,7 @@ const CvFormPage = ({
               <input
                 className="full-width"
                 type="text"
-                placeholder="Profession"
+                placeholder={t('cvForm.professionPlaceholder')}
                 value={cvProfile.profession}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, profession: event.target.value }))
@@ -132,7 +129,7 @@ const CvFormPage = ({
               <input
                 className="full-width"
                 type="text"
-                placeholder="Mobile Phone"
+                placeholder={t('cvForm.phonePlaceholder')}
                 value={cvProfile.phone}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, phone: event.target.value }))
@@ -141,7 +138,7 @@ const CvFormPage = ({
               <input
                 className="full-width"
                 type="email"
-                placeholder="Email Address"
+                placeholder={t('cvForm.emailPlaceholder')}
                 value={cvProfile.email}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, email: event.target.value }))
@@ -150,7 +147,7 @@ const CvFormPage = ({
               <input
                 className="full-width"
                 type="text"
-                placeholder="Address"
+                placeholder={t('cvForm.addressPlaceholder')}
                 value={cvProfile.address}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, address: event.target.value }))
@@ -158,7 +155,7 @@ const CvFormPage = ({
               />
               <input
                 type="text"
-                placeholder="Country"
+                placeholder={t('cvForm.countryPlaceholder')}
                 value={cvProfile.country}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, country: event.target.value }))
@@ -166,7 +163,7 @@ const CvFormPage = ({
               />
               <input
                 type="text"
-                placeholder="City"
+                placeholder={t('cvForm.cityPlaceholder')}
                 value={cvProfile.city}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, city: event.target.value }))
@@ -175,7 +172,7 @@ const CvFormPage = ({
               <textarea
                 className="full-width"
                 rows="4"
-                placeholder="Write about you"
+                placeholder={t('cvForm.aboutPlaceholder')}
                 value={cvProfile.about}
                 onChange={(event) =>
                   setCvProfile((prev) => ({ ...prev, about: event.target.value }))
@@ -189,7 +186,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Work experience</h2>
+            <h2>{t('cvForm.workTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -198,7 +195,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Position"
+              placeholder={t('cvForm.positionPlaceholder')}
               value={workEntry.position}
               onChange={(event) =>
                 setWorkEntry((prev) => ({ ...prev, position: event.target.value }))
@@ -207,7 +204,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Company"
+              placeholder={t('cvForm.companyPlaceholder')}
               value={workEntry.company}
               onChange={(event) =>
                 setWorkEntry((prev) => ({ ...prev, company: event.target.value }))
@@ -215,7 +212,7 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="Start Date (MM/YYYY)"
+              placeholder={t('cvForm.startDatePlaceholder')}
               value={workEntry.startDate}
               onChange={(event) =>
                 setWorkEntry((prev) => ({ ...prev, startDate: event.target.value }))
@@ -223,7 +220,7 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="End Date (MM/YYYY)"
+              placeholder={t('cvForm.endDatePlaceholder')}
               value={workEntry.endDate}
               onChange={(event) =>
                 setWorkEntry((prev) => ({ ...prev, endDate: event.target.value }))
@@ -237,12 +234,12 @@ const CvFormPage = ({
                   setWorkEntry((prev) => ({ ...prev, current: event.target.checked }))
                 }
               />
-              Current Position
+              {t('cvForm.currentPosition')}
             </label>
             <textarea
               className="full-width"
               rows="4"
-              placeholder="Add Description"
+              placeholder={t('cvForm.addDescription')}
               value={workEntry.description}
               onChange={(event) =>
                 setWorkEntry((prev) => ({ ...prev, description: event.target.value }))
@@ -251,20 +248,21 @@ const CvFormPage = ({
           </div>
           <div className="cv-actions-row">
             <button className="ghost" type="button" onClick={onClearWorkEntry}>
-              Clear
+              {t('cvForm.clear')}
             </button>
             <button className="primary" type="button" onClick={onAddWorkEntry}>
-              Add
+              {t('cvForm.add')}
             </button>
           </div>
           {workEntries.length > 0 && (
             <div className="cv-list">
               {workEntries.map((entry, index) => (
                 <div key={`${entry.position}-${index}`} className="cv-list-card">
-                  <strong>{entry.position || 'Role'}</strong> · {entry.company || 'Company'}
+                  <strong>{entry.position || t('cvForm.roleFallback')}</strong> ·{' '}
+                  {entry.company || t('cvForm.companyFallback')}
                   <span className="muted">
                     {entry.current
-                      ? `${entry.startDate || 'Start'} - Present`
+                      ? `${entry.startDate || t('cvForm.startFallback')} - ${t('cvForm.present')}`
                       : [entry.startDate, entry.endDate].filter(Boolean).join(' - ')}
                   </span>
                   {entry.description && <p>{entry.description}</p>}
@@ -278,7 +276,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Education</h2>
+            <h2>{t('cvForm.educationTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -287,7 +285,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Degree"
+              placeholder={t('cvForm.degreePlaceholder')}
               value={educationEntry.degree}
               onChange={(event) =>
                 setEducationEntry((prev) => ({ ...prev, degree: event.target.value }))
@@ -296,7 +294,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="University/Institute/College"
+              placeholder={t('cvForm.schoolPlaceholder')}
               value={educationEntry.school}
               onChange={(event) =>
                 setEducationEntry((prev) => ({ ...prev, school: event.target.value }))
@@ -305,7 +303,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Faculty"
+              placeholder={t('cvForm.facultyPlaceholder')}
               value={educationEntry.faculty}
               onChange={(event) =>
                 setEducationEntry((prev) => ({ ...prev, faculty: event.target.value }))
@@ -313,7 +311,7 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="Start Date (MM/YYYY)"
+              placeholder={t('cvForm.startDatePlaceholder')}
               value={educationEntry.startDate}
               onChange={(event) =>
                 setEducationEntry((prev) => ({ ...prev, startDate: event.target.value }))
@@ -321,7 +319,7 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="End Date (MM/YYYY)"
+              placeholder={t('cvForm.endDatePlaceholder')}
               value={educationEntry.endDate}
               onChange={(event) =>
                 setEducationEntry((prev) => ({ ...prev, endDate: event.target.value }))
@@ -330,17 +328,18 @@ const CvFormPage = ({
           </div>
           <div className="cv-actions-row">
             <button className="ghost" type="button" onClick={onClearEducationEntry}>
-              Clear
+              {t('cvForm.clear')}
             </button>
             <button className="primary" type="button" onClick={onAddEducationEntry}>
-              Add
+              {t('cvForm.add')}
             </button>
           </div>
           {educationEntries.length > 0 && (
             <div className="cv-list">
               {educationEntries.map((entry, index) => (
                 <div key={`${entry.degree}-${index}`} className="cv-list-card">
-                  <strong>{entry.degree || 'Degree'}</strong> · {entry.school || 'School'}
+                  <strong>{entry.degree || t('cvForm.degreePlaceholder')}</strong> ·{' '}
+                  {entry.school || t('cvForm.schoolPlaceholder')}
                   <span className="muted">
                     {[entry.startDate, entry.endDate].filter(Boolean).join(' - ')}
                   </span>
@@ -355,7 +354,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Languages</h2>
+            <h2>{t('cvForm.languagesTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -363,7 +362,7 @@ const CvFormPage = ({
           <div className="cv-inline">
             <input
               type="text"
-              placeholder="Select Language"
+              placeholder={t('cvForm.selectLanguagePlaceholder')}
               value={languageEntry.name}
               onChange={(event) =>
                 setLanguageEntry((prev) => ({ ...prev, name: event.target.value }))
@@ -371,14 +370,14 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="Level"
+              placeholder={t('cvForm.levelPlaceholder')}
               value={languageEntry.level}
               onChange={(event) =>
                 setLanguageEntry((prev) => ({ ...prev, level: event.target.value }))
               }
             />
             <button className="primary" type="button" onClick={onAddLanguageEntry}>
-              Add
+              {t('cvForm.add')}
             </button>
           </div>
           {languageEntries.length > 0 && (
@@ -396,7 +395,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Skills</h2>
+            <h2>{t('cvForm.skillsTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -404,12 +403,12 @@ const CvFormPage = ({
           <div className="cv-inline">
             <input
               type="text"
-              placeholder="Enter skill"
+              placeholder={t('cvForm.skillPlaceholder')}
               value={skillInput}
               onChange={(event) => setSkillInput(event.target.value)}
             />
             <button className="primary" type="button" onClick={onAddSkill}>
-              Add
+              {t('cvForm.add')}
             </button>
           </div>
           {skillsList.length > 0 && (
@@ -427,7 +426,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Certificates</h2>
+            <h2>{t('cvForm.certificatesTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -436,7 +435,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Title"
+              placeholder={t('cvForm.titlePlaceholder')}
               value={certificateEntry.title}
               onChange={(event) =>
                 setCertificateEntry((prev) => ({ ...prev, title: event.target.value }))
@@ -445,7 +444,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Organization"
+              placeholder={t('cvForm.organizationPlaceholder')}
               value={certificateEntry.organization}
               onChange={(event) =>
                 setCertificateEntry((prev) => ({ ...prev, organization: event.target.value }))
@@ -454,7 +453,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Issue Date (MM/YYYY)"
+              placeholder={t('cvForm.issueDatePlaceholder')}
               value={certificateEntry.issueDate}
               onChange={(event) =>
                 setCertificateEntry((prev) => ({ ...prev, issueDate: event.target.value }))
@@ -463,18 +462,20 @@ const CvFormPage = ({
           </div>
           <div className="cv-actions-row">
             <button className="ghost" type="button" onClick={onClearCertificateEntry}>
-              Clear
+              {t('cvForm.clear')}
             </button>
             <button className="primary" type="button" onClick={onAddCertificateEntry}>
-              Add
+              {t('cvForm.add')}
             </button>
           </div>
           {certificateEntries.length > 0 && (
             <div className="cv-list">
               {certificateEntries.map((entry, index) => (
                 <div key={`${entry.title}-${index}`} className="cv-list-card">
-                  <strong>{entry.title || 'Certificate'}</strong>
-                  <span className="muted">{entry.organization || 'Organization'}</span>
+                  <strong>{entry.title || t('cvForm.certificateFallback')}</strong>
+                  <span className="muted">
+                    {entry.organization || t('cvForm.organizationPlaceholder')}
+                  </span>
                   {entry.issueDate && <span className="muted">{entry.issueDate}</span>}
                 </div>
               ))}
@@ -486,7 +487,7 @@ const CvFormPage = ({
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
-            <h2>Trainings & Courses</h2>
+            <h2>{t('cvForm.trainingsTitle')}</h2>
             <button className="icon-button" type="button" aria-label="Collapse">
               ▴
             </button>
@@ -495,7 +496,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Title"
+              placeholder={t('cvForm.titlePlaceholder')}
               value={trainingEntry.title}
               onChange={(event) =>
                 setTrainingEntry((prev) => ({ ...prev, title: event.target.value }))
@@ -504,7 +505,7 @@ const CvFormPage = ({
             <input
               className="full-width"
               type="text"
-              placeholder="Organization"
+              placeholder={t('cvForm.organizationPlaceholder')}
               value={trainingEntry.organization}
               onChange={(event) =>
                 setTrainingEntry((prev) => ({ ...prev, organization: event.target.value }))
@@ -512,7 +513,7 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="Start Date (MM/YYYY)"
+              placeholder={t('cvForm.startDatePlaceholder')}
               value={trainingEntry.startDate}
               onChange={(event) =>
                 setTrainingEntry((prev) => ({ ...prev, startDate: event.target.value }))
@@ -520,7 +521,7 @@ const CvFormPage = ({
             />
             <input
               type="text"
-              placeholder="End Date (MM/YYYY)"
+              placeholder={t('cvForm.endDatePlaceholder')}
               value={trainingEntry.endDate}
               onChange={(event) =>
                 setTrainingEntry((prev) => ({ ...prev, endDate: event.target.value }))
@@ -529,18 +530,20 @@ const CvFormPage = ({
           </div>
           <div className="cv-actions-row">
             <button className="ghost" type="button" onClick={onClearTrainingEntry}>
-              Clear
+              {t('cvForm.clear')}
             </button>
             <button className="primary" type="button" onClick={onAddTrainingEntry}>
-              Add
+              {t('cvForm.add')}
             </button>
           </div>
           {trainingEntries.length > 0 && (
             <div className="cv-list">
               {trainingEntries.map((entry, index) => (
                 <div key={`${entry.title}-${index}`} className="cv-list-card">
-                  <strong>{entry.title || 'Training'}</strong>
-                  <span className="muted">{entry.organization || 'Organization'}</span>
+                  <strong>{entry.title || t('cvForm.trainingFallback')}</strong>
+                  <span className="muted">
+                    {entry.organization || t('cvForm.organizationPlaceholder')}
+                  </span>
                   <span className="muted">
                     {[entry.startDate, entry.endDate].filter(Boolean).join(' - ')}
                   </span>
@@ -553,7 +556,7 @@ const CvFormPage = ({
 
       <div className="cv-footer">
         <button className="primary" type="button" onClick={onSave}>
-          Publish CV
+          {t('cvForm.publish')}
         </button>
       </div>
     </div>

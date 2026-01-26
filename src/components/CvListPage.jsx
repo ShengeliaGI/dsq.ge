@@ -1,6 +1,12 @@
 import { useState } from 'react'
 
-const CvListPage = ({ cvSubmissions, onAddCv, onBackVacancies, onDeleteCv }) => {
+const CvListPage = ({
+  cvSubmissions,
+  onAddCv,
+  onBackVacancies,
+  onDeleteCv,
+  t,
+}) => {
   const [expandedCvId, setExpandedCvId] = useState(null)
 
   const toggleCv = (cvId) => {
@@ -11,23 +17,23 @@ const CvListPage = ({ cvSubmissions, onAddCv, onBackVacancies, onDeleteCv }) => 
     <div className="page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Looking for job</p>
-          <h1>Job seeker CVs</h1>
-          <p className="muted">Browse saved CVs from candidates.</p>
+          <p className="eyebrow">{t('cvList.eyebrow')}</p>
+          <h1>{t('cvList.title')}</h1>
+          <p className="muted">{t('cvList.subtitle')}</p>
         </div>
         <div className="header-actions">
           <button className="ghost" type="button" onClick={onAddCv}>
-            Add CV
+            {t('cvList.addCv')}
           </button>
           <button className="ghost" type="button" onClick={onBackVacancies}>
-            Back to vacancies
+            {t('cvList.backToVacancies')}
           </button>
         </div>
       </header>
       {cvSubmissions.length === 0 ? (
         <div className="empty-state">
-          <h3>No CVs yet</h3>
-          <p className="muted">Use Add CV to fill out your profile.</p>
+          <h3>{t('cvList.emptyTitle')}</h3>
+          <p className="muted">{t('cvList.emptySubtitle')}</p>
         </div>
       ) : (
         <div className="cv-list">
@@ -44,49 +50,59 @@ const CvListPage = ({ cvSubmissions, onAddCv, onBackVacancies, onDeleteCv }) => 
                     type="button"
                     onClick={() => toggleCv(cv.id)}
                   >
-                    {expandedCvId === cv.id ? 'Hide details' : 'View details'}
+                    {expandedCvId === cv.id
+                      ? t('cvList.hideDetails')
+                      : t('cvList.viewDetails')}
                   </button>
                   <button
                     className="danger"
                     type="button"
                     onClick={() => onDeleteCv(cv.id)}
                   >
-                    Delete CV
+                    {t('cvList.deleteCv')}
                   </button>
                 </div>
                 {expandedCvId === cv.id && (
                   <div className="cv-details">
                     <div>
-                      <h5>Personal info</h5>
-                      <p className="muted">{cv.personalInfo || 'Not provided.'}</p>
+                      <h5>{t('cvList.personalInfo')}</h5>
+                      <p className="muted">
+                        {cv.personalInfo || t('cvList.notProvided')}
+                      </p>
                     </div>
                     <div>
-                      <h5>Work experience</h5>
-                      <p className="muted">{cv.workExperience || 'Not provided.'}</p>
+                      <h5>{t('cvList.workExperience')}</h5>
+                      <p className="muted">
+                        {cv.workExperience || t('cvList.notProvided')}
+                      </p>
                     </div>
                     <div>
-                      <h5>Education</h5>
-                      <p className="muted">{cv.education || 'Not provided.'}</p>
+                      <h5>{t('cvList.education')}</h5>
+                      <p className="muted">{cv.education || t('cvList.notProvided')}</p>
                     </div>
                     <div>
-                      <h5>Languages</h5>
-                      <p className="muted">{cv.languages || 'Not provided.'}</p>
+                      <h5>{t('cvList.languages')}</h5>
+                      <p className="muted">{cv.languages || t('cvList.notProvided')}</p>
                     </div>
                     <div>
-                      <h5>Skills</h5>
-                      <p className="muted">{cv.skills || 'Not provided.'}</p>
+                      <h5>{t('cvList.skills')}</h5>
+                      <p className="muted">{cv.skills || t('cvList.notProvided')}</p>
                     </div>
                     <div>
-                      <h5>Certificates</h5>
-                      <p className="muted">{cv.certificates || 'Not provided.'}</p>
+                      <h5>{t('cvList.certificates')}</h5>
+                      <p className="muted">
+                        {cv.certificates || t('cvList.notProvided')}
+                      </p>
                     </div>
                     <div>
-                      <h5>Trainings</h5>
-                      <p className="muted">{cv.trainings || 'Not provided.'}</p>
+                      <h5>{t('cvList.trainings')}</h5>
+                      <p className="muted">{cv.trainings || t('cvList.notProvided')}</p>
                     </div>
                     <div>
-                      <h5>Social networks</h5>
-                      <p className="muted">{cv.socialNetworks || 'Not provided.'}</p>
+                      <h5>{t('cvList.socialNetworks')}</h5>
+                      <p className="muted">
+                        {cv.socialNetworks || t('cvList.notProvided')}
+                      </p>
                     </div>
                   </div>
                 )}

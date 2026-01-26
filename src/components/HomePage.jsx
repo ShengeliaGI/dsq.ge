@@ -1,48 +1,45 @@
-const HomePage = ({ onStart, onViewProfile, onRegister }) => (
+const HomePage = ({ onStart, onViewProfile, onRegister, t }) => (
   <div className="page">
     <header className="page-header hero">
       <div>
         <p className="eyebrow">dsq.ge</p>
-        <h1>Hire fast. Apply smarter.</h1>
-        <p className="muted">
-          A talent marketplace with guided tests, clear hiring stages, and built-in
-          messaging between companies and applicants.
-        </p>
+        <h1>{t('home.title')}</h1>
+        <p className="muted">{t('home.subtitle')}</p>
         <div className="hero-actions">
           <button className="primary" type="button" onClick={onStart}>
-            Explore vacancies
+            {t('home.explore')}
           </button>
           <button className="ghost" type="button" onClick={onViewProfile}>
-            View profile
+            {t('home.viewProfile')}
           </button>
           <button className="ghost" type="button" onClick={onRegister}>
-            Register
+            {t('home.register')}
           </button>
         </div>
       </div>
       <div className="hero-card">
-        <h3>How it works</h3>
+        <h3>{t('home.howItWorks')}</h3>
         <ol>
-          <li>Browse vacancies and learn how the platform works.</li>
-          <li>Applicants take a 15-question multiple-choice test.</li>
-          <li>Companies review results and move candidates to next stages.</li>
-          <li>Messages and notifications keep everyone aligned.</li>
+          <li>{t('home.step1')}</li>
+          <li>{t('home.step2')}</li>
+          <li>{t('home.step3')}</li>
+          <li>{t('home.step4')}</li>
         </ol>
       </div>
     </header>
 
     <section className="feature-grid">
       <article className="feature-card">
-        <h4>Quick links</h4>
-        <p className="muted">Jump to profile, open vacancies, tests, and messages.</p>
+        <h4>{t('home.quickLinksTitle')}</h4>
+        <p className="muted">{t('home.quickLinksDesc')}</p>
       </article>
       <article className="feature-card">
-        <h4>Application tracker</h4>
-        <p className="muted">See submitted, pending, interview, and accepted stages.</p>
+        <h4>{t('home.trackerTitle')}</h4>
+        <p className="muted">{t('home.trackerDesc')}</p>
       </article>
       <article className="feature-card">
-        <h4>Messaging portal</h4>
-        <p className="muted">Chat with companies as soon as you are accepted.</p>
+        <h4>{t('home.messagingTitle')}</h4>
+        <p className="muted">{t('home.messagingDesc')}</p>
       </article>
     </section>
   </div>

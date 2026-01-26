@@ -6,6 +6,7 @@ const AuthScreen = ({
   errorMessage,
   onSubmit,
   onToggleMode,
+  t,
 }) => {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -26,18 +27,16 @@ const AuthScreen = ({
       <div className="auth-card">
         <div className="auth-header">
           <p className="eyebrow">dsq.ge</p>
-          <h1>{authMode === 'login' ? 'Log in' : 'Create account'}</h1>
-          <p className="muted">
-            Companies publish vacancies. Candidates complete a custom test.
-          </p>
+          <h1>{authMode === 'login' ? t('auth.titleLogin') : t('auth.titleRegister')}</h1>
+          <p className="muted">{t('auth.subtitle')}</p>
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
           {authMode === 'register' && (
             <label>
-              Full name
+              {t('auth.fullName')}
               <input
                 type="text"
-                placeholder="Alex Carter"
+                placeholder={t('auth.fullNamePlaceholder')}
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
                 required
@@ -46,36 +45,36 @@ const AuthScreen = ({
           )}
           {authMode === 'register' && (
             <label>
-              Account type
+              {t('auth.accountType')}
               <select
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
               >
-                <option value="applicant">Employee / Applicant</option>
-                <option value="company">Company</option>
+                <option value="applicant">{t('auth.accountApplicant')}</option>
+                <option value="company">{t('auth.accountCompany')}</option>
               </select>
               <span className="helper">
                 {role === 'company'
-                  ? 'Company perks: publish roles, review tests, message applicants.'
-                  : 'Employee perks: take tests, track status, get interview updates.'}
+                  ? t('auth.helperCompany')
+                  : t('auth.helperApplicant')}
               </span>
             </label>
           )}
           <label>
-            Email
+            {t('auth.email')}
             <input
               type="email"
-              placeholder="you@email.com"
+              placeholder={t('auth.emailPlaceholder')}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
             />
           </label>
           <label>
-            Password
+            {t('auth.password')}
             <input
               type="password"
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
@@ -84,16 +83,16 @@ const AuthScreen = ({
           {errorMessage && <p className="auth-error">{errorMessage}</p>}
           <button className="primary" type="submit" disabled={isSubmitting}>
             {isSubmitting
-              ? 'Please wait...'
+              ? t('auth.loading')
               : authMode === 'login'
-                ? 'Enter dsq.ge'
-                : 'Register and continue'}
+                ? t('auth.enter')
+                : t('auth.registerContinue')}
           </button>
         </form>
         <button className="link" type="button" onClick={onToggleMode}>
           {authMode === 'login'
-            ? 'New here? Create an account'
-            : 'Already have an account? Log in'}
+            ? t('auth.toggleToRegister')
+            : t('auth.toggleToLogin')}
         </button>
       </div>
     </div>

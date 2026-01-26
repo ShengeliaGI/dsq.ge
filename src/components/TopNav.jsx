@@ -9,6 +9,10 @@ const TopNav = ({
   isAuthed,
   onAuthRegister,
   onAuthLogin,
+  language,
+  onToggleLanguage,
+  t,
+  getRoleModeLabel,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -34,7 +38,7 @@ const TopNav = ({
         <button
           className="nav-burger"
           type="button"
-          aria-label="Toggle navigation"
+          aria-label={t('nav.toggle')}
           aria-controls="nav-menu"
           aria-expanded={isOpen}
           onClick={() => setIsOpen((prev) => !prev)}
@@ -53,14 +57,14 @@ const TopNav = ({
           type="button"
           onClick={() => handleNavigate('home')}
         >
-          Home
+          {t('nav.home')}
         </button>
         <button
           className={page === 'vacancies' ? 'nav-button active' : 'nav-button'}
           type="button"
           onClick={() => handleNavigate('vacancies')}
         >
-          Open vacancies
+          {t('nav.vacancies')}
         </button>
         {isAuthed ? (
           <>
@@ -69,21 +73,21 @@ const TopNav = ({
               type="button"
               onClick={() => handleNavigate('tests')}
             >
-              Tests
+              {t('nav.tests')}
             </button>
             <button
               className={page === 'profile' ? 'nav-button active' : 'nav-button'}
               type="button"
               onClick={() => handleNavigate('profile')}
             >
-              Profile
+              {t('nav.profile')}
             </button>
             <button
               className={page === 'messages' ? 'nav-button active' : 'nav-button'}
               type="button"
               onClick={() => handleNavigate('messages')}
             >
-              Messages
+              {t('nav.messages')}
               {notificationCount > 0 && (
                 <span className="nav-badge">{notificationCount}</span>
               )}
@@ -94,7 +98,7 @@ const TopNav = ({
                 type="button"
                 onClick={() => handleNavigate('cvs')}
               >
-                CVs
+                {t('nav.cvs')}
               </button>
             )}
             {userRole === 'company' && (
@@ -103,11 +107,11 @@ const TopNav = ({
                 type="button"
                 onClick={() => handleNavigate('company')}
               >
-                Company
+                {t('nav.company')}
               </button>
             )}
             <span className="nav-role">
-              {userRole === 'company' ? 'Company mode' : 'Applicant mode'}
+              {getRoleModeLabel(userRole)}
             </span>
             {showAdmin && (
               <button
@@ -115,24 +119,39 @@ const TopNav = ({
                 type="button"
                 onClick={() => handleNavigate('admin')}
               >
-                Admin panel
+                {t('nav.admin')}
               </button>
             )}
           </>
         ) : (
           <div className="nav-auth">
             <button className="ghost" type="button" onClick={handleAuthLogin}>
-              Log in
+              {t('nav.login')}
             </button>
             <button
               className="primary"
               type="button"
               onClick={handleAuthRegister}
             >
-              Register
+              {t('nav.register')}
             </button>
           </div>
         )}
+        <div className="nav-actions">
+          <button
+            className="language-toggle"
+            type="button"
+            onClick={onToggleLanguage}
+            aria-label={
+              language === 'ka' ? t('nav.switchToEnglish') : t('nav.switchToGeorgian')
+            }
+            title={
+              language === 'ka' ? t('nav.switchToEnglish') : t('nav.switchToGeorgian')
+            }
+          >
+            <span className="language-flag">{language === 'ka' ? '🇺🇸' : '🇬🇪'}</span>
+          </button>
+        </div>
       </div>
     </nav>
   )

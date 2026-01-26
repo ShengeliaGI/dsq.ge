@@ -1,23 +1,31 @@
-const TestsPage = ({ vacancies, applications, onOpenJobTest, currentUserEmail, onBack }) => {
+const TestsPage = ({
+  vacancies,
+  applications,
+  onOpenJobTest,
+  currentUserEmail,
+  onBack,
+  t,
+  getJobTitleLabel,
+}) => {
   const appliedJobIds = new Set(applications.map((entry) => entry.jobId))
 
   return (
     <div className="page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Tests</p>
-          <h1>Role assessments</h1>
-          <p className="muted">Pick a vacancy and complete the multiple-choice test.</p>
+          <p className="eyebrow">{t('tests.eyebrow')}</p>
+          <h1>{t('tests.title')}</h1>
+          <p className="muted">{t('tests.subtitle')}</p>
         </div>
         <button className="ghost" type="button" onClick={onBack}>
-          Back to vacancies
+          {t('tests.backToVacancies')}
         </button>
       </header>
 
       {vacancies.length === 0 ? (
         <div className="empty-state">
-          <h3>No tests yet</h3>
-          <p className="muted">Companies will publish tests for each vacancy.</p>
+          <h3>{t('tests.emptyTitle')}</h3>
+          <p className="muted">{t('tests.emptySubtitle')}</p>
         </div>
       ) : (
         <div className="grid">
@@ -26,7 +34,7 @@ const TestsPage = ({ vacancies, applications, onOpenJobTest, currentUserEmail, o
             return (
               <div key={job.id} className="job-card">
                 <div>
-                  <h3>{job.title}</h3>
+                  <h3>{getJobTitleLabel(job.title)}</h3>
                   <p className="muted">{job.company}</p>
                 </div>
                 <p className="job-description">{job.description}</p>
@@ -40,7 +48,7 @@ const TestsPage = ({ vacancies, applications, onOpenJobTest, currentUserEmail, o
                   disabled={!currentUserEmail || alreadyApplied}
                   onClick={() => onOpenJobTest(job.id)}
                 >
-                  {alreadyApplied ? 'Test submitted' : 'Start test'}
+                  {alreadyApplied ? t('tests.submitted') : t('tests.start')}
                 </button>
               </div>
             )

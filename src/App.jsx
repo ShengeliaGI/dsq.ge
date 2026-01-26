@@ -19,6 +19,645 @@ import {
   parseManualQuestions,
 } from './utils/testUtils'
 
+const JOB_TYPE_LABELS = {
+  en: {
+    'Frontend Developer': 'Frontend Developer',
+    'Backend Engineer': 'Backend Engineer',
+    'Fullstack Developer': 'Fullstack Developer',
+    'UI/UX Designer': 'UI/UX Designer',
+    'Mobile Developer': 'Mobile Developer',
+    'DevOps Engineer': 'DevOps Engineer',
+    'QA Engineer': 'QA Engineer',
+    'Data Analyst': 'Data Analyst',
+    'Product Manager': 'Product Manager',
+    Cybersecurity: 'Cybersecurity',
+  },
+  ka: {
+    'Frontend Developer': 'ფრონტენდ დეველოპერი',
+    'Backend Engineer': 'ბექენდ ინჟინერი',
+    'Fullstack Developer': 'ფულსტეკ დეველოპერი',
+    'UI/UX Designer': 'UI/UX დიზაინერი',
+    'Mobile Developer': 'მობაილ დეველოპერი',
+    'DevOps Engineer': 'DevOps ინჟინერი',
+    'QA Engineer': 'QA ინჟინერი',
+    'Data Analyst': 'დეტა ანალიტიკოსი',
+    'Product Manager': 'პროდუქტის მენეჯერი',
+    Cybersecurity: 'კიბერუსაფრთხოება',
+  },
+}
+
+const translations = {
+  en: {
+    'nav.home': 'Home',
+    'nav.vacancies': 'Open vacancies',
+    'nav.tests': 'Tests',
+    'nav.profile': 'Profile',
+    'nav.messages': 'Messages',
+    'nav.cvs': 'CVs',
+    'nav.company': 'Company',
+    'nav.companyMode': 'Company mode',
+    'nav.applicantMode': 'Applicant mode',
+    'nav.admin': 'Admin panel',
+    'nav.login': 'Log in',
+    'nav.register': 'Register',
+    'nav.toggle': 'Toggle navigation',
+    'nav.switchToEnglish': 'Switch to English',
+    'nav.switchToGeorgian': 'Switch to Georgian',
+
+    'home.title': 'Hire fast. Apply smarter.',
+    'home.subtitle':
+      'A talent marketplace with guided tests, clear hiring stages, and built-in messaging between companies and applicants.',
+    'home.explore': 'Explore vacancies',
+    'home.viewProfile': 'View profile',
+    'home.register': 'Register',
+    'home.howItWorks': 'How it works',
+    'home.step1': 'Browse vacancies and learn how the platform works.',
+    'home.step2': 'Applicants take a 15-question multiple-choice test.',
+    'home.step3': 'Companies review results and move candidates to next stages.',
+    'home.step4': 'Messages and notifications keep everyone aligned.',
+    'home.quickLinksTitle': 'Quick links',
+    'home.quickLinksDesc': 'Jump to profile, open vacancies, tests, and messages.',
+    'home.trackerTitle': 'Application tracker',
+    'home.trackerDesc': 'See submitted, pending, interview, and accepted stages.',
+    'home.messagingTitle': 'Messaging portal',
+    'home.messagingDesc': 'Chat with companies as soon as you are accepted.',
+
+    'vacancies.eyebrow': 'Vacancies',
+    'vacancies.title': 'Explore open roles',
+    'vacancies.subtitle': 'Tap a role to start the multiple-choice test.',
+    'vacancies.myPage': 'My Page',
+    'vacancies.logout': 'Log out',
+    'vacancies.emptyTitle': 'No vacancies yet',
+    'vacancies.emptySubtitle': 'Use My Page to publish your first vacancy.',
+    'vacancies.startTest': 'Start test →',
+    'vacancies.waiting': 'Waiting for answer',
+    'vacancies.tryAgain': 'Try again',
+    'vacancies.delete': 'Delete vacancy',
+
+    'auth.titleLogin': 'Log in',
+    'auth.titleRegister': 'Create account',
+    'auth.subtitle': 'Companies publish vacancies. Candidates complete a custom test.',
+    'auth.fullName': 'Full name',
+    'auth.fullNamePlaceholder': 'Alex Carter',
+    'auth.accountType': 'Account type',
+    'auth.accountApplicant': 'Employee / Applicant',
+    'auth.accountCompany': 'Company',
+    'auth.helperCompany':
+      'Company perks: publish roles, review tests, message applicants.',
+    'auth.helperApplicant':
+      'Employee perks: take tests, track status, get interview updates.',
+    'auth.email': 'Email',
+    'auth.emailPlaceholder': 'you@email.com',
+    'auth.password': 'Password',
+    'auth.passwordPlaceholder': '••••••••',
+    'auth.loading': 'Please wait...',
+    'auth.enter': 'Enter dsq.ge',
+    'auth.registerContinue': 'Register and continue',
+    'auth.toggleToRegister': 'New here? Create an account',
+    'auth.toggleToLogin': 'Already have an account? Log in',
+
+    'profile.eyebrow': 'Profile',
+    'profile.titleFallback': 'Profile',
+    'profile.roleLabel': 'Role: {role}',
+    'profile.openVacancies': 'Open vacancies',
+    'profile.messages': 'Messages',
+    'profile.logout': 'Log out',
+    'profile.account': 'Account',
+    'profile.roleMode': 'Role mode: {role}',
+    'profile.changeRole': 'Change account type',
+    'profile.employeeTitle': 'Employee / Applicant',
+    'profile.employeeDesc': 'Employee perks: take tests, track status, get interview updates.',
+    'profile.companyTitle': 'Company',
+    'profile.companyDesc': 'Company perks: publish roles, review tests, message applicants.',
+    'profile.notifications': 'Notifications',
+    'profile.noUpdates': 'No updates yet.',
+    'profile.appliedJobs': 'Applied jobs',
+    'profile.appliedDesc': 'Track your submissions and hiring stages.',
+    'profile.emptyApplicationsTitle': 'No applications yet',
+    'profile.emptyApplicationsDesc': 'Take a test to start your application journey.',
+    'profile.scoreLabel': 'Score: {score}/{total}',
+
+    'cvForm.eyebrow': 'Candidate profile',
+    'cvForm.title': 'Publish your CV',
+    'cvForm.subtitle':
+      'Create a professional candidate profile recruiters can review in seconds.',
+    'cvForm.back': 'Back',
+    'cvForm.socialTitle': 'Social links',
+    'cvForm.socialDesc': 'You can add links to websites you want hiring managers to see.',
+    'cvForm.socialPlaceholder': 'LinkedIn, GitHub, portfolio',
+    'cvForm.addLink': 'Add link',
+    'cvForm.personalTitle': 'Personal Information',
+    'cvForm.upload': 'Upload',
+    'cvForm.namePlaceholder': 'Name',
+    'cvForm.surnamePlaceholder': 'Surname',
+    'cvForm.professionPlaceholder': 'Profession',
+    'cvForm.phonePlaceholder': 'Mobile Phone',
+    'cvForm.emailPlaceholder': 'Email Address',
+    'cvForm.addressPlaceholder': 'Address',
+    'cvForm.countryPlaceholder': 'Country',
+    'cvForm.cityPlaceholder': 'City',
+    'cvForm.aboutPlaceholder': 'Write about you',
+    'cvForm.workTitle': 'Work experience',
+    'cvForm.positionPlaceholder': 'Position',
+    'cvForm.companyPlaceholder': 'Company',
+    'cvForm.startDatePlaceholder': 'Start Date (MM/YYYY)',
+    'cvForm.endDatePlaceholder': 'End Date (MM/YYYY)',
+    'cvForm.currentPosition': 'Current Position',
+    'cvForm.addDescription': 'Add Description',
+    'cvForm.clear': 'Clear',
+    'cvForm.add': 'Add',
+    'cvForm.roleFallback': 'Role',
+    'cvForm.companyFallback': 'Company',
+    'cvForm.startFallback': 'Start',
+    'cvForm.present': 'Present',
+    'cvForm.educationTitle': 'Education',
+    'cvForm.degreePlaceholder': 'Degree',
+    'cvForm.schoolPlaceholder': 'University/Institute/College',
+    'cvForm.facultyPlaceholder': 'Faculty',
+    'cvForm.languagesTitle': 'Languages',
+    'cvForm.selectLanguagePlaceholder': 'Select Language',
+    'cvForm.levelPlaceholder': 'Level',
+    'cvForm.skillsTitle': 'Skills',
+    'cvForm.skillPlaceholder': 'Enter skill',
+    'cvForm.certificatesTitle': 'Certificates',
+    'cvForm.titlePlaceholder': 'Title',
+    'cvForm.organizationPlaceholder': 'Organization',
+    'cvForm.issueDatePlaceholder': 'Issue Date (MM/YYYY)',
+    'cvForm.certificateFallback': 'Certificate',
+    'cvForm.trainingsTitle': 'Trainings & Courses',
+    'cvForm.trainingFallback': 'Training',
+    'cvForm.publish': 'Publish CV',
+
+    'cvList.eyebrow': 'Looking for job',
+    'cvList.title': 'Job seeker CVs',
+    'cvList.subtitle': 'Browse saved CVs from candidates.',
+    'cvList.addCv': 'Add CV',
+    'cvList.backToVacancies': 'Back to vacancies',
+    'cvList.emptyTitle': 'No CVs yet',
+    'cvList.emptySubtitle': 'Use Add CV to fill out your profile.',
+    'cvList.hideDetails': 'Hide details',
+    'cvList.viewDetails': 'View details',
+    'cvList.deleteCv': 'Delete CV',
+    'cvList.personalInfo': 'Personal info',
+    'cvList.workExperience': 'Work experience',
+    'cvList.education': 'Education',
+    'cvList.languages': 'Languages',
+    'cvList.skills': 'Skills',
+    'cvList.certificates': 'Certificates',
+    'cvList.trainings': 'Trainings',
+    'cvList.socialNetworks': 'Social networks',
+    'cvList.notProvided': 'Not provided.',
+
+    'messages.eyebrow': 'Messages',
+    'messages.title': 'Messaging portal',
+    'messages.subtitle': 'Connect applicants and companies in one place.',
+    'messages.back': 'Back',
+    'messages.emptyTitle': 'No conversations yet',
+    'messages.emptySubtitle': 'Messages will appear after a company responds.',
+    'messages.message': 'Message',
+    'messages.startConversation': 'Start the conversation.',
+    'messages.writePlaceholder': 'Write a message...',
+    'messages.send': 'Send',
+    'messages.selectThread': 'Select a thread to begin.',
+
+    'tests.eyebrow': 'Tests',
+    'tests.title': 'Role assessments',
+    'tests.subtitle': 'Pick a vacancy and complete the multiple-choice test.',
+    'tests.backToVacancies': 'Back to vacancies',
+    'tests.emptyTitle': 'No tests yet',
+    'tests.emptySubtitle': 'Companies will publish tests for each vacancy.',
+    'tests.submitted': 'Test submitted',
+    'tests.start': 'Start test',
+
+    'test.eyebrow': 'Test',
+    'test.titleFallback': 'Role test',
+    'test.subtitle': 'Company test assignment',
+    'test.backToVacancies': 'Back to vacancies',
+    'test.company': 'Company: {company}',
+    'test.timeLeft': 'Time left: {time}',
+    'test.aiCopy': 'AI generated test tailored to this role.',
+    'test.manualCopy': 'Company written test.',
+    'test.finish': 'Finish test',
+    'test.abandon': 'Abandon',
+    'test.timeUpTitle': 'Time is up',
+    'test.timeUpText': 'Sorry, the test time has expired.',
+    'test.ok': 'OK',
+
+    'company.eyebrow': 'Company',
+    'company.title': 'Post vacancies',
+    'company.subtitle': 'Choose a role and add optional details.',
+    'company.backToVacancies': 'Back to vacancies',
+    'company.chooseType': 'Choose vacancy type',
+    'company.details': 'Vacancy details',
+    'company.companyName': 'Company name',
+    'company.companyNamePlaceholder': 'dsq.ge',
+    'company.roleTitle': 'Role title',
+    'company.jobTypeOptional': 'Job type (optional)',
+    'company.jobTypePlaceholder': 'Full time / Part time',
+    'company.salaryOptional': 'Monthly salary (optional)',
+    'company.salaryPlaceholder': '$2,500',
+    'company.basedIn': 'Based in',
+    'company.locationPlaceholder': 'Tbilisi, GE',
+    'company.minScore': 'Minimum score required',
+    'company.minScorePlaceholder': '10',
+    'company.description': 'Description',
+    'company.descriptionPlaceholder': 'Describe the role, team, and expectations',
+    'company.testType': 'Test type',
+    'company.aiTest': 'AI test (15 questions)',
+    'company.manualTest': 'Company written test',
+    'company.manualQuestions': 'Company test questions (15 lines)',
+    'company.manualPlaceholder':
+      'Write 15 questions, one per line. Format:\nQuestion | Option A | Option B | Option C | Correct (A/B/C)',
+    'company.questionsCount': '{count}/15 questions',
+    'company.publish': 'Publish vacancy',
+    'company.resultsEyebrow': 'Results',
+    'company.resultsTitle': 'Test submissions',
+    'company.resultsSubtitle': 'Scores are 1 point per answered question.',
+    'company.emptyVacanciesTitle': 'No vacancies yet',
+    'company.emptyVacanciesSubtitle': 'Publish a vacancy to receive test results.',
+    'company.emptyResultsTitle': 'No results yet',
+    'company.emptyResultsSubtitle': 'Results will appear here after candidates finish tests.',
+    'company.noSubmissions': 'No submissions yet.',
+    'company.hideDetails': 'Hide details',
+    'company.viewDetails': 'View details',
+    'company.delete': 'Delete',
+    'company.message': 'Message',
+    'company.pending': 'Pending',
+    'company.interview': 'Interview',
+    'company.accept': 'Accept',
+    'company.reject': 'Reject',
+    'company.questionBreakdown': 'Question breakdown',
+    'company.answered': 'Answered',
+    'company.noAnswer': 'No answer provided.',
+
+    'admin.eyebrow': 'Admin panel',
+    'admin.title': 'Activity overview',
+    'admin.subtitle': 'Monitor recent activity across the platform.',
+    'admin.backToVacancies': 'Back to vacancies',
+    'admin.totalVacancies': 'Total vacancies',
+    'admin.openVacancies': 'Open vacancies',
+    'admin.waitingVacancies': 'Waiting for response',
+    'admin.cvSubmissions': 'CV submissions',
+    'admin.recentVacancies': 'Recent vacancies',
+    'admin.noVacancies': 'No vacancies created yet.',
+    'admin.recentCvs': 'Recent CV submissions',
+    'admin.noCvs': 'No CV submissions yet.',
+
+    'status.submitted': 'submitted',
+    'status.pending': 'pending',
+    'status.interview': 'interview',
+    'status.accepted': 'accepted',
+    'status.rejected': 'rejected',
+    'status.waiting': 'waiting',
+
+    'role.applicant': 'Applicant',
+    'role.company': 'Company',
+
+    'modal.registrationRequired': 'Registration required',
+    'modal.register': 'Register',
+    'modal.cancel': 'Cancel',
+
+    'require.default': 'Please register to use this feature.',
+    'require.accessArea': 'Please register to access this area.',
+    'require.viewProfile': 'Register to view your profile.',
+    'require.startTest': 'Register to start the test.',
+    'require.manageVacancies': 'Register to manage vacancies.',
+    'require.companyTools': 'Register to access company tools.',
+    'require.takeTest': 'Register to take a test.',
+    'require.manageResults': 'Register to manage results.',
+    'require.updateStatuses': 'Register to update statuses.',
+    'require.useMessaging': 'Register to use messaging.',
+    'require.addCv': 'Register to add your CV.',
+    'require.manageCvs': 'Register to manage CVs.',
+
+    'notifications.acceptedTitle': 'Application accepted',
+    'notifications.interviewTitle': 'Interview requested',
+    'notifications.statusMessage': 'Your application for {title} has been {status}.',
+    'notifications.acceptedMessage':
+      'Congrats! We have accepted you for {title}. Let\'s discuss next steps.',
+    'notifications.interviewMessage':
+      'We would like to invite you to an interview for {title}.',
+
+    'cv.defaults.noFile': 'No file uploaded',
+    'cv.defaults.noDetails': 'No details provided.',
+    'cv.defaults.notProvided': 'Not provided.',
+    'cv.defaults.role': 'Role',
+    'cv.defaults.company': 'Company',
+    'cv.defaults.start': 'Start',
+    'cv.defaults.present': 'Present',
+
+    'vacancy.defaults.company': 'Company',
+    'vacancy.defaults.remote': 'Remote',
+    'vacancy.defaults.notSpecified': 'Not specified',
+    'vacancy.defaults.noDescription': 'No description added yet.',
+  },
+  ka: {
+    'nav.home': 'მთავარი',
+    'nav.vacancies': 'ღია ვაკანსიები',
+    'nav.tests': 'ტესტები',
+    'nav.profile': 'პროფილი',
+    'nav.messages': 'შეტყობინებები',
+    'nav.cvs': 'CV-ები',
+    'nav.company': 'კომპანია',
+    'nav.companyMode': 'კომპანიის რეჟიმი',
+    'nav.applicantMode': 'აპლიკანტის რეჟიმი',
+    'nav.admin': 'ადმინ პანელი',
+    'nav.login': 'შესვლა',
+    'nav.register': 'რეგისტრაცია',
+    'nav.toggle': 'ნავიგაციის გადართვა',
+    'nav.switchToEnglish': 'ინგლისურზე გადართვა',
+    'nav.switchToGeorgian': 'ქართულზე გადართვა',
+
+    'home.title': 'დაიქირავე სწრაფად. დააპლიკირე გონივრულად.',
+    'home.subtitle':
+      'ტალანტების პლატფორმა ტესტებით, მკაფიო დაქირავების ეტაპებით და ჩაშენებული მესიჯინგით კომპანიებსა და კანდიდატებს შორის.',
+    'home.explore': 'ვაკანსიების ნახვა',
+    'home.viewProfile': 'პროფილის ნახვა',
+    'home.register': 'რეგისტრაცია',
+    'home.howItWorks': 'როგორ მუშაობს',
+    'home.step1': 'ნახეთ ვაკანსიები და გაეცანით პლატფორმას.',
+    'home.step2': 'კანდიდატები ასრულებენ 15 კითხვიან ტესტს.',
+    'home.step3': 'კომპანიები ხედავენ შედეგებს და ამაღლებენ კანდიდატებს ეტაპებზე.',
+    'home.step4': 'შეტყობინებები და ნოტიფიკაციები ყველას აერთიანებს.',
+    'home.quickLinksTitle': 'სწრაფი ბმულები',
+    'home.quickLinksDesc': 'გადახტი პროფილზე, ვაკანსიებზე, ტესტებსა და მესიჯებზე.',
+    'home.trackerTitle': 'აპლიკაციის ტრეკერი',
+    'home.trackerDesc': 'ნახე სტატუსები: გაგზავნილი, მოლოდინი, ინტერვიუ, მიღება.',
+    'home.messagingTitle': 'მესიჯინგის პორტალი',
+    'home.messagingDesc': 'დაუკავშირდი კომპანიებს მიღებისთანავე.',
+
+    'vacancies.eyebrow': 'ვაკანსიები',
+    'vacancies.title': 'ნახე ღია პოზიციები',
+    'vacancies.subtitle': 'აირჩიე პოზიცია და დაიწყე ტესტი.',
+    'vacancies.myPage': 'ჩემი გვერდი',
+    'vacancies.logout': 'გასვლა',
+    'vacancies.emptyTitle': 'ვაკანსიები ჯერ არ არის',
+    'vacancies.emptySubtitle': 'გამოიყენე „ჩემი გვერდი“ პირველი ვაკანსიის გამოსაქვეყნებლად.',
+    'vacancies.startTest': 'ტესტის დაწყება →',
+    'vacancies.waiting': 'პასუხის მოლოდინი',
+    'vacancies.tryAgain': 'ხელახლა სცადე',
+    'vacancies.delete': 'ვაკანსიის წაშლა',
+
+    'auth.titleLogin': 'შესვლა',
+    'auth.titleRegister': 'ანგარიშის შექმნა',
+    'auth.subtitle': 'კომპანიები აქვეყნებენ ვაკანსიებს. კანდიდატები ასრულებენ ტესტს.',
+    'auth.fullName': 'სრული სახელი',
+    'auth.fullNamePlaceholder': 'ალექს კარტერი',
+    'auth.accountType': 'ანგარიშის ტიპი',
+    'auth.accountApplicant': 'თანამშრომელი / აპლიკანტი',
+    'auth.accountCompany': 'კომპანია',
+    'auth.helperCompany':
+      'კომპანიის პრივილეგიები: ვაკანსიების გამოქვეყნება, ტესტების შეფასება, მესიჯინგი.',
+    'auth.helperApplicant':
+      'თანამშრომლის პრივილეგიები: ტესტების გავლა, სტატუსის მონიტორინგი, ინტერვიუს განახლებები.',
+    'auth.email': 'ელ-ფოსტა',
+    'auth.emailPlaceholder': 'you@email.com',
+    'auth.password': 'პაროლი',
+    'auth.passwordPlaceholder': '••••••••',
+    'auth.loading': 'გთხოვთ დაელოდოთ...',
+    'auth.enter': 'შესვლა dsq.ge-ზე',
+    'auth.registerContinue': 'რეგისტრაცია და გაგრძელება',
+    'auth.toggleToRegister': 'ახალი ხარ? შექმენი ანგარიში',
+    'auth.toggleToLogin': 'უკვე გაქვს ანგარიში? შედი',
+
+    'profile.eyebrow': 'პროფილი',
+    'profile.titleFallback': 'პროფილი',
+    'profile.roleLabel': 'როლი: {role}',
+    'profile.openVacancies': 'ღია ვაკანსიები',
+    'profile.messages': 'შეტყობინებები',
+    'profile.logout': 'გასვლა',
+    'profile.account': 'ანგარიში',
+    'profile.roleMode': 'რეჟიმი: {role}',
+    'profile.changeRole': 'ანგარიშის ტიპის შეცვლა',
+    'profile.employeeTitle': 'თანამშრომელი / აპლიკანტი',
+    'profile.employeeDesc':
+      'თანამშრომლის პრივილეგიები: ტესტების გავლა, სტატუსის მონიტორინგი, ინტერვიუს განახლებები.',
+    'profile.companyTitle': 'კომპანია',
+    'profile.companyDesc':
+      'კომპანიის პრივილეგიები: ვაკანსიების გამოქვეყნება, ტესტების შეფასება, მესიჯინგი.',
+    'profile.notifications': 'შეტყობინებები',
+    'profile.noUpdates': 'განახლებები ჯერ არ არის.',
+    'profile.appliedJobs': 'გაგზავნილი განაცხადები',
+    'profile.appliedDesc': 'დააკვირდი შენს განაცხადებს და ეტაპებს.',
+    'profile.emptyApplicationsTitle': 'განაცხადები ჯერ არ არის',
+    'profile.emptyApplicationsDesc': 'გაიარე ტესტი და დაიწყე განაცხადის გზა.',
+    'profile.scoreLabel': 'ქულა: {score}/{total}',
+
+    'cvForm.eyebrow': 'კანდიდატის პროფილი',
+    'cvForm.title': 'CV-ის გამოქვეყნება',
+    'cvForm.subtitle': 'შექმენი პროფესიონალური პროფილი, რომელსაც რეკრუტერები სწრაფად ნახავენ.',
+    'cvForm.back': 'უკან',
+    'cvForm.socialTitle': 'სოციალური ბმულები',
+    'cvForm.socialDesc': 'დაამატე ბმულები იმ საიტებზე, რაც გსურს რომ დამსაქმებელმა ნახოს.',
+    'cvForm.socialPlaceholder': 'LinkedIn, GitHub, პორტფოლიო',
+    'cvForm.addLink': 'ბმულის დამატება',
+    'cvForm.personalTitle': 'პირადი ინფორმაცია',
+    'cvForm.upload': 'ატვირთვა',
+    'cvForm.namePlaceholder': 'სახელი',
+    'cvForm.surnamePlaceholder': 'გვარი',
+    'cvForm.professionPlaceholder': 'პროფესია',
+    'cvForm.phonePlaceholder': 'ტელეფონი',
+    'cvForm.emailPlaceholder': 'ელ-ფოსტა',
+    'cvForm.addressPlaceholder': 'მისამართი',
+    'cvForm.countryPlaceholder': 'ქვეყანა',
+    'cvForm.cityPlaceholder': 'ქალაქი',
+    'cvForm.aboutPlaceholder': 'აღწერე საკუთარი თავი',
+    'cvForm.workTitle': 'სამუშაო გამოცდილება',
+    'cvForm.positionPlaceholder': 'პოზიცია',
+    'cvForm.companyPlaceholder': 'კომპანია',
+    'cvForm.startDatePlaceholder': 'დაწყების თარიღი (თვე/წელი)',
+    'cvForm.endDatePlaceholder': 'დასრულების თარიღი (თვე/წელი)',
+    'cvForm.currentPosition': 'ამჟამინდელი პოზიცია',
+    'cvForm.addDescription': 'დამატე აღწერა',
+    'cvForm.clear': 'გასუფთავება',
+    'cvForm.add': 'დამატება',
+    'cvForm.roleFallback': 'პოზიცია',
+    'cvForm.companyFallback': 'კომპანია',
+    'cvForm.startFallback': 'დაწყება',
+    'cvForm.present': 'ამჟამად',
+    'cvForm.educationTitle': 'განათლება',
+    'cvForm.degreePlaceholder': 'ხარისხი',
+    'cvForm.schoolPlaceholder': 'უნივერსიტეტი/ინსტიტუტი/კოლეჯი',
+    'cvForm.facultyPlaceholder': 'ფაკულტეტი',
+    'cvForm.languagesTitle': 'ენები',
+    'cvForm.selectLanguagePlaceholder': 'აირჩიე ენა',
+    'cvForm.levelPlaceholder': 'დონე',
+    'cvForm.skillsTitle': 'უნარები',
+    'cvForm.skillPlaceholder': 'შეიყვანე უნარი',
+    'cvForm.certificatesTitle': 'სერტიფიკატები',
+    'cvForm.titlePlaceholder': 'სათაური',
+    'cvForm.organizationPlaceholder': 'ორგანიზაცია',
+    'cvForm.issueDatePlaceholder': 'გამოცემის თარიღი (თვე/წელი)',
+    'cvForm.certificateFallback': 'სერტიფიკატი',
+    'cvForm.trainingsTitle': 'ტრენინგები და კურსები',
+    'cvForm.trainingFallback': 'ტრენინგი',
+    'cvForm.publish': 'CV-ის გამოქვეყნება',
+
+    'cvList.eyebrow': 'ვაკანსიის ძიება',
+    'cvList.title': 'კანდიდატების CV-ები',
+    'cvList.subtitle': 'დაათვალიერე კანდიდატების შენახული CV-ები.',
+    'cvList.addCv': 'CV-ის დამატება',
+    'cvList.backToVacancies': 'ვაკანსიებზე დაბრუნება',
+    'cvList.emptyTitle': 'CV-ები ჯერ არ არის',
+    'cvList.emptySubtitle': 'გამოიყენე „CV-ის დამატება“ პროფილის შესავსებად.',
+    'cvList.hideDetails': 'დეტალების დამალვა',
+    'cvList.viewDetails': 'დეტალების ნახვა',
+    'cvList.deleteCv': 'CV-ის წაშლა',
+    'cvList.personalInfo': 'პირადი ინფორმაცია',
+    'cvList.workExperience': 'სამუშაო გამოცდილება',
+    'cvList.education': 'განათლება',
+    'cvList.languages': 'ენები',
+    'cvList.skills': 'უნარები',
+    'cvList.certificates': 'სერტიფიკატები',
+    'cvList.trainings': 'ტრენინგები',
+    'cvList.socialNetworks': 'სოციალური ქსელები',
+    'cvList.notProvided': 'არ არის მოწოდებული.',
+
+    'messages.eyebrow': 'შეტყობინებები',
+    'messages.title': 'მესიჯინგის პორტალი',
+    'messages.subtitle': 'დააკავშირე კომპანიები და კანდიდატები ერთ სივრცეში.',
+    'messages.back': 'უკან',
+    'messages.emptyTitle': 'საუბრები ჯერ არ არის',
+    'messages.emptySubtitle': 'შეტყობინებები გამოჩნდება, როცა კომპანია პასუხობს.',
+    'messages.message': 'მესიჯი',
+    'messages.startConversation': 'დაიწყე საუბარი.',
+    'messages.writePlaceholder': 'დაწერე შეტყობინება...',
+    'messages.send': 'გაგზავნა',
+    'messages.selectThread': 'აირჩიე საუბარი დასაწყებად.',
+
+    'tests.eyebrow': 'ტესტები',
+    'tests.title': 'როლის შეფასება',
+    'tests.subtitle': 'აირჩიე ვაკანსია და დაასრულე მრავალვარიანტიანი ტესტი.',
+    'tests.backToVacancies': 'ვაკანსიებზე დაბრუნება',
+    'tests.emptyTitle': 'ტესტები ჯერ არ არის',
+    'tests.emptySubtitle': 'კომპანიები თითოეულ ვაკანსიაზე ტესტს გამოაქვეყნებენ.',
+    'tests.submitted': 'ტესტი გაგზავნილია',
+    'tests.start': 'ტესტის დაწყება',
+
+    'test.eyebrow': 'ტესტი',
+    'test.titleFallback': 'როლის ტესტი',
+    'test.subtitle': 'კომპანიის ტესტური დავალება',
+    'test.backToVacancies': 'ვაკანსიებზე დაბრუნება',
+    'test.company': 'კომპანია: {company}',
+    'test.timeLeft': 'დარჩენილი დრო: {time}',
+    'test.aiCopy': 'AI-ის მიერ გენერირებული ტესტი ამ როლზე.',
+    'test.manualCopy': 'კომპანიის მიერ დაწერილი ტესტი.',
+    'test.finish': 'ტესტის დასრულება',
+    'test.abandon': 'გაუქმება',
+    'test.timeUpTitle': 'დრო ამოიწურა',
+    'test.timeUpText': 'სამწუხაროდ, ტესტის დრო დასრულდა.',
+    'test.ok': 'კარგი',
+
+    'company.eyebrow': 'კომპანია',
+    'company.title': 'ვაკანსიების გამოქვეყნება',
+    'company.subtitle': 'აირჩიე როლი და დაამატე დეტალები.',
+    'company.backToVacancies': 'ვაკანსიებზე დაბრუნება',
+    'company.chooseType': 'აირჩიე ვაკანსიის ტიპი',
+    'company.details': 'ვაკანსიის დეტალები',
+    'company.companyName': 'კომპანიის დასახელება',
+    'company.companyNamePlaceholder': 'dsq.ge',
+    'company.roleTitle': 'როლის სათაური',
+    'company.jobTypeOptional': 'სამუშაო ტიპი (არასავალდებულო)',
+    'company.jobTypePlaceholder': 'სრული/ნახევარი განაკვეთი',
+    'company.salaryOptional': 'თვიური ხელფასი (არასავალდებულო)',
+    'company.salaryPlaceholder': '₾2,500',
+    'company.basedIn': 'ლოკაცია',
+    'company.locationPlaceholder': 'თბილისი, GE',
+    'company.minScore': 'საჭირო მინიმალური ქულა',
+    'company.minScorePlaceholder': '10',
+    'company.description': 'აღწერა',
+    'company.descriptionPlaceholder': 'აღწერე როლი, გუნდი და მოლოდინები',
+    'company.testType': 'ტესტის ტიპი',
+    'company.aiTest': 'AI ტესტი (15 კითხვა)',
+    'company.manualTest': 'კომპანიის მიერ დაწერილი ტესტი',
+    'company.manualQuestions': 'კომპანიის კითხვები (15 ხაზი)',
+    'company.manualPlaceholder':
+      'დაწერე 15 კითხვა, თითო ხაზი. ფორმატი:\nკითხვა | ვარიანტი A | ვარიანტი B | ვარიანტი C | სწორი (A/B/C)',
+    'company.questionsCount': '{count}/15 კითხვა',
+    'company.publish': 'ვაკანსიის გამოქვეყნება',
+    'company.resultsEyebrow': 'შედეგები',
+    'company.resultsTitle': 'ტესტის გაგზავნები',
+    'company.resultsSubtitle': 'ქულა = 1 ქულა თითო სწორ პასუხზე.',
+    'company.emptyVacanciesTitle': 'ვაკანსიები ჯერ არ არის',
+    'company.emptyVacanciesSubtitle': 'გამოაქვეყნე ვაკანსია შედეგების მისაღებად.',
+    'company.emptyResultsTitle': 'შედეგები ჯერ არ არის',
+    'company.emptyResultsSubtitle': 'შედეგები გამოჩნდება ტესტის დასრულების შემდეგ.',
+    'company.noSubmissions': 'გაგზავნები ჯერ არ არის.',
+    'company.hideDetails': 'დეტალების დამალვა',
+    'company.viewDetails': 'დეტალების ნახვა',
+    'company.delete': 'წაშლა',
+    'company.message': 'მესიჯი',
+    'company.pending': 'მოლოდინი',
+    'company.interview': 'ინტერვიუ',
+    'company.accept': 'მიღება',
+    'company.reject': 'უარყოფა',
+    'company.questionBreakdown': 'კითხვების ანალიზი',
+    'company.answered': 'პასუხია გაცემული',
+    'company.noAnswer': 'პასუხი არ არის.',
+
+    'admin.eyebrow': 'ადმინ პანელი',
+    'admin.title': 'აქტივობის მიმოხილვა',
+    'admin.subtitle': 'ნახე პლატფორმის ბოლო აქტივობა.',
+    'admin.backToVacancies': 'ვაკანსიებზე დაბრუნება',
+    'admin.totalVacancies': 'სულ ვაკანსია',
+    'admin.openVacancies': 'ღია ვაკანსიები',
+    'admin.waitingVacancies': 'პასუხის მოლოდინი',
+    'admin.cvSubmissions': 'CV-ს გაგზავნები',
+    'admin.recentVacancies': 'ბოლო ვაკანსიები',
+    'admin.noVacancies': 'ვაკანსიები ჯერ არ შექმნილა.',
+    'admin.recentCvs': 'ბოლო CV-ს გაგზავნები',
+    'admin.noCvs': 'CV-ს გაგზავნები ჯერ არ არის.',
+
+    'status.submitted': 'გაგზავნილია',
+    'status.pending': 'მოლოდინი',
+    'status.interview': 'ინტერვიუ',
+    'status.accepted': 'მიღებულია',
+    'status.rejected': 'უარყოფილია',
+    'status.waiting': 'მოლოდინი',
+
+    'role.applicant': 'აპლიკანტი',
+    'role.company': 'კომპანია',
+
+    'modal.registrationRequired': 'რეგისტრაცია საჭიროა',
+    'modal.register': 'რეგისტრაცია',
+    'modal.cancel': 'გაუქმება',
+
+    'require.default': 'გთხოვთ დარეგისტრირდეთ ამ ფუნქციის გამოყენებისთვის.',
+    'require.accessArea': 'გთხოვთ დარეგისტრირდეთ ამ ზონაში შესასვლელად.',
+    'require.viewProfile': 'პროფილის სანახავად დარეგისტრირდი.',
+    'require.startTest': 'ტესტის დასაწყებად დარეგისტრირდი.',
+    'require.manageVacancies': 'ვაკანსიების მართვისთვის დარეგისტრირდი.',
+    'require.companyTools': 'კომპანიის ინსტრუმენტებისთვის დარეგისტრირდი.',
+    'require.takeTest': 'ტესტის გასავლელად დარეგისტრირდი.',
+    'require.manageResults': 'შედეგების მართვისთვის დარეგისტრირდი.',
+    'require.updateStatuses': 'სტატუსების განახლებისთვის დარეგისტრირდი.',
+    'require.useMessaging': 'მესიჯინგის გამოსაყენებლად დარეგისტრირდი.',
+    'require.addCv': 'CV-ის დასამატებლად დარეგისტრირდი.',
+    'require.manageCvs': 'CV-ების მართვისთვის დარეგისტრირდი.',
+
+    'notifications.acceptedTitle': 'განაცხადი მიღებულია',
+    'notifications.interviewTitle': 'მოწვევა ინტერვიუზე',
+    'notifications.statusMessage': 'თქვენი განაცხადი პოზიციაზე {title} არის {status}.',
+    'notifications.acceptedMessage':
+      'გილოცავთ! თქვენ მიიღეთ პოზიციაზე {title}. განვიხილოთ შემდეგი ნაბიჯები.',
+    'notifications.interviewMessage':
+      'გვსურს მოგიწვიოთ ინტერვიუზე პოზიციაზე {title}.',
+
+    'cv.defaults.noFile': 'ფაილი არ არის ატვირთული',
+    'cv.defaults.noDetails': 'დეტალები არ არის მითითებული.',
+    'cv.defaults.notProvided': 'არ არის მოწოდებული.',
+    'cv.defaults.role': 'პოზიცია',
+    'cv.defaults.company': 'კომპანია',
+    'cv.defaults.start': 'დაწყება',
+    'cv.defaults.present': 'ამჟამად',
+
+    'vacancy.defaults.company': 'კომპანია',
+    'vacancy.defaults.remote': 'დისტანციური',
+    'vacancy.defaults.notSpecified': 'არ არის მითითებული',
+    'vacancy.defaults.noDescription': 'აღწერა ჯერ არ არის დამატებული.',
+  },
+}
+
 function App() {
   const [authMode, setAuthMode] = useState('login')
   const [isAuthed, setIsAuthed] = useState(false)
@@ -27,6 +666,10 @@ function App() {
   const [authUser, setAuthUser] = useState(null)
   const [page, setPage] = useState('home')
   const [authModal, setAuthModal] = useState({ open: false, message: '' })
+  const [language, setLanguage] = useState(() => {
+    const stored = localStorage.getItem('app_language')
+    return stored || 'ka'
+  })
   const [selectedJobId, setSelectedJobId] = useState(null)
   const [selectedJobType, setSelectedJobType] = useState('Frontend Developer')
   const [vacancies, setVacancies] = useState([])
@@ -110,6 +753,39 @@ function App() {
     }
   })
   const [messageThreads, setMessageThreads] = useState([])
+
+  useEffect(() => {
+    localStorage.setItem('app_language', language)
+  }, [language])
+
+  const t = (key, vars = {}) => {
+    const template = translations[language]?.[key] ?? translations.en?.[key] ?? key
+    return template.replace(/\{(\w+)\}/g, (_, token) =>
+      Object.prototype.hasOwnProperty.call(vars, token) ? vars[token] : '',
+    )
+  }
+
+  const getRoleLabel = (role) =>
+    role === 'company' ? t('role.company') : t('role.applicant')
+
+  const getRoleModeLabel = (role) =>
+    role === 'company' ? t('nav.companyMode') : t('nav.applicantMode')
+
+  const getStatusLabel = (status) => {
+    if (!status) {
+      return ''
+    }
+    return t(`status.${status}`)
+  }
+
+  const getJobTitleLabel = (title) =>
+    JOB_TYPE_LABELS[language]?.[title] ?? title
+
+  const formatTime = (seconds) =>
+    `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
+
+  const handleToggleLanguage = () =>
+    setLanguage((prev) => (prev === 'ka' ? 'en' : 'ka'))
 
   const selectedJob = useMemo(
     () => vacancies.find((job) => job.id === selectedJobId) ?? null,
@@ -459,7 +1135,7 @@ function App() {
     const workText = workEntries
       .map((entry) => {
         const dates = entry.current
-          ? `${entry.startDate || 'Start'} - Present`
+          ? `${entry.startDate || t('cv.defaults.start')} - ${t('cv.defaults.present')}`
           : [entry.startDate, entry.endDate].filter(Boolean).join(' - ')
         return [entry.position, entry.company, dates, entry.description]
           .map((item) => item.trim())
@@ -528,8 +1204,8 @@ function App() {
 
     const submission = {
       id: `cv-${Date.now()}`,
-      fileName: cvFileName || 'No file uploaded',
-      summary: summaryText.slice(0, 160) || 'No details provided.',
+      fileName: cvFileName || t('cv.defaults.noFile'),
+      summary: summaryText.slice(0, 160) || t('cv.defaults.noDetails'),
       personalInfo: personalParts.join(' • '),
       workExperience: workText,
       education: educationText,
@@ -603,7 +1279,7 @@ function App() {
   const handlePublish = async () => {
     const manualQuestions = parseManualQuestions(manualTest)
     const normalizedMinScore = Number.parseInt(minScore, 10)
-    const companyLabel = companyName.trim() || 'Company'
+    const companyLabel = companyName.trim() || t('vacancy.defaults.company')
     const questionSets =
       testMode === 'ai'
         ? generateQuestionSets(selectedJobType, companyLabel)
@@ -613,10 +1289,10 @@ function App() {
       id: `job-${Date.now()}`,
       title: selectedJobType,
       company: companyLabel,
-      location: location.trim() || 'Remote',
-      type: jobType.trim() || 'Not specified',
-      salary: salary.trim() || 'Not specified',
-      description: description.trim() || 'No description added yet.',
+      location: location.trim() || t('vacancy.defaults.remote'),
+      type: jobType.trim() || t('vacancy.defaults.notSpecified'),
+      salary: salary.trim() || t('vacancy.defaults.notSpecified'),
+      description: description.trim() || t('vacancy.defaults.noDescription'),
       minScore: Number.isFinite(normalizedMinScore) ? normalizedMinScore : 0,
       testMode,
       questionSets,
@@ -854,8 +1530,13 @@ function App() {
     if (result?.candidateEmail && (status === 'accepted' || status === 'interview')) {
       addNotification(
         result.candidateEmail,
-        status === 'accepted' ? 'Application accepted' : 'Interview requested',
-        `Your application for ${job?.title ?? 'a role'} has been ${status}.`,
+        status === 'accepted'
+          ? t('notifications.acceptedTitle')
+          : t('notifications.interviewTitle'),
+        t('notifications.statusMessage', {
+          title: getJobTitleLabel(job?.title ?? t('cv.defaults.role')),
+          status: getStatusLabel(status),
+        }),
       )
 
       const thread = await ensureThread({
@@ -870,8 +1551,12 @@ function App() {
         handleSendMessage(
           thread.id,
           status === 'accepted'
-            ? `Congrats! We have accepted you for ${job?.title ?? 'the role'}. Let's discuss next steps.`
-            : `We would like to invite you to an interview for ${job?.title ?? 'the role'}.`,
+            ? t('notifications.acceptedMessage', {
+                title: getJobTitleLabel(job?.title ?? t('cv.defaults.role')),
+              })
+            : t('notifications.interviewMessage', {
+                title: getJobTitleLabel(job?.title ?? t('cv.defaults.role')),
+              }),
           'company',
         )
       }
@@ -884,7 +1569,7 @@ function App() {
     if (!isAuthed) {
       setAuthModal({
         open: true,
-        message: message || 'Please register to use this feature.',
+        message: message || t('require.default'),
       })
       return
     }
@@ -895,7 +1580,7 @@ function App() {
     if (!isAuthed && !['home', 'vacancies', 'auth'].includes(next)) {
       setAuthModal({
         open: true,
-        message: 'Please register to access this area.',
+        message: t('require.accessArea'),
       })
       return
     }
@@ -915,6 +1600,10 @@ function App() {
           userRole={userRole}
           notificationCount={unreadNotifications.length}
           isAuthed={isAuthed}
+          language={language}
+          onToggleLanguage={handleToggleLanguage}
+          t={t}
+          getRoleModeLabel={getRoleModeLabel}
           onAuthRegister={() => {
             setAuthMode('register')
             setPage('auth')
@@ -929,12 +1618,13 @@ function App() {
         <HomePage
           onStart={() => setPage('vacancies')}
           onViewProfile={() =>
-            requireAuth('Register to view your profile.', () => setPage('profile'))
+            requireAuth(t('require.viewProfile'), () => setPage('profile'))
           }
           onRegister={() => {
             setAuthMode('register')
             setPage('auth')
           }}
+          t={t}
         />
       )}
       {page === 'auth' && (
@@ -947,21 +1637,22 @@ function App() {
             setAuthError('')
             setAuthMode(authMode === 'login' ? 'register' : 'login')
           }}
+          t={t}
         />
       )}
       {page === 'vacancies' && (
         <VacanciesPage
           vacancies={vacancies}
           onOpenJobTest={(jobId) =>
-            requireAuth('Register to start the test.', () => openJobTest(jobId))
+            requireAuth(t('require.startTest'), () => openJobTest(jobId))
           }
           onDeleteVacancy={(jobId) =>
-            requireAuth('Register to manage vacancies.', () =>
+            requireAuth(t('require.manageVacancies'), () =>
               handleDeleteVacancy(jobId),
             )
           }
           onGoCompany={() =>
-            requireAuth('Register to access company tools.', () =>
+            requireAuth(t('require.companyTools'), () =>
               setPage('company'),
             )
           }
@@ -974,6 +1665,9 @@ function App() {
           }}
           currentUserEmail={currentUserEmail}
           isAuthed={isAuthed}
+          t={t}
+          getStatusLabel={getStatusLabel}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'tests' && (
@@ -981,10 +1675,12 @@ function App() {
           vacancies={vacancies}
           applications={applications}
           onOpenJobTest={(jobId) =>
-            requireAuth('Register to take a test.', () => openJobTest(jobId))
+            requireAuth(t('require.takeTest'), () => openJobTest(jobId))
           }
           currentUserEmail={currentUserEmail}
           onBack={() => setPage('vacancies')}
+          t={t}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'profile' && (
@@ -1003,6 +1699,10 @@ function App() {
             setAuthUser(null)
             setPage('home')
           }}
+          t={t}
+          getRoleLabel={getRoleLabel}
+          getStatusLabel={getStatusLabel}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'messages' && (
@@ -1015,6 +1715,8 @@ function App() {
           onStartThread={ensureThread}
           onSendMessage={handleSendMessage}
           onBack={() => setPage('vacancies')}
+          t={t}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'admin' && isAdmin && (
@@ -1022,23 +1724,25 @@ function App() {
           vacancies={vacancies}
           cvSubmissions={cvSubmissions}
           onBack={() => setPage('vacancies')}
+          t={t}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'company' && (
         <CompanyPage
           vacancies={vacancies}
           onDeleteResult={(jobId, resultId) =>
-            requireAuth('Register to manage results.', () =>
+            requireAuth(t('require.manageResults'), () =>
               handleDeleteResult(jobId, resultId),
             )
           }
           onUpdateResultStatus={(jobId, resultId, status) =>
-            requireAuth('Register to update statuses.', () =>
+            requireAuth(t('require.updateStatuses'), () =>
               handleUpdateResultStatus(jobId, resultId, status),
             )
           }
           onOpenMessages={(jobId, result) =>
-            requireAuth('Register to use messaging.', () => {
+            requireAuth(t('require.useMessaging'), () => {
               const job = vacancies.find((item) => item.id === jobId)
               if (!job || !result?.candidateEmail) {
                 return
@@ -1072,6 +1776,9 @@ function App() {
           setManualTest={setManualTest}
           onPublish={handlePublish}
           onBack={() => setPage('vacancies')}
+          t={t}
+          getStatusLabel={getStatusLabel}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'test' && (
@@ -1086,6 +1793,9 @@ function App() {
           onAbandon={handleAbandonTest}
           onTimeUpOk={handleTimeUpOk}
           onBack={() => setPage('vacancies')}
+          t={t}
+          getJobTitleLabel={getJobTitleLabel}
+          formatTime={formatTime}
         />
       )}
       {page === 'cv' && (
@@ -1130,24 +1840,24 @@ function App() {
           onAddTrainingEntry={addTrainingEntry}
           onClearTrainingEntry={clearTrainingEntry}
           onSave={handleSaveCv}
+          t={t}
         />
       )}
       {page === 'cvs' && (
         <CvListPage
           cvSubmissions={cvSubmissions}
-          onAddCv={() =>
-            requireAuth('Register to add your CV.', () => setPage('cv'))
-          }
+          onAddCv={() => requireAuth(t('require.addCv'), () => setPage('cv'))}
           onBackVacancies={() => setPage('vacancies')}
           onDeleteCv={(cvId) =>
-            requireAuth('Register to manage CVs.', () => handleDeleteCv(cvId))
+            requireAuth(t('require.manageCvs'), () => handleDeleteCv(cvId))
           }
+          t={t}
         />
       )}
       {authModal.open && (
         <div className="modal-backdrop" role="dialog" aria-modal="true">
           <div className="modal">
-            <h3>Registration required</h3>
+            <h3>{t('modal.registrationRequired')}</h3>
             <p className="muted">{authModal.message}</p>
             <div className="test-actions">
               <button
@@ -1159,14 +1869,14 @@ function App() {
                   setPage('auth')
                 }}
               >
-                Register
+                {t('modal.register')}
               </button>
               <button
                 className="ghost"
                 type="button"
                 onClick={() => setAuthModal({ open: false, message: '' })}
               >
-                Cancel
+                {t('modal.cancel')}
               </button>
             </div>
           </div>

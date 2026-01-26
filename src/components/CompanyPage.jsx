@@ -26,6 +26,9 @@ const CompanyPage = ({
   onBack,
   onUpdateResultStatus,
   onOpenMessages,
+  t,
+  getStatusLabel,
+  getJobTitleLabel,
 }) => {
   const manualCount = parseManualQuestions(manualTest).length
 
@@ -40,17 +43,17 @@ const CompanyPage = ({
     <div className="page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Company</p>
-          <h1>Post vacancies</h1>
-          <p className="muted">Choose a role and add optional details.</p>
+          <p className="eyebrow">{t('company.eyebrow')}</p>
+          <h1>{t('company.title')}</h1>
+          <p className="muted">{t('company.subtitle')}</p>
         </div>
         <button className="ghost" type="button" onClick={onBack}>
-          Back to vacancies
+          {t('company.backToVacancies')}
         </button>
       </header>
       <div className="company-panel">
         <div className="panel-section">
-          <h3>Choose vacancy type</h3>
+          <h3>{t('company.chooseType')}</h3>
           <div className="chip-grid">
             {COMPANY_JOB_TYPES.map((jobTypeOption) => (
               <button
@@ -61,83 +64,83 @@ const CompanyPage = ({
                 }
                 onClick={() => setSelectedJobType(jobTypeOption)}
               >
-                {jobTypeOption}
+                {getJobTitleLabel(jobTypeOption)}
               </button>
             ))}
           </div>
         </div>
         <div className="panel-section">
-          <h3>Vacancy details</h3>
+          <h3>{t('company.details')}</h3>
           <div className="form-grid">
             <label>
-              Company name
+              {t('company.companyName')}
               <input
                 type="text"
-                placeholder="dsq.ge"
+                placeholder={t('company.companyNamePlaceholder')}
                 value={companyName}
                 onChange={(event) => setCompanyName(event.target.value)}
               />
             </label>
             <label>
-              Role title
-              <input type="text" value={selectedJobType} readOnly />
+              {t('company.roleTitle')}
+              <input type="text" value={getJobTitleLabel(selectedJobType)} readOnly />
             </label>
             <label>
-              Job type (optional)
+              {t('company.jobTypeOptional')}
               <input
                 type="text"
-                placeholder="Full time / Part time"
+                placeholder={t('company.jobTypePlaceholder')}
                 value={jobType}
                 onChange={(event) => setJobType(event.target.value)}
               />
             </label>
             <label>
-              Monthly salary (optional)
+              {t('company.salaryOptional')}
               <input
                 type="text"
-                placeholder="$2,500"
+                placeholder={t('company.salaryPlaceholder')}
                 value={salary}
                 onChange={(event) => setSalary(event.target.value)}
               />
             </label>
             <label>
-              Based in
+              {t('company.basedIn')}
               <input
                 type="text"
-                placeholder="Tbilisi, GE"
+                placeholder={t('company.locationPlaceholder')}
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
               />
             </label>
             <label>
-              Minimum score required
+              {t('company.minScore')}
               <input
                 type="number"
                 min="0"
                 max="15"
-                placeholder="10"
+                placeholder={t('company.minScorePlaceholder')}
                 value={minScore}
                 onChange={(event) => setMinScore(event.target.value)}
               />
             </label>
             <label className="full-width">
-              Description
+              {t('company.description')}
               <textarea
                 rows="4"
-                placeholder="Describe the role, team, and expectations"
+                placeholder={t('company.descriptionPlaceholder')}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
             </label>
             <label className="full-width">
-              Test type
+              {t('company.testType')}
               <div className="toggle-row">
                 <button
                   className={testMode === 'ai' ? 'chip chip-active' : 'chip'}
                   type="button"
                   onClick={() => setTestMode('ai')}
                 >
-                  AI test (15 questions)
+                  {t('company.aiTest')}
                 </button>
                 <button
                   className={
@@ -146,22 +149,22 @@ const CompanyPage = ({
                   type="button"
                   onClick={() => setTestMode('manual')}
                 >
-                  Company written test
+                  {t('company.manualTest')}
                 </button>
               </div>
             </label>
             {testMode === 'manual' && (
               <label className="full-width">
-                Company test questions (15 lines)
+                {t('company.manualQuestions')}
                 <textarea
                   rows="8"
-                  placeholder={
-                    'Write 15 questions, one per line. Format:\nQuestion | Option A | Option B | Option C | Correct (A/B/C)'
-                  }
+                  placeholder={t('company.manualPlaceholder')}
                   value={manualTest}
                   onChange={(event) => setManualTest(event.target.value)}
                 />
-                <span className="helper">{manualCount}/15 questions</span>
+                <span className="helper">
+                  {t('company.questionsCount', { count: manualCount })}
+                </span>
               </label>
             )}
           </div>
@@ -171,7 +174,7 @@ const CompanyPage = ({
             onClick={onPublish}
             disabled={testMode === 'manual' && manualCount !== 15}
           >
-            Publish vacancy
+            {t('company.publish')}
           </button>
         </div>
       </div>
@@ -179,31 +182,31 @@ const CompanyPage = ({
       <div className="company-results">
         <header className="page-header">
           <div>
-            <p className="eyebrow">Results</p>
-            <h2>Test submissions</h2>
-            <p className="muted">Scores are 1 point per answered question.</p>
+            <p className="eyebrow">{t('company.resultsEyebrow')}</p>
+            <h2>{t('company.resultsTitle')}</h2>
+            <p className="muted">{t('company.resultsSubtitle')}</p>
           </div>
         </header>
         {vacancies.length === 0 ? (
           <div className="empty-state">
-            <h3>No vacancies yet</h3>
-            <p className="muted">Publish a vacancy to receive test results.</p>
+            <h3>{t('company.emptyVacanciesTitle')}</h3>
+            <p className="muted">{t('company.emptyVacanciesSubtitle')}</p>
           </div>
         ) : !hasResults ? (
           <div className="empty-state">
-            <h3>No results yet</h3>
-            <p className="muted">Results will appear here after candidates finish tests.</p>
+            <h3>{t('company.emptyResultsTitle')}</h3>
+            <p className="muted">{t('company.emptyResultsSubtitle')}</p>
           </div>
         ) : (
           <div className="grid">
             {vacancies.map((job) => (
               <div key={job.id} className="result-card">
                 <div>
-                  <h3>{job.title}</h3>
+                  <h3>{getJobTitleLabel(job.title)}</h3>
                   <p className="muted">{job.company}</p>
                 </div>
                 {(job.testResults ?? []).length === 0 ? (
-                  <p className="muted">No submissions yet.</p>
+                  <p className="muted">{t('company.noSubmissions')}</p>
                 ) : (
                   <ul className="result-list">
                     {job.testResults.slice(0, 5).map((result) => (
@@ -222,7 +225,7 @@ const CompanyPage = ({
                           {result.score}/{result.total}
                         </span>
                         <span className={`status-chip ${result.status || 'submitted'}`}>
-                          {result.status || 'submitted'}
+                          {getStatusLabel(result.status || 'submitted')}
                         </span>
                         <div className="result-actions">
                           <button
@@ -231,22 +234,22 @@ const CompanyPage = ({
                             onClick={() => toggleResult(result.id)}
                           >
                             {expandedResultId === result.id
-                              ? 'Hide details'
-                              : 'View details'}
+                              ? t('company.hideDetails')
+                              : t('company.viewDetails')}
                           </button>
                           <button
                             className="danger"
                             type="button"
                             onClick={() => onDeleteResult(job.id, result.id)}
                           >
-                            Delete
+                            {t('company.delete')}
                           </button>
                           <button
                             className="ghost"
                             type="button"
                             onClick={() => onOpenMessages(job.id, result)}
                           >
-                            Message
+                            {t('company.message')}
                           </button>
                         </div>
                         <div className="result-status-actions">
@@ -255,7 +258,7 @@ const CompanyPage = ({
                             type="button"
                             onClick={() => onUpdateResultStatus(job.id, result.id, 'pending')}
                           >
-                            Pending
+                            {t('company.pending')}
                           </button>
                           <button
                             className="ghost"
@@ -264,7 +267,7 @@ const CompanyPage = ({
                               onUpdateResultStatus(job.id, result.id, 'interview')
                             }
                           >
-                            Interview
+                            {t('company.interview')}
                           </button>
                           <button
                             className="ghost"
@@ -273,7 +276,7 @@ const CompanyPage = ({
                               onUpdateResultStatus(job.id, result.id, 'accepted')
                             }
                           >
-                            Accept
+                            {t('company.accept')}
                           </button>
                           <button
                             className="danger"
@@ -282,12 +285,12 @@ const CompanyPage = ({
                               onUpdateResultStatus(job.id, result.id, 'rejected')
                             }
                           >
-                            Reject
+                            {t('company.reject')}
                           </button>
                         </div>
                         {expandedResultId === result.id && (
                           <div className="result-details">
-                            <h4>Question breakdown</h4>
+                            <h4>{t('company.questionBreakdown')}</h4>
                             <ol>
                               {(result.questions ?? []).map((question, index) => {
                                 const prompt = question?.prompt ?? question
@@ -323,7 +326,7 @@ const CompanyPage = ({
                                             : 'muted result-answer-missing'
                                         }
                                       >
-                                        {answered ? 'Answered' : 'No answer provided.'}
+                                        {answered ? t('company.answered') : t('company.noAnswer')}
                                       </p>
                                     )}
                                   </li>
