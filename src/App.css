@@ -87,8 +87,10 @@
 }
 
 .language-flag {
-  font-size: 18px;
-  line-height: 1;
+  width: 22px;
+  height: 16px;
+  display: block;
+  border-radius: 2px;
 }
 
 .nav-auth {

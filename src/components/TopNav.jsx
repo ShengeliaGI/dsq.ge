@@ -31,6 +31,8 @@ const TopNav = ({
     setIsOpen(false)
   }
 
+  const flagSrc = language === 'ka' ? '/flags/us.svg' : '/flags/ge.svg'
+
   return (
     <nav className="top-nav">
       <div className="nav-header">
@@ -149,7 +151,7 @@ const TopNav = ({
               language === 'ka' ? t('nav.switchToEnglish') : t('nav.switchToGeorgian')
             }
           >
-            <span className="language-flag">{language === 'ka' ? '🇺🇸' : '🇬🇪'}</span>
+            <img className="language-flag" src={flagSrc} alt="" aria-hidden="true" />
           </button>
         </div>
       </div>
