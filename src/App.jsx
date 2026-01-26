@@ -517,7 +517,7 @@ const translations = {
     'messages.title': 'მესიჯინგის პორტალი',
     'messages.subtitle': 'დააკავშირე კომპანიები და კანდიდატები ერთ სივრცეში.',
     'messages.back': 'უკან',
-    'messages.emptyTitle': 'საუბრები ჯერ არ არის',
+    'messages.emptyTitle': 'მესიჯები ჯერ არ არის',
     'messages.emptySubtitle': 'შეტყობინებები გამოჩნდება, როცა კომპანია პასუხობს.',
     'messages.message': 'მესიჯი',
     'messages.startConversation': 'დაიწყე საუბარი.',
