@@ -93,6 +93,7 @@ const translations = {
     'vacancies.waiting': 'Waiting for answer',
     'vacancies.tryAgain': 'Try again',
     'vacancies.delete': 'Delete vacancy',
+    'vacancies.deleting': 'Deleting...',
 
     'auth.titleLogin': 'Log in',
     'auth.titleRegister': 'Create account',
@@ -270,6 +271,7 @@ const translations = {
       'Write 15 questions, one per line. Format:\nQuestion | Option A | Option B | Option C | Correct (A/B/C)',
     'company.questionsCount': '{count}/15 questions',
     'company.publish': 'Publish vacancy',
+    'company.publishing': 'Publishing...',
     'company.resultsEyebrow': 'Results',
     'company.resultsTitle': 'Test submissions',
     'company.resultsSubtitle': 'Scores are 1 point per answered question.',
@@ -397,6 +399,7 @@ const translations = {
     'vacancies.waiting': 'პასუხის მოლოდინი',
     'vacancies.tryAgain': 'ხელახლა სცადე',
     'vacancies.delete': 'ვაკანსიის წაშლა',
+    'vacancies.deleting': 'ვშლით...',
 
     'auth.titleLogin': 'შესვლა',
     'auth.titleRegister': 'ანგარიშის შექმნა',
@@ -575,6 +578,7 @@ const translations = {
       'დაწერე 15 კითხვა, თითო ხაზი. ფორმატი:\nკითხვა | ვარიანტი A | ვარიანტი B | ვარიანტი C | სწორი (A/B/C)',
     'company.questionsCount': '{count}/15 კითხვა',
     'company.publish': 'ვაკანსიის გამოქვეყნება',
+    'company.publishing': 'ვაქვეყნებთ...',
     'company.resultsEyebrow': 'შედეგები',
     'company.resultsTitle': 'ტესტის გაგზავნები',
     'company.resultsSubtitle': 'ქულა = 1 ქულა თითო სწორ პასუხზე.',
@@ -753,6 +757,8 @@ function App() {
     }
   })
   const [messageThreads, setMessageThreads] = useState([])
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [deletingVacancyIds, setDeletingVacancyIds] = useState([])
 
   useEffect(() => {
     localStorage.setItem('app_language', language)
@@ -920,6 +926,12 @@ function App() {
   }
 
   const handleDeleteVacancy = (jobId) => {
+    if (deletingVacancyIds.includes(jobId)) {
+      return
+    }
+    setDeletingVacancyIds((prev) =>
+      prev.includes(jobId) ? prev : [...prev, jobId],
+    )
     const deleteVacancy = async () => {
       try {
         const response = await fetch(`/api/vacancies/${jobId}`, {
@@ -935,6 +947,8 @@ function App() {
         }
       } catch (error) {
         console.error(error)
+      } finally {
+        setDeletingVacancyIds((prev) => prev.filter((id) => id !== jobId))
       }
     }
 
@@ -1277,6 +1291,10 @@ function App() {
   }
 
   const handlePublish = async () => {
+    if (isPublishing) {
+      return
+    }
+    setIsPublishing(true)
     const manualQuestions = parseManualQuestions(manualTest)
     const normalizedMinScore = Number.parseInt(minScore, 10)
     const companyLabel = companyName.trim() || t('vacancy.defaults.company')
@@ -1318,6 +1336,8 @@ function App() {
       console.error('Failed to publish vacancy', error)
       setVacancies((prev) => [newVacancy, ...prev])
       setSelectedJobId(newVacancy.id)
+    } finally {
+      setIsPublishing(false)
     }
     setPage('vacancies')
   }
@@ -1668,6 +1688,7 @@ function App() {
           t={t}
           getStatusLabel={getStatusLabel}
           getJobTitleLabel={getJobTitleLabel}
+          deletingVacancyIds={deletingVacancyIds}
         />
       )}
       {page === 'tests' && (
@@ -1779,6 +1800,7 @@ function App() {
           t={t}
           getStatusLabel={getStatusLabel}
           getJobTitleLabel={getJobTitleLabel}
+          isPublishing={isPublishing}
         />
       )}
       {page === 'test' && (

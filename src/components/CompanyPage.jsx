@@ -29,6 +29,7 @@ const CompanyPage = ({
   t,
   getStatusLabel,
   getJobTitleLabel,
+  isPublishing,
 }) => {
   const manualCount = parseManualQuestions(manualTest).length
 
@@ -172,9 +173,9 @@ const CompanyPage = ({
             className="primary"
             type="button"
             onClick={onPublish}
-            disabled={testMode === 'manual' && manualCount !== 15}
+            disabled={isPublishing || (testMode === 'manual' && manualCount !== 15)}
           >
-            {t('company.publish')}
+            {isPublishing ? t('company.publishing') : t('company.publish')}
           </button>
         </div>
       </div>

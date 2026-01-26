@@ -9,6 +9,7 @@ const VacanciesPage = ({
   t,
   getStatusLabel,
   getJobTitleLabel,
+  deletingVacancyIds = [],
 }) => (
   <div className="page">
     <header className="page-header">
@@ -43,6 +44,7 @@ const VacanciesPage = ({
               result.candidateEmail?.toLowerCase() === currentUserEmail?.toLowerCase(),
           )
 
+          const isDeleting = deletingVacancyIds.includes(job.id)
           return (
             <div key={job.id} className="job-card">
             <button
@@ -81,8 +83,9 @@ const VacanciesPage = ({
               className="danger"
               type="button"
               onClick={() => onDeleteVacancy(job.id)}
+              disabled={isDeleting}
             >
-              {t('vacancies.delete')}
+              {isDeleting ? t('vacancies.deleting') : t('vacancies.delete')}
             </button>
           </div>
           )
