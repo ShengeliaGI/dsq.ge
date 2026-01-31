@@ -44,6 +44,7 @@ const CompanyPage = ({
       ).length,
     [manualQuestions],
   )
+  const hasResults = vacancies.some((job) => (job.testResults ?? []).length > 0)
   const [expandedResultId, setExpandedResultId] = useState(null)
 
   const handleQuestionCountChange = (event) => {
