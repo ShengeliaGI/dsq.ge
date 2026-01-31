@@ -24,6 +24,7 @@ const CompanyPage = ({
   setManualQuestionCount,
   manualQuestions,
   setManualQuestions,
+  onBack,
   onUpdateResultStatus,
   onOpenMessages,
   t,
