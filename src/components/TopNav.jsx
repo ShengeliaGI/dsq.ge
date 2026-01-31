@@ -94,15 +94,13 @@ const TopNav = ({
                 <span className="nav-badge">{notificationCount}</span>
               )}
             </button>
-            {userRole !== 'company' && (
-              <button
-                className={page === 'cvs' ? 'nav-button active' : 'nav-button'}
-                type="button"
-                onClick={() => handleNavigate('cvs')}
-              >
-                {t('nav.cvs')}
-              </button>
-            )}
+            <button
+              className={page === 'cvs' ? 'nav-button active' : 'nav-button'}
+              type="button"
+              onClick={() => handleNavigate('cvs')}
+            >
+              {t('nav.cvs')}
+            </button>
             {userRole === 'company' && (
               <button
                 className={page === 'company' ? 'nav-button active' : 'nav-button'}
