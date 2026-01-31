@@ -1025,6 +1025,10 @@ input::placeholder {
   min-height: 56px;
 }
 
+.test-option button {
+  margin-top: auto;
+}
+
 .recommend-badge {
   font-size: 0.65rem;
   letter-spacing: 0.08em;
