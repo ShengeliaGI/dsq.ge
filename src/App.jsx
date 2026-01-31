@@ -316,6 +316,7 @@ const translations = {
     'company.correctOptionA': 'Option A',
     'company.correctOptionB': 'Option B',
     'company.correctOptionC': 'Option C',
+    'company.questionsReady': 'Questions ready: {count}/{total}',
     'company.manualQuestions': 'Company test questions (15 lines)',
     'company.manualPlaceholder':
       'Write 15 questions, one per line. Format:\nQuestion | Option A | Option B | Option C | Correct (A/B/C)',
@@ -637,6 +638,7 @@ const translations = {
     'company.correctOptionA': 'ვარიანტი A',
     'company.correctOptionB': 'ვარიანტი B',
     'company.correctOptionC': 'ვარიანტი C',
+    'company.questionsReady': 'მზადაა კითხვები: {count}/{total}',
     'company.manualQuestions': 'კომპანიის კითხვები (15 ხაზი)',
     'company.manualPlaceholder':
       'დაწერე 15 კითხვა, თითო ხაზი. ფორმატი:\nკითხვა | ვარიანტი A | ვარიანტი B | ვარიანტი C | სწორი (A/B/C)',

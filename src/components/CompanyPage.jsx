@@ -277,7 +277,10 @@ const CompanyPage = ({
                   ))}
                 </div>
                 <span className="helper">
-                  {t('company.questionsCount', { count: manualCount })}
+                  {t('company.questionsReady', {
+                    count: manualCount,
+                    total: manualQuestionCount,
+                  })}
                 </span>
               </div>
             )}
@@ -286,10 +289,7 @@ const CompanyPage = ({
             className="primary"
             type="button"
             onClick={onPublish}
-            disabled={
-              isPublishing ||
-              (testMode === 'manual' && manualCount !== manualQuestionCount)
-            }
+            disabled={isPublishing || (testMode === 'manual' && manualCount === 0)}
           >
             {isPublishing ? t('company.publishing') : t('company.publish')}
           </button>
