@@ -1471,7 +1471,21 @@ function App() {
   useEffect(() => {
     const existingToken = localStorage.getItem('auth_token')
     if (existingToken) {
-      setIsAuthed(true)
+      try {
+        const payload = JSON.parse(
+          atob(existingToken.split('.')[1] || ''),
+        )
+        const isExpired = payload?.exp ? payload.exp * 1000 < Date.now() : false
+        if (isExpired) {
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
+        } else {
+          setIsAuthed(true)
+        }
+      } catch {
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_user')
+      }
     }
     const storedUser = localStorage.getItem('auth_user')
     if (storedUser) {

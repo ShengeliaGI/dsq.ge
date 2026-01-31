@@ -186,7 +186,9 @@ const requireAuth = async (req, res, next) => {
     }
     return next()
   } catch (error) {
-    console.error('Auth error:', error)
+    if (error?.name !== 'TokenExpiredError') {
+      console.error('Auth error:', error)
+    }
     return res.status(401).json({ message: 'Unauthorized.' })
   }
 }
