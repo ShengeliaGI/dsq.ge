@@ -149,9 +149,6 @@ const CompanyPage = ({
               ) : (
                 <div className="toggle-row">
                   <div className="test-option">
-                    <span className="recommend-badge">
-                      {t('company.recommended')}
-                    </span>
                     <button
                       className={testMode === 'ai' ? 'chip chip-active' : 'chip'}
                       type="button"
