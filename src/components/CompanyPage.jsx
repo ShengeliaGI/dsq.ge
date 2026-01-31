@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { COMPANY_JOB_TYPES, parseManualQuestions } from '../utils/testUtils'
+import { useMemo, useState } from 'react'
+import { COMPANY_JOB_TYPES } from '../utils/testUtils'
 
 const CompanyPage = ({
   vacancies,
@@ -20,10 +20,10 @@ const CompanyPage = ({
   setMinScore,
   testMode,
   setTestMode,
-  manualTest,
-  setManualTest,
-  onPublish,
-  onBack,
+  manualQuestionCount,
+  setManualQuestionCount,
+  manualQuestions,
+  setManualQuestions,
   onUpdateResultStatus,
   onOpenMessages,
   t,
@@ -31,11 +31,41 @@ const CompanyPage = ({
   getJobTitleLabel,
   isPublishing,
 }) => {
-  const manualCount = parseManualQuestions(manualTest).length
   const isOtherVacancy = selectedJobType === 'Other'
-
-  const hasResults = vacancies.some((job) => (job.testResults ?? []).length > 0)
+  const manualCount = useMemo(
+    () =>
+      manualQuestions.filter(
+        (question) =>
+          question.prompt?.trim() &&
+          (question.options ?? []).length === 3 &&
+          (question.options ?? []).every((option) => option?.trim()),
+      ).length,
+    [manualQuestions],
+  )
   const [expandedResultId, setExpandedResultId] = useState(null)
+
+  const handleQuestionCountChange = (event) => {
+    const nextCount = Math.max(1, Math.min(30, Number(event.target.value) || 1))
+    setManualQuestionCount(nextCount)
+    setManualQuestions((prev) => {
+      const next = [...prev]
+      if (nextCount > next.length) {
+        const missing = nextCount - next.length
+        for (let i = 0; i < missing; i += 1) {
+          next.push({ prompt: '', options: ['', '', ''], correctIndex: 0 })
+        }
+      }
+      return next.slice(0, nextCount)
+    })
+  }
+
+  const updateManualQuestion = (index, updates) => {
+    setManualQuestions((prev) =>
+      prev.map((question, questionIndex) =>
+        questionIndex === index ? { ...question, ...updates } : question,
+      ),
+    )
+  }
 
   const toggleResult = (resultId) => {
     setExpandedResultId((prev) => (prev === resultId ? null : resultId))
@@ -68,7 +98,10 @@ const CompanyPage = ({
                   setSelectedJobType(jobTypeOption)
                   if (jobTypeOption === 'Other') {
                     setTestMode('none')
-                    setManualTest('')
+                    setManualQuestionCount(1)
+                    setManualQuestions([
+                      { prompt: '', options: ['', '', ''], correctIndex: 0 },
+                    ])
                   } else if (testMode === 'none') {
                     setTestMode('ai')
                   }
@@ -149,15 +182,6 @@ const CompanyPage = ({
               ) : (
                 <div className="toggle-row">
                   <div className="test-option">
-                    <button
-                      className={testMode === 'ai' ? 'chip chip-active' : 'chip'}
-                      type="button"
-                      onClick={() => setTestMode('ai')}
-                    >
-                      {t('company.aiTest')}
-                    </button>
-                  </div>
-                  <div className="test-option">
                     <span className="recommend-badge">
                       {t('company.recommended')}
                     </span>
@@ -171,29 +195,99 @@ const CompanyPage = ({
                       {t('company.manualTest')}
                     </button>
                   </div>
+                  <div className="test-option">
+                    <button
+                      className={testMode === 'ai' ? 'chip chip-active' : 'chip'}
+                      type="button"
+                      onClick={() => setTestMode('ai')}
+                    >
+                      {t('company.aiTest')}
+                    </button>
+                  </div>
                 </div>
               )}
             </label>
             {testMode === 'manual' && (
-              <label className="full-width">
-                {t('company.manualQuestions')}
-                <textarea
-                  rows="8"
-                  placeholder={t('company.manualPlaceholder')}
-                  value={manualTest}
-                  onChange={(event) => setManualTest(event.target.value)}
-                />
+              <div className="full-width manual-builder">
+                <label className="manual-count">
+                  {t('company.manualQuestionCount')}
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={manualQuestionCount}
+                    onChange={handleQuestionCountChange}
+                  />
+                </label>
+                <div className="manual-grid">
+                  {manualQuestions.map((question, index) => (
+                    <div key={`manual-${index}`} className="manual-card">
+                      <label>
+                        {t('company.manualQuestionLabel', { index: index + 1 })}
+                        <input
+                          type="text"
+                          value={question.prompt}
+                          placeholder={t('company.manualQuestionPlaceholder')}
+                          onChange={(event) =>
+                            updateManualQuestion(index, {
+                              prompt: event.target.value,
+                            })
+                          }
+                        />
+                      </label>
+                      <div className="manual-options">
+                        {['A', 'B', 'C'].map((label, optionIndex) => (
+                          <label key={`${index}-${label}`}>
+                            {t('company.optionLabel', { label })}
+                            <input
+                              type="text"
+                              value={question.options?.[optionIndex] ?? ''}
+                              onChange={(event) => {
+                                const nextOptions = [...(question.options ?? [])]
+                                while (nextOptions.length < 3) {
+                                  nextOptions.push('')
+                                }
+                                nextOptions[optionIndex] = event.target.value
+                                updateManualQuestion(index, {
+                                  options: nextOptions,
+                                })
+                              }}
+                            />
+                          </label>
+                        ))}
+                      </div>
+                      <label>
+                        {t('company.correctAnswer')}
+                        <select
+                          value={question.correctIndex ?? 0}
+                          onChange={(event) =>
+                            updateManualQuestion(index, {
+                              correctIndex: Number(event.target.value),
+                            })
+                          }
+                        >
+                          <option value={0}>{t('company.correctOptionA')}</option>
+                          <option value={1}>{t('company.correctOptionB')}</option>
+                          <option value={2}>{t('company.correctOptionC')}</option>
+                        </select>
+                      </label>
+                    </div>
+                  ))}
+                </div>
                 <span className="helper">
                   {t('company.questionsCount', { count: manualCount })}
                 </span>
-              </label>
+              </div>
             )}
           </div>
           <button
             className="primary"
             type="button"
             onClick={onPublish}
-            disabled={isPublishing || (testMode === 'manual' && manualCount !== 15)}
+            disabled={
+              isPublishing ||
+              (testMode === 'manual' && manualCount !== manualQuestionCount)
+            }
           >
             {isPublishing ? t('company.publishing') : t('company.publish')}
           </button>

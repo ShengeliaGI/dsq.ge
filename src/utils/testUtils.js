@@ -32,6 +32,23 @@ export const TEST_DURATION_SECONDS = 60 * 60
 
 const shuffleArray = (items) => [...items].sort(() => Math.random() - 0.5)
 
+const seededShuffle = (items, seed) => {
+  const array = [...items]
+  let currentIndex = array.length
+  let nextSeed = seed
+
+  while (currentIndex > 0) {
+    nextSeed = (nextSeed * 9301 + 49297) % 233280
+    const randomIndex = Math.floor((nextSeed / 233280) * currentIndex)
+    currentIndex -= 1
+    const temp = array[currentIndex]
+    array[currentIndex] = array[randomIndex]
+    array[randomIndex] = temp
+  }
+
+  return array
+}
+
 const buildOptions = (jobType) => {
   const correct = `Break the ${jobType} task into clear steps, validate assumptions, and deliver measurable outcomes.`
   const wrongOne = 'Skip planning and jump directly into execution without alignment.'
@@ -102,8 +119,67 @@ export const parseManualQuestions = (raw) =>
     })
     .filter(Boolean)
 
-export const generateQuestionSets = (jobType, companyLabel) =>
-  Array.from({ length: 10 }, () => generateAiQuestions(jobType, companyLabel))
+export const generateQuestionSets = (jobType, companyLabel) => {
+  const sets = []
+  const signatures = new Set()
+  let seed = Date.now() % 100000
+
+  while (sets.length < 10) {
+    const questions = generateAiQuestions(jobType, companyLabel)
+    const signature = questions.map((q) => q.prompt).join('|')
+    if (!signatures.has(signature)) {
+      signatures.add(signature)
+      sets.push(questions)
+    }
+    seed += 7
+  }
+
+  return sets
+}
+
+export const normalizeManualQuestions = (questions) =>
+  (questions ?? [])
+    .map((question) => ({
+      prompt: question.prompt?.trim() ?? '',
+      options: (question.options ?? []).map((option) => option?.trim() ?? ''),
+      correctIndex: Number.isFinite(question.correctIndex)
+        ? question.correctIndex
+        : 0,
+    }))
+    .filter(
+      (question) =>
+        question.prompt &&
+        question.options.length === 3 &&
+        question.options.every((option) => option),
+    )
+    .map((question) => ({
+      id: question.id || `q-${Math.random().toString(36).slice(2, 10)}`,
+      prompt: question.prompt,
+      options: question.options,
+      correctIndex:
+        question.correctIndex >= 0 && question.correctIndex <= 2
+          ? question.correctIndex
+          : 0,
+    }))
+
+const shuffleQuestionOptions = (question, seed) => {
+  const labeled = question.options.map((option, index) => ({ option, index }))
+  const shuffled = seededShuffle(labeled, seed)
+  const newOptions = shuffled.map((entry) => entry.option)
+  const newCorrectIndex = shuffled.findIndex(
+    (entry) => entry.index === question.correctIndex,
+  )
+
+  return {
+    ...question,
+    options: newOptions,
+    correctIndex: newCorrectIndex === -1 ? 0 : newCorrectIndex,
+  }
+}
 
 export const generateManualQuestionSets = (questions) =>
-  Array.from({ length: 10 }, () => shuffleArray([...questions]))
+  Array.from({ length: 10 }, (_, index) => {
+    const seed = (Date.now() % 100000) + index * 97
+    return seededShuffle(questions, seed)
+      .map((question, qIndex) => shuffleQuestionOptions(question, seed + qIndex))
+  })

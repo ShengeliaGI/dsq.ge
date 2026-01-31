@@ -16,7 +16,7 @@ import {
   TEST_DURATION_SECONDS,
   generateManualQuestionSets,
   generateQuestionSets,
-  parseManualQuestions,
+  normalizeManualQuestions,
 } from './utils/testUtils'
 
 const JOB_TYPE_LABELS = {
@@ -308,6 +308,14 @@ const translations = {
     'company.noTest': 'No test is required for this vacancy type.',
     'company.aiTest': 'AI test (15 questions)',
     'company.manualTest': 'Company written test',
+    'company.manualQuestionCount': 'How many questions?',
+    'company.manualQuestionLabel': 'Question {index}',
+    'company.manualQuestionPlaceholder': 'Write the question here',
+    'company.optionLabel': 'Option {label}',
+    'company.correctAnswer': 'Correct answer',
+    'company.correctOptionA': 'Option A',
+    'company.correctOptionB': 'Option B',
+    'company.correctOptionC': 'Option C',
     'company.manualQuestions': 'Company test questions (15 lines)',
     'company.manualPlaceholder':
       'Write 15 questions, one per line. Format:\nQuestion | Option A | Option B | Option C | Correct (A/B/C)',
@@ -621,6 +629,14 @@ const translations = {
     'company.noTest': 'ამ ვაკანსიისთვის ტესტი საჭირო არ არის.',
     'company.aiTest': 'AI ტესტი (15 კითხვა)',
     'company.manualTest': 'კომპანიის მიერ დაწერილი ტესტი',
+    'company.manualQuestionCount': 'რამდენი კითხვა გჭირდება?',
+    'company.manualQuestionLabel': 'კითხვა {index}',
+    'company.manualQuestionPlaceholder': 'ჩაწერე კითხვა აქ',
+    'company.optionLabel': 'ვარიანტი {label}',
+    'company.correctAnswer': 'სწორი პასუხი',
+    'company.correctOptionA': 'ვარიანტი A',
+    'company.correctOptionB': 'ვარიანტი B',
+    'company.correctOptionC': 'ვარიანტი C',
     'company.manualQuestions': 'კომპანიის კითხვები (15 ხაზი)',
     'company.manualPlaceholder':
       'დაწერე 15 კითხვა, თითო ხაზი. ფორმატი:\nკითხვა | ვარიანტი A | ვარიანტი B | ვარიანტი C | სწორი (A/B/C)',
@@ -732,7 +748,14 @@ function App() {
   const [description, setDescription] = useState('')
   const [minScore, setMinScore] = useState('10')
   const [testMode, setTestMode] = useState('ai')
-  const [manualTest, setManualTest] = useState('')
+  const [manualQuestionCount, setManualQuestionCount] = useState(15)
+  const [manualQuestions, setManualQuestions] = useState(
+    Array.from({ length: 15 }, () => ({
+      prompt: '',
+      options: ['', '', ''],
+      correctIndex: 0,
+    })),
+  )
   const [timeLeft, setTimeLeft] = useState(TEST_DURATION_SECONDS)
   const [showTimeUp, setShowTimeUp] = useState(false)
   const [answers, setAnswers] = useState([])
@@ -1342,14 +1365,14 @@ function App() {
       return
     }
     setIsPublishing(true)
-    const manualQuestions = parseManualQuestions(manualTest)
+    const normalizedManualQuestions = normalizeManualQuestions(manualQuestions)
     const normalizedMinScore = Number.parseInt(minScore, 10)
     const companyLabel = companyName.trim() || t('vacancy.defaults.company')
     const questionSets =
       testMode === 'ai'
         ? generateQuestionSets(selectedJobType, companyLabel)
         : testMode === 'manual'
-          ? generateManualQuestionSets(manualQuestions)
+          ? generateManualQuestionSets(normalizedManualQuestions)
           : []
 
     const newVacancy = {
@@ -1842,8 +1865,10 @@ function App() {
           setMinScore={setMinScore}
           testMode={testMode}
           setTestMode={setTestMode}
-          manualTest={manualTest}
-          setManualTest={setManualTest}
+          manualQuestionCount={manualQuestionCount}
+          setManualQuestionCount={setManualQuestionCount}
+          manualQuestions={manualQuestions}
+          setManualQuestions={setManualQuestions}
           onPublish={handlePublish}
           onBack={() => setPage('vacancies')}
           t={t}
