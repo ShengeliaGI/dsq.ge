@@ -1749,6 +1749,7 @@ function App() {
             setAuthMode('register')
             setPage('auth')
           }}
+          isAuthed={isAuthed}
           t={t}
         />
       )}

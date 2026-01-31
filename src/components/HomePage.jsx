@@ -1,4 +1,4 @@
-const HomePage = ({ onStart, onViewProfile, onRegister, t }) => (
+const HomePage = ({ onStart, onViewProfile, onRegister, isAuthed, t }) => (
   <div className="page">
     <header className="page-header hero">
       <div>
@@ -12,9 +12,11 @@ const HomePage = ({ onStart, onViewProfile, onRegister, t }) => (
           <button className="ghost" type="button" onClick={onViewProfile}>
             {t('home.viewProfile')}
           </button>
-          <button className="ghost" type="button" onClick={onRegister}>
-            {t('home.register')}
-          </button>
+          {!isAuthed && (
+            <button className="ghost" type="button" onClick={onRegister}>
+              {t('home.register')}
+            </button>
+          )}
         </div>
       </div>
       <div className="hero-card">
