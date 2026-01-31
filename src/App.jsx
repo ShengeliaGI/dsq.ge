@@ -873,9 +873,7 @@ function App() {
 
   const fetchThreads = async () => {
     try {
-      const response = await fetch('/api/messages/threads', {
-        headers: getAuthHeaders(),
-      })
+      const response = await authFetch('/api/messages/threads')
       if (response.ok) {
         const data = await response.json()
         setMessageThreads(data)
@@ -937,6 +935,28 @@ function App() {
   const getAuthHeaders = () => {
     const token = localStorage.getItem('auth_token')
     return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
+  const handleUnauthorized = () => {
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
+    setIsAuthed(false)
+    setAuthUser(null)
+    setPage('home')
+  }
+
+  const authFetch = async (url, options = {}) => {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        ...getAuthHeaders(),
+      },
+    })
+    if (response.status === 401) {
+      handleUnauthorized()
+    }
+    return response
   }
 
   const handleAuthSubmit = async ({ name, email, password, role }) => {
@@ -1004,9 +1024,8 @@ function App() {
     )
     const deleteVacancy = async () => {
       try {
-        const response = await fetch(`/api/vacancies/${jobId}`, {
+        const response = await authFetch(`/api/vacancies/${jobId}`, {
           method: 'DELETE',
-          headers: getAuthHeaders(),
         })
         if (!response.ok) {
           throw new Error('Failed to delete vacancy')
@@ -1063,9 +1082,9 @@ function App() {
           : job,
       ),
     )
-    fetch(`/api/vacancies/${selectedJobId}/results`, {
+    authFetch(`/api/vacancies/${selectedJobId}/results`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ result: resultEntry, status: 'waiting', tryAgain: false }),
     }).catch((error) => {
       console.error('Failed to save test result', error)
@@ -1084,9 +1103,9 @@ function App() {
           job.id === selectedJobId ? { ...job, tryAgain: true } : job,
         ),
       )
-      fetch(`/api/vacancies/${selectedJobId}`, {
+      authFetch(`/api/vacancies/${selectedJobId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tryAgain: true }),
       }).catch((error) => {
         console.error('Failed to update vacancy', error)
@@ -1301,9 +1320,9 @@ function App() {
     }
 
     try {
-      const response = await fetch('/api/cvs', {
+      const response = await authFetch('/api/cvs', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submission),
       })
       const saved = await response.json().catch(() => null)
@@ -1322,9 +1341,8 @@ function App() {
   const handleDeleteCv = (cvId) => {
     const removeCv = async () => {
       try {
-        const response = await fetch(`/api/cvs/${cvId}`, {
+        const response = await authFetch(`/api/cvs/${cvId}`, {
           method: 'DELETE',
-          headers: getAuthHeaders(),
         })
         if (!response.ok) {
           throw new Error('Failed to delete CV')
@@ -1352,9 +1370,8 @@ function App() {
       ),
     )
 
-    fetch(`/api/vacancies/${jobId}/results/${resultId}`, {
+    authFetch(`/api/vacancies/${jobId}/results/${resultId}`, {
       method: 'DELETE',
-      headers: getAuthHeaders(),
     }).catch((error) => {
       console.error('Failed to delete result', error)
     })
@@ -1391,9 +1408,9 @@ function App() {
     }
 
     try {
-      const response = await fetch('/api/vacancies', {
+      const response = await authFetch('/api/vacancies', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newVacancy),
       })
       const saved = await response.json().catch(() => null)
@@ -1553,9 +1570,9 @@ function App() {
       return existing
     }
 
-    const response = await fetch('/api/messages/threads', {
+    const response = await authFetch('/api/messages/threads', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jobId, jobTitle, company, candidateEmail, companyEmail }),
     })
 
@@ -1577,9 +1594,9 @@ function App() {
     }
 
     try {
-      const response = await fetch(`/api/messages/threads/${threadId}/messages`, {
+      const response = await authFetch(`/api/messages/threads/${threadId}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender, body: message.trim() }),
       })
       const updated = await response.json().catch(() => null)
@@ -1611,9 +1628,9 @@ function App() {
       ),
     )
 
-    fetch(`/api/vacancies/${jobId}/results/${resultId}`, {
+    authFetch(`/api/vacancies/${jobId}/results/${resultId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     }).catch((error) => {
       console.error('Failed to update result', error)
