@@ -9,6 +9,23 @@ export const COMPANY_JOB_TYPES = [
   'Data Analyst',
   'Product Manager',
   'Cybersecurity',
+  'Administration / Management',
+  'Finance / Accounting / Statistics',
+  'Sales',
+  'PR / Marketing',
+  'General Technical Staff',
+  'Logistics / Transportation / Distribution',
+  'Construction / Repair',
+  'Cleaning',
+  'Security / Safety',
+  'IT / Programming',
+  'Media / Design / Publishing',
+  'Education',
+  'Legal',
+  'Healthcare / Pharmacy',
+  'Beauty / Fashion',
+  'Food Service (HoReCa)',
+  'Other',
 ]
 
 export const TEST_DURATION_SECONDS = 60 * 60

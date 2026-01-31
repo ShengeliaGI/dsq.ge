@@ -31,6 +31,24 @@ const JOB_TYPE_LABELS = {
     'Data Analyst': 'Data Analyst',
     'Product Manager': 'Product Manager',
     Cybersecurity: 'Cybersecurity',
+    'Administration / Management': 'Administration / Management',
+    'Finance / Accounting / Statistics': 'Finance / Accounting / Statistics',
+    Sales: 'Sales',
+    'PR / Marketing': 'PR / Marketing',
+    'General Technical Staff': 'General Technical Staff',
+    'Logistics / Transportation / Distribution':
+      'Logistics / Transportation / Distribution',
+    'Construction / Repair': 'Construction / Repair',
+    Cleaning: 'Cleaning',
+    'Security / Safety': 'Security / Safety',
+    'IT / Programming': 'IT / Programming',
+    'Media / Design / Publishing': 'Media / Design / Publishing',
+    Education: 'Education',
+    Legal: 'Legal',
+    'Healthcare / Pharmacy': 'Healthcare / Pharmacy',
+    'Beauty / Fashion': 'Beauty / Fashion',
+    'Food Service (HoReCa)': 'Food Service (HoReCa)',
+    Other: 'Other',
   },
   ka: {
     'Frontend Developer': 'ფრონტენდ დეველოპერი',
@@ -43,6 +61,24 @@ const JOB_TYPE_LABELS = {
     'Data Analyst': 'დეტა ანალიტიკოსი',
     'Product Manager': 'პროდუქტის მენეჯერი',
     Cybersecurity: 'კიბერუსაფრთხოება',
+    'Administration / Management': 'Administration / Management',
+    'Finance / Accounting / Statistics': 'Finance / Accounting / Statistics',
+    Sales: 'Sales',
+    'PR / Marketing': 'PR / Marketing',
+    'General Technical Staff': 'General Technical Staff',
+    'Logistics / Transportation / Distribution':
+      'Logistics / Transportation / Distribution',
+    'Construction / Repair': 'Construction / Repair',
+    Cleaning: 'Cleaning',
+    'Security / Safety': 'Security / Safety',
+    'IT / Programming': 'IT / Programming',
+    'Media / Design / Publishing': 'Media / Design / Publishing',
+    Education: 'Education',
+    Legal: 'Legal',
+    'Healthcare / Pharmacy': 'Healthcare / Pharmacy',
+    'Beauty / Fashion': 'Beauty / Fashion',
+    'Food Service (HoReCa)': 'Food Service (HoReCa)',
+    Other: 'Other',
   },
 }
 
@@ -94,6 +130,9 @@ const translations = {
     'vacancies.tryAgain': 'Try again',
     'vacancies.delete': 'Delete vacancy',
     'vacancies.deleting': 'Deleting...',
+    'vacancies.filterAll': 'All categories',
+    'vacancies.filterLabel': 'Filter by category',
+    'vacancies.noTest': 'No test required',
 
     'auth.titleLogin': 'Log in',
     'auth.titleRegister': 'Create account',
@@ -229,6 +268,7 @@ const translations = {
     'tests.emptySubtitle': 'Companies will publish tests for each vacancy.',
     'tests.submitted': 'Test submitted',
     'tests.start': 'Start test',
+    'tests.noTest': 'No test',
 
     'test.eyebrow': 'Test',
     'test.titleFallback': 'Role test',
@@ -264,6 +304,8 @@ const translations = {
     'company.description': 'Description',
     'company.descriptionPlaceholder': 'Describe the role, team, and expectations',
     'company.testType': 'Test type',
+    'company.recommended': 'Recommended',
+    'company.noTest': 'No test is required for this vacancy type.',
     'company.aiTest': 'AI test (15 questions)',
     'company.manualTest': 'Company written test',
     'company.manualQuestions': 'Company test questions (15 lines)',
@@ -400,6 +442,9 @@ const translations = {
     'vacancies.tryAgain': 'ხელახლა სცადე',
     'vacancies.delete': 'ვაკანსიის წაშლა',
     'vacancies.deleting': 'ვშლით...',
+    'vacancies.filterAll': 'ყველა კატეგორია',
+    'vacancies.filterLabel': 'კატეგორიის მიხედვით',
+    'vacancies.noTest': 'ტესტი არ არის საჭირო',
 
     'auth.titleLogin': 'შესვლა',
     'auth.titleRegister': 'ანგარიშის შექმნა',
@@ -536,6 +581,7 @@ const translations = {
     'tests.emptySubtitle': 'კომპანიები თითოეულ ვაკანსიაზე ტესტს გამოაქვეყნებენ.',
     'tests.submitted': 'ტესტი გაგზავნილია',
     'tests.start': 'ტესტის დაწყება',
+    'tests.noTest': 'ტესტი არ არის',
 
     'test.eyebrow': 'ტესტი',
     'test.titleFallback': 'როლის ტესტი',
@@ -571,6 +617,8 @@ const translations = {
     'company.description': 'აღწერა',
     'company.descriptionPlaceholder': 'აღწერე როლი, გუნდი და მოლოდინები',
     'company.testType': 'ტესტის ტიპი',
+    'company.recommended': 'რეკომენდებული',
+    'company.noTest': 'ამ ვაკანსიისთვის ტესტი საჭირო არ არის.',
     'company.aiTest': 'AI ტესტი (15 კითხვა)',
     'company.manualTest': 'კომპანიის მიერ დაწერილი ტესტი',
     'company.manualQuestions': 'კომპანიის კითხვები (15 ხაზი)',
@@ -910,19 +958,18 @@ function App() {
   }
 
   const openJobTest = (jobId) => {
+    const job = vacancies.find((item) => item.id === jobId)
+    if (!job?.questionSets?.length || job.testMode === 'none') {
+      return
+    }
     setSelectedJobId(jobId)
     setPage('test')
     setTimeLeft(TEST_DURATION_SECONDS)
     setShowTimeUp(false)
     setAnswers([])
-    const job = vacancies.find((item) => item.id === jobId)
-    if (job?.questionSets?.length) {
-      const randomSet =
-        job.questionSets[Math.floor(Math.random() * job.questionSets.length)]
-      setActiveQuestions(randomSet)
-    } else {
-      setActiveQuestions([])
-    }
+    const randomSet =
+      job.questionSets[Math.floor(Math.random() * job.questionSets.length)]
+    setActiveQuestions(randomSet)
   }
 
   const handleDeleteVacancy = (jobId) => {
@@ -1301,7 +1348,9 @@ function App() {
     const questionSets =
       testMode === 'ai'
         ? generateQuestionSets(selectedJobType, companyLabel)
-        : generateManualQuestionSets(manualQuestions)
+        : testMode === 'manual'
+          ? generateManualQuestionSets(manualQuestions)
+          : []
 
     const newVacancy = {
       id: `job-${Date.now()}`,

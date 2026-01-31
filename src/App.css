@@ -385,6 +385,18 @@ input::placeholder {
   opacity: 1;
 }
 
+.job-card-disabled {
+  opacity: 0.78;
+}
+
+.job-card-disabled .job-main {
+  cursor: not-allowed;
+}
+
+.job-card-disabled .cta {
+  color: rgba(214, 228, 255, 0.6);
+}
+
 .job-main {
   background: none;
   border: none;
@@ -931,6 +943,42 @@ input::placeholder {
   gap: 12px;
 }
 
+.vacancy-filters {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(120, 160, 255, 0.18);
+  background: rgba(9, 18, 40, 0.65);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-chip {
+  border-radius: 999px;
+  border: 1px solid rgba(120, 160, 255, 0.25);
+  padding: 6px 14px;
+  background: rgba(6, 14, 32, 0.8);
+  color: rgba(214, 228, 255, 0.85);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(140, 190, 255, 0.6);
+}
+
+.filter-chip-active {
+  border-color: rgba(120, 200, 255, 0.9);
+  box-shadow: 0 8px 18px rgba(70, 140, 255, 0.25);
+}
+
 .chip {
   border-radius: 999px;
   border: 1px solid rgba(120, 160, 255, 0.35);
@@ -966,6 +1014,24 @@ input::placeholder {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
+}
+
+.test-option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.recommend-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9fd1ff;
+  background: rgba(90, 140, 255, 0.2);
+  border: 1px solid rgba(120, 160, 255, 0.4);
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 
 .helper {

@@ -31,6 +31,8 @@ const TestsPage = ({
         <div className="grid">
           {vacancies.map((job) => {
             const alreadyApplied = appliedJobIds.has(job.id)
+            const hasTest =
+              job.testMode !== 'none' && (job.questionSets ?? []).length > 0
             return (
               <div key={job.id} className="job-card">
                 <div>
@@ -45,10 +47,14 @@ const TestsPage = ({
                 <button
                   className="primary"
                   type="button"
-                  disabled={!currentUserEmail || alreadyApplied}
+                  disabled={!currentUserEmail || alreadyApplied || !hasTest}
                   onClick={() => onOpenJobTest(job.id)}
                 >
-                  {alreadyApplied ? t('tests.submitted') : t('tests.start')}
+                  {alreadyApplied
+                    ? t('tests.submitted')
+                    : hasTest
+                      ? t('tests.start')
+                      : t('tests.noTest')}
                 </button>
               </div>
             )

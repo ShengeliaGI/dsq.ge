@@ -32,6 +32,7 @@ const CompanyPage = ({
   isPublishing,
 }) => {
   const manualCount = parseManualQuestions(manualTest).length
+  const isOtherVacancy = selectedJobType === 'Other'
 
   const hasResults = vacancies.some((job) => (job.testResults ?? []).length > 0)
   const [expandedResultId, setExpandedResultId] = useState(null)
@@ -63,7 +64,15 @@ const CompanyPage = ({
                 className={
                   jobTypeOption === selectedJobType ? 'chip chip-active' : 'chip'
                 }
-                onClick={() => setSelectedJobType(jobTypeOption)}
+                onClick={() => {
+                  setSelectedJobType(jobTypeOption)
+                  if (jobTypeOption === 'Other') {
+                    setTestMode('none')
+                    setManualTest('')
+                  } else if (testMode === 'none') {
+                    setTestMode('ai')
+                  }
+                }}
               >
                 {getJobTitleLabel(jobTypeOption)}
               </button>
@@ -135,24 +144,38 @@ const CompanyPage = ({
             </label>
             <label className="full-width">
               {t('company.testType')}
-              <div className="toggle-row">
-                <button
-                  className={testMode === 'ai' ? 'chip chip-active' : 'chip'}
-                  type="button"
-                  onClick={() => setTestMode('ai')}
-                >
-                  {t('company.aiTest')}
-                </button>
-                <button
-                  className={
-                    testMode === 'manual' ? 'chip chip-active' : 'chip'
-                  }
-                  type="button"
-                  onClick={() => setTestMode('manual')}
-                >
-                  {t('company.manualTest')}
-                </button>
-              </div>
+              {isOtherVacancy ? (
+                <p className="muted">{t('company.noTest')}</p>
+              ) : (
+                <div className="toggle-row">
+                  <div className="test-option">
+                    <span className="recommend-badge">
+                      {t('company.recommended')}
+                    </span>
+                    <button
+                      className={testMode === 'ai' ? 'chip chip-active' : 'chip'}
+                      type="button"
+                      onClick={() => setTestMode('ai')}
+                    >
+                      {t('company.aiTest')}
+                    </button>
+                  </div>
+                  <div className="test-option">
+                    <span className="recommend-badge">
+                      {t('company.recommended')}
+                    </span>
+                    <button
+                      className={
+                        testMode === 'manual' ? 'chip chip-active' : 'chip'
+                      }
+                      type="button"
+                      onClick={() => setTestMode('manual')}
+                    >
+                      {t('company.manualTest')}
+                    </button>
+                  </div>
+                </div>
+              )}
             </label>
             {testMode === 'manual' && (
               <label className="full-width">
