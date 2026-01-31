@@ -1385,9 +1385,10 @@ input::placeholder {
   border-radius: 20px;
   border: 1px solid rgba(120, 160, 255, 0.18);
   background: rgba(6, 12, 28, 0.75);
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  max-height: 560px;
+  height: 560px;
   overflow: hidden;
   box-shadow: 0 20px 44px rgba(4, 8, 18, 0.35);
 }
@@ -1400,7 +1401,8 @@ input::placeholder {
   border-radius: 16px;
   background: rgba(8, 16, 35, 0.55);
   border: 1px solid rgba(120, 160, 255, 0.12);
-  max-height: 320px;
+  flex: 1;
+  min-height: 0;
 }
 
 .message-bubble {
@@ -1576,7 +1578,7 @@ input::placeholder {
   }
   .thread-list,
   .thread-panel {
-    max-height: none;
+    height: 520px;
   }
 }
 
