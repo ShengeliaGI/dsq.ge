@@ -1739,6 +1739,7 @@ function App() {
           }}
         />
       )}
+      <main className="main-content" id="main-content">
       {page === 'home' && (
         <HomePage
           onStart={() => setPage('vacancies')}
@@ -1984,6 +1985,7 @@ function App() {
           t={t}
         />
       )}
+      </main>
       {authModal.open && (
         <div className="modal-backdrop" role="dialog" aria-modal="true">
           <div className="modal">

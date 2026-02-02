@@ -20,7 +20,7 @@ const HomePage = ({ onStart, onViewProfile, onRegister, isAuthed, t }) => (
         </div>
       </div>
       <div className="hero-card">
-        <h3>{t('home.howItWorks')}</h3>
+        <h2>{t('home.howItWorks')}</h2>
         <ol>
           <li>{t('home.step1')}</li>
           <li>{t('home.step2')}</li>
@@ -32,15 +32,15 @@ const HomePage = ({ onStart, onViewProfile, onRegister, isAuthed, t }) => (
 
     <section className="feature-grid">
       <article className="feature-card">
-        <h4>{t('home.quickLinksTitle')}</h4>
+        <h3>{t('home.quickLinksTitle')}</h3>
         <p className="muted">{t('home.quickLinksDesc')}</p>
       </article>
       <article className="feature-card">
-        <h4>{t('home.trackerTitle')}</h4>
+        <h3>{t('home.trackerTitle')}</h3>
         <p className="muted">{t('home.trackerDesc')}</p>
       </article>
       <article className="feature-card">
-        <h4>{t('home.messagingTitle')}</h4>
+        <h3>{t('home.messagingTitle')}</h3>
         <p className="muted">{t('home.messagingDesc')}</p>
       </article>
     </section>
