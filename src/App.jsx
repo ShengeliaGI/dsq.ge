@@ -99,6 +99,9 @@ const translations = {
     'nav.toggle': 'Toggle navigation',
     'nav.switchToEnglish': 'Switch to English',
     'nav.switchToGeorgian': 'Switch to Georgian',
+    'nav.toggleTheme': 'Toggle theme',
+    'nav.themeLight': 'Light',
+    'nav.themeDark': 'Dark',
 
     'home.title': 'Hire fast. Apply smarter.',
     'home.subtitle':
@@ -420,6 +423,9 @@ const translations = {
     'nav.toggle': 'ნავიგაციის გადართვა',
     'nav.switchToEnglish': 'ინგლისურზე გადართვა',
     'nav.switchToGeorgian': 'ქართულზე გადართვა',
+    'nav.toggleTheme': 'თემის გადართვა',
+    'nav.themeLight': 'ღია',
+    'nav.themeDark': 'მუქი',
 
     'home.title': 'დასაქმდი მარტივად, დარეგისტრირდი სწრაფად.',
     'home.subtitle':
@@ -740,6 +746,10 @@ function App() {
     const stored = localStorage.getItem('app_language')
     return stored || 'ka'
   })
+  const [theme, setTheme] = useState(() => {
+    const stored = localStorage.getItem('app_theme')
+    return stored || 'dark'
+  })
   const [selectedJobId, setSelectedJobId] = useState(null)
   const [selectedJobType, setSelectedJobType] = useState('Frontend Developer')
   const [vacancies, setVacancies] = useState([])
@@ -837,6 +847,11 @@ function App() {
     localStorage.setItem('app_language', language)
   }, [language])
 
+  useEffect(() => {
+    localStorage.setItem('app_theme', theme)
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
+
   const t = (key, vars = {}) => {
     const template = translations[language]?.[key] ?? translations.en?.[key] ?? key
     return template.replace(/\{(\w+)\}/g, (_, token) =>
@@ -865,6 +880,9 @@ function App() {
 
   const handleToggleLanguage = () =>
     setLanguage((prev) => (prev === 'ka' ? 'en' : 'ka'))
+
+  const handleToggleTheme = () =>
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
 
   const selectedJob = useMemo(
     () => vacancies.find((job) => job.id === selectedJobId) ?? null,
@@ -1727,6 +1745,8 @@ function App() {
           isAuthed={isAuthed}
           language={language}
           onToggleLanguage={handleToggleLanguage}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
           t={t}
           getRoleModeLabel={getRoleModeLabel}
           onAuthRegister={() => {

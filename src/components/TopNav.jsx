@@ -11,6 +11,8 @@ const TopNav = ({
   onAuthLogin,
   language,
   onToggleLanguage,
+  theme,
+  onToggleTheme,
   t,
   getRoleModeLabel,
 }) => {
@@ -138,6 +140,15 @@ const TopNav = ({
           </div>
         )}
         <div className="nav-actions">
+          <button
+            className="theme-toggle"
+            type="button"
+            onClick={onToggleTheme}
+            aria-label={t('nav.toggleTheme')}
+            title={t('nav.toggleTheme')}
+          >
+            {theme === 'dark' ? t('nav.themeLight') : t('nav.themeDark')}
+          </button>
           <button
             className="language-toggle"
             type="button"
