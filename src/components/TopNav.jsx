@@ -147,7 +147,47 @@ const TopNav = ({
             aria-label={t('nav.toggleTheme')}
             title={t('nav.toggleTheme')}
           >
-            {theme === 'dark' ? t('nav.themeLight') : t('nav.themeDark')}
+            {theme === 'dark' ? (
+              <>
+                <svg
+                  className="theme-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 3v2" />
+                  <path d="M12 19v2" />
+                  <path d="M4.22 4.22l1.42 1.42" />
+                  <path d="M18.36 18.36l1.42 1.42" />
+                  <path d="M3 12h2" />
+                  <path d="M19 12h2" />
+                  <path d="M4.22 19.78l1.42-1.42" />
+                  <path d="M18.36 5.64l1.42-1.42" />
+                </svg>
+                <span className="sr-only">{t('nav.themeLight')}</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  className="theme-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+                </svg>
+                <span className="sr-only">{t('nav.themeDark')}</span>
+              </>
+            )}
           </button>
           <button
             className="language-toggle"
