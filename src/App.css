@@ -70,9 +70,11 @@
   gap: 10px;
   align-items: center;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   flex: 1;
   justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .nav-content::-webkit-scrollbar {
@@ -127,6 +129,7 @@
   font-weight: 600;
   text-align: center;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .nav-button.active {
