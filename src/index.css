@@ -2,12 +2,27 @@
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #eaf0ff;
-  background-color: #050b1f;
+  color: #f7f1e6;
+  background-color: #0f1114;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --bg-0: #0f1114;
+  --bg-1: rgba(18, 20, 26, 0.85);
+  --bg-2: rgba(22, 24, 30, 0.75);
+  --bg-3: rgba(16, 18, 24, 0.6);
+  --bg-4: rgba(24, 26, 32, 0.9);
+  --border-1: rgba(242, 196, 138, 0.25);
+  --border-2: rgba(242, 196, 138, 0.45);
+  --border-3: rgba(242, 196, 138, 0.65);
+  --accent-1: #f2c48a;
+  --accent-2: #e9a16f;
+  --accent-3: #7bc5a4;
+  --text-strong: #f7f1e6;
+  --text: rgba(245, 238, 226, 0.9);
+  --text-muted: rgba(245, 238, 226, 0.7);
+  --text-soft: rgba(245, 238, 226, 0.55);
 }
 
 * {
@@ -18,15 +33,15 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 20%, rgba(84, 122, 255, 0.25), transparent 35%),
-    radial-gradient(circle at 90% 10%, rgba(80, 200, 255, 0.2), transparent 40%),
-    radial-gradient(circle at 50% 120%, rgba(22, 36, 90, 0.8), transparent 50%),
-    #050b1f;
+  background: radial-gradient(circle at 12% 18%, rgba(242, 196, 138, 0.18), transparent 40%),
+    radial-gradient(circle at 88% 12%, rgba(123, 197, 164, 0.16), transparent 42%),
+    radial-gradient(circle at 50% 120%, rgba(26, 28, 34, 0.9), transparent 55%),
+    var(--bg-0);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(120, 160, 255, 0.6) rgba(6, 12, 30, 0.9);
+  scrollbar-color: rgba(242, 196, 138, 0.7) rgba(16, 18, 24, 0.95);
 }
 
 *::-webkit-scrollbar {
@@ -35,18 +50,18 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(6, 12, 30, 0.9);
+  background: rgba(16, 18, 24, 0.95);
   border-radius: 999px;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(120, 160, 255, 0.9), rgba(90, 200, 255, 0.8));
+  background: linear-gradient(180deg, rgba(242, 196, 138, 0.95), rgba(233, 158, 116, 0.85));
   border-radius: 999px;
-  border: 2px solid rgba(6, 12, 30, 0.9);
+  border: 2px solid rgba(16, 18, 24, 0.95);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(150, 190, 255, 1), rgba(110, 220, 255, 0.95));
+  background: linear-gradient(180deg, rgba(248, 210, 162, 1), rgba(242, 180, 130, 0.98));
 }
 
 body::before {
@@ -54,11 +69,11 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1px 1px at 70% 20%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1px 1px at 40% 80%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 80% 70%, rgba(255, 255, 255, 0.5), transparent);
-  opacity: 0.6;
+  background-image: radial-gradient(1px 1px at 20% 30%, rgba(248, 237, 220, 0.55), transparent),
+    radial-gradient(1px 1px at 70% 20%, rgba(248, 237, 220, 0.35), transparent),
+    radial-gradient(1px 1px at 40% 80%, rgba(248, 237, 220, 0.28), transparent),
+    radial-gradient(1px 1px at 80% 70%, rgba(248, 237, 220, 0.45), transparent);
+  opacity: 0.55;
   z-index: 0;
 }
 

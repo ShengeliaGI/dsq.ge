@@ -1526,6 +1526,274 @@ input::placeholder {
   gap: 12px;
 }
 
+/* Warm theme overrides */
+.top-nav,
+.nav-burger,
+.language-toggle,
+.auth-card,
+.metric-card,
+.admin-panel,
+.job-card,
+.empty-state,
+.company-panel,
+.result-card,
+.result-item,
+.result-details,
+.cv-hero-card,
+.cv-panel,
+.cv-section-card,
+.cv-list-card,
+.cv-card,
+.cv-details,
+.vacancy-filters,
+.manual-builder,
+.manual-card,
+.test-panel,
+.hero-card,
+.role-card,
+.feature-card,
+.profile-card,
+.notification-item,
+.option-item,
+.thread-list,
+.thread-card,
+.thread-panel,
+.message-list,
+.modal,
+.question-list li,
+.answer-option,
+.file-drop,
+.file-button,
+.icon-button,
+.cv-tag,
+.cv-avatar-circle {
+  background: var(--bg-1);
+  border-color: var(--border-1);
+}
+
+.nav-brand,
+.nav-button,
+.nav-role,
+.job-card,
+.file-drop-title,
+.thread-card h4,
+.profile-page,
+.profile-page .muted,
+.profile-page p,
+.profile-page h1,
+.profile-page h2,
+.profile-page h3,
+.profile-page h4,
+.profile-page h5,
+.profile-page h6,
+.profile-page span,
+.profile-page strong,
+.profile-page li,
+.profile-page label {
+  color: var(--text-strong);
+}
+
+.nav-burger span {
+  background: var(--text-strong);
+}
+
+.nav-button.active {
+  background: rgba(242, 196, 138, 0.18);
+  border-color: var(--border-2);
+}
+
+.app-shell::before {
+  background: radial-gradient(circle at 15% 15%, rgba(242, 196, 138, 0.18), transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(123, 197, 164, 0.16), transparent 40%);
+}
+
+.auth-card {
+  background: var(--bg-1);
+  border-color: var(--border-1);
+  box-shadow: 0 20px 60px rgba(8, 9, 12, 0.55);
+}
+
+.auth-card::after {
+  background: radial-gradient(circle, rgba(242, 196, 138, 0.25), transparent 70%);
+}
+
+.eyebrow,
+.cta,
+.link {
+  color: var(--accent-1);
+}
+
+.muted,
+.meta,
+.job-description,
+.file-name,
+.cv-tips,
+.file-drop-sub,
+.helper,
+.nav-role,
+.thread-card p,
+.message-bubble span,
+.cv-list-card p,
+.result-answer-missing,
+.file-name {
+  color: var(--text-muted);
+}
+
+label {
+  color: var(--text-muted);
+}
+
+input,
+select,
+textarea,
+.message-composer input {
+  background: var(--bg-3);
+  border-color: var(--border-1);
+  color: var(--text-strong);
+}
+
+input::placeholder {
+  color: var(--text-soft);
+}
+
+.primary {
+  background: linear-gradient(120deg, #f2c48a, #f08d7e);
+  color: #1a1310;
+}
+
+.primary:hover {
+  box-shadow: 0 12px 25px rgba(242, 196, 138, 0.35);
+}
+
+.ghost,
+.chip,
+.filter-chip,
+.file-button,
+.icon-button,
+.cv-tag {
+  border-color: var(--border-2);
+  color: var(--text-strong);
+  background: var(--bg-2);
+}
+
+.filter-chip:hover,
+.chip:hover {
+  border-color: rgba(248, 210, 162, 0.7);
+}
+
+.filter-chip-active,
+.chip-active {
+  border-color: var(--border-3);
+  box-shadow: 0 8px 18px rgba(214, 152, 112, 0.25);
+}
+
+.job-card::after {
+  background: linear-gradient(120deg, rgba(242, 196, 138, 0.08), transparent 55%);
+}
+
+.status-chip {
+  background: rgba(123, 197, 164, 0.18);
+  color: #c9f1da;
+}
+
+.status-chip.waiting,
+.status-chip.pending {
+  background: rgba(242, 196, 138, 0.2);
+  color: #f5d7b2;
+}
+
+.status-chip.warning,
+.status-chip.submitted {
+  background: rgba(233, 158, 116, 0.2);
+  color: #f2c1a2;
+}
+
+.status-chip.interview,
+.status-chip.accepted {
+  background: rgba(123, 197, 164, 0.22);
+  color: #c9f1da;
+}
+
+.status-chip.rejected {
+  background: rgba(255, 137, 150, 0.2);
+  color: #ffd0d7;
+}
+
+.danger {
+  border-color: rgba(255, 140, 150, 0.45);
+  color: #ffd0d7;
+  background: rgba(40, 16, 18, 0.72);
+}
+
+.danger:hover {
+  border-color: rgba(255, 160, 170, 0.85);
+}
+
+.result-score,
+.timer,
+.cv-step span,
+.role-card.active {
+  background: rgba(242, 196, 138, 0.2);
+  color: #f2e6d4;
+}
+
+.result-score-low {
+  background: rgba(255, 137, 150, 0.2);
+  color: #ffd0d7;
+  border-color: rgba(255, 137, 150, 0.5);
+}
+
+.message-bubble {
+  background: rgba(242, 196, 138, 0.12);
+  box-shadow: 0 10px 20px rgba(10, 10, 12, 0.2);
+}
+
+.message-bubble.company {
+  border-color: rgba(242, 196, 138, 0.4);
+  background: rgba(242, 196, 138, 0.18);
+}
+
+.message-bubble.applicant {
+  border-color: rgba(123, 197, 164, 0.45);
+  background: rgba(123, 197, 164, 0.2);
+}
+
+.message-composer input:focus {
+  border-color: var(--border-3);
+  box-shadow: 0 0 0 3px rgba(242, 196, 138, 0.22);
+}
+
+.thread-card.active {
+  border-color: var(--border-3);
+  background: linear-gradient(135deg, rgba(242, 196, 138, 0.22), rgba(123, 197, 164, 0.12));
+  box-shadow: 0 16px 30px rgba(20, 18, 16, 0.3);
+}
+
+.thread-card:hover {
+  border-color: var(--border-2);
+  box-shadow: 0 10px 22px rgba(20, 18, 16, 0.25);
+}
+
+.thread-list::-webkit-scrollbar-track,
+.message-list::-webkit-scrollbar-track {
+  background: rgba(18, 20, 26, 0.6);
+}
+
+.thread-list::-webkit-scrollbar-thumb,
+.message-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(120deg, rgba(242, 196, 138, 0.6), rgba(233, 158, 116, 0.6));
+  border: 2px solid rgba(18, 20, 26, 0.6);
+}
+
+.nav-badge {
+  background: rgba(255, 140, 150, 0.85);
+  color: #1b1310;
+}
+
+.modal-backdrop {
+  background: rgba(12, 12, 14, 0.72);
+}
+
 @media (max-width: 900px) {
   .app-shell {
     padding: 32px clamp(16px, 4vw, 36px) 48px;
