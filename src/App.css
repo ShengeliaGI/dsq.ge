@@ -5,33 +5,34 @@
 .app-shell {
   position: relative;
   min-height: 100vh;
-  padding: 32px clamp(18px, 4vw, 48px) 48px;
+  padding: 32px clamp(18px, 4vw, 48px) 56px;
+  max-width: 1240px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
-  gap: 28px;
+  gap: 24px;
 }
 
 .top-nav {
   position: sticky;
-  top: 24px;
+  top: 18px;
   z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 22px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 20px;
   background: rgba(8, 16, 36, 0.75);
   border: 1px solid rgba(120, 160, 255, 0.25);
   backdrop-filter: blur(14px);
-  margin-bottom: 0;
+  margin-bottom: 8px;
 }
 
 .nav-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  padding: 4px 4px 8px;
+  padding: 0;
 }
 
 .nav-brand {
@@ -65,13 +66,14 @@
 .nav-content {
   display: flex;
   gap: 10px;
-  align-items: stretch;
-  flex-direction: column;
-  flex-wrap: nowrap;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex: 1;
 }
 
 .nav-actions {
-  margin-left: 0;
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -103,9 +105,9 @@
 }
 
 .nav-auth {
-  display: grid;
+  display: inline-flex;
   gap: 10px;
-  align-items: stretch;
+  align-items: center;
 }
 
 .nav-button {
@@ -116,7 +118,7 @@
   color: #d6e4ff;
   cursor: pointer;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
 }
 
 .nav-button.active {
@@ -1848,7 +1850,6 @@ input::placeholder {
 @media (max-width: 900px) {
   .app-shell {
     padding: 24px clamp(16px, 4vw, 36px) 40px;
-    grid-template-columns: 1fr;
   }
   .top-nav {
     width: 100%;
@@ -1857,6 +1858,8 @@ input::placeholder {
     gap: 8px;
     position: static;
     margin-bottom: 16px;
+    flex-direction: column;
+    align-items: stretch;
   }
   .nav-burger {
     display: grid;
