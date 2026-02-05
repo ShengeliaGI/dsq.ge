@@ -19,13 +19,14 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 20px;
-  background: rgba(8, 16, 36, 0.75);
-  border: 1px solid rgba(120, 160, 255, 0.25);
-  backdrop-filter: blur(14px);
-  margin-bottom: 8px;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--bg-1);
+  border: 1px solid var(--border-1);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(10, 12, 16, 0.28);
+  margin-bottom: 10px;
 }
 
 .nav-header {
@@ -37,8 +38,9 @@
 
 .nav-brand {
   font-weight: 700;
-  color: #eaf0ff;
+  color: var(--text-strong);
   letter-spacing: 0.04em;
+  font-size: 0.95rem;
 }
 
 .nav-burger {
@@ -68,10 +70,9 @@
   gap: 10px;
   align-items: center;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   flex: 1;
-  overflow-x: auto;
-  scrollbar-width: none;
+  justify-content: center;
 }
 
 .nav-content::-webkit-scrollbar {
@@ -89,13 +90,13 @@
   width: 40px;
   height: 40px;
   border-radius: 999px;
-  border: 1px solid rgba(120, 160, 255, 0.4);
-  background: rgba(8, 16, 36, 0.85);
-  color: #eaf0ff;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--text-strong);
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(5, 10, 30, 0.3);
+  box-shadow: 0 8px 18px rgba(8, 9, 12, 0.2);
 }
 
 .language-toggle:hover {
@@ -119,17 +120,18 @@
 .nav-button {
   border: 1px solid transparent;
   border-radius: 999px;
-  padding: 10px 18px;
+  padding: 8px 14px;
   background: transparent;
-  color: #d6e4ff;
+  color: var(--text);
   cursor: pointer;
   font-weight: 600;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .nav-button.active {
-  background: rgba(90, 140, 255, 0.2);
-  border-color: rgba(120, 160, 255, 0.5);
+  background: rgba(242, 196, 138, 0.18);
+  border-color: var(--border-2);
 }
 
 .app-shell::before {
@@ -1177,9 +1179,13 @@ input::placeholder {
 
 .nav-role {
   align-self: center;
-  color: rgba(214, 228, 255, 0.7);
-  font-size: 0.85rem;
-  margin-left: 8px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-left: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-1);
+  background: var(--bg-2);
 }
 
 .hero {
@@ -1617,7 +1623,7 @@ input::placeholder {
 
 .theme-toggle {
   height: 40px;
-  padding: 0 14px;
+  padding: 0;
   border-radius: 999px;
   border: 1px solid var(--border-2);
   background: var(--bg-2);
