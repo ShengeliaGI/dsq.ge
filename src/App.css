@@ -27,6 +27,8 @@
   backdrop-filter: blur(16px);
   box-shadow: 0 16px 40px rgba(10, 12, 16, 0.28);
   margin-bottom: 10px;
+  height: 64px;
+  max-height: 64px;
 }
 
 .nav-header {
@@ -34,6 +36,7 @@
   align-items: center;
   gap: 12px;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .nav-brand {
@@ -75,6 +78,7 @@
   justify-content: center;
   overflow-x: auto;
   scrollbar-width: none;
+  min-width: 0;
 }
 
 .nav-content::-webkit-scrollbar {
@@ -86,6 +90,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .language-toggle {
@@ -1189,6 +1194,7 @@ input::placeholder {
   border-radius: 999px;
   border: 1px solid var(--border-1);
   background: var(--bg-2);
+  white-space: nowrap;
 }
 
 .hero {
