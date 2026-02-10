@@ -8,6 +8,7 @@ const VacanciesPage = ({
   onLogout,
   currentUserEmail,
   isAuthed,
+  isAdmin,
   t,
   getStatusLabel,
   getJobTitleLabel,
@@ -98,6 +99,11 @@ const VacanciesPage = ({
                 const isDeleting = deletingVacancyIds.includes(job.id)
                 const hasTest =
                   job.testMode !== 'none' && (job.questionSets ?? []).length > 0
+                const canDelete =
+                  isAdmin ||
+                  (isAuthed &&
+                    job.createdBy?.email?.toLowerCase() ===
+                      currentUserEmail?.toLowerCase())
                 return (
                   <div key={job.id} className="job-card vacancy-card">
                     <button
@@ -137,14 +143,18 @@ const VacanciesPage = ({
                         {t('vacancies.tryAgain')}
                       </div>
                     )}
-                    <button
-                      className="danger"
-                      type="button"
-                      onClick={() => onDeleteVacancy(job.id)}
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? t('vacancies.deleting') : t('vacancies.delete')}
-                    </button>
+                    {canDelete && (
+                      <button
+                        className="danger"
+                        type="button"
+                        onClick={() => onDeleteVacancy(job.id)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting
+                          ? t('vacancies.deleting')
+                          : t('vacancies.delete')}
+                      </button>
+                    )}
                   </div>
                 )
               })}

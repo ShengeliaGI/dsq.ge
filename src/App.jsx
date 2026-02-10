@@ -1135,6 +1135,14 @@ function App() {
   }
 
   const handleDeleteVacancy = (jobId) => {
+    const job = vacancies.find((item) => item.id === jobId)
+    const canDelete =
+      isAdmin ||
+      (job?.createdBy?.email &&
+        job.createdBy.email.toLowerCase() === currentUserEmail)
+    if (!canDelete) {
+      return
+    }
     if (deletingVacancyIds.includes(jobId)) {
       return
     }
@@ -1527,6 +1535,9 @@ function App() {
       id: `job-${Date.now()}`,
       title: selectedJobType,
       company: companyLabel,
+      createdBy: authUser
+        ? { name: authUser.name, email: authUser.email }
+        : null,
       location: location.trim() || t('vacancy.defaults.remote'),
       type: jobType.trim() || t('vacancy.defaults.notSpecified'),
       salary: salary.trim() || t('vacancy.defaults.notSpecified'),
@@ -1940,6 +1951,7 @@ function App() {
           }}
           currentUserEmail={currentUserEmail}
           isAuthed={isAuthed}
+          isAdmin={isAdmin}
           t={t}
           getStatusLabel={getStatusLabel}
           getJobTitleLabel={getJobTitleLabel}
