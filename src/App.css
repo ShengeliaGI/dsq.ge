@@ -386,7 +386,7 @@ input::placeholder {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-top: -12px;
+  margin-top: 8px;
 }
 
 .header-left {
