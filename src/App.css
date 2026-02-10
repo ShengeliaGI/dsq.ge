@@ -256,6 +256,10 @@
   opacity: 0.8;
 }
 
+.auth-header {
+  text-align: center;
+}
+
 .auth-header h1 {
   margin: 8px 0 6px;
   font-size: clamp(1.8rem, 3vw, 2.5rem);
