@@ -556,10 +556,17 @@ input::placeholder {
 .vacancy-detail-card {
   padding: 22px;
   border-radius: 18px;
-  border: 1px solid rgba(120, 160, 255, 0.25);
-  background: rgba(9, 18, 40, 0.85);
+  border: 1px solid var(--border-1);
+  background: var(--bg-1);
   display: grid;
   gap: 16px;
+  box-shadow: 0 18px 36px rgba(8, 9, 12, 0.25);
+}
+
+[data-theme='light'] .vacancy-detail-card {
+  background: var(--bg-2);
+  border-color: var(--border-2);
+  box-shadow: 0 14px 28px rgba(48, 36, 28, 0.12);
 }
 
 .vacancy-detail-meta {
@@ -567,7 +574,7 @@ input::placeholder {
   gap: 12px;
   flex-wrap: wrap;
   font-size: 0.9rem;
-  color: rgba(214, 228, 255, 0.75);
+  color: var(--text-muted);
 }
 
 .vacancy-detail-description h3 {
@@ -576,7 +583,7 @@ input::placeholder {
 
 .vacancy-detail-description p {
   margin: 0;
-  color: rgba(214, 228, 255, 0.85);
+  color: var(--text);
 }
 
 .vacancy-detail-footer {
