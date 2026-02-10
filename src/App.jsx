@@ -318,6 +318,8 @@ const translations = {
     'company.locationPlaceholder': 'Tbilisi, GE',
     'company.minScore': 'Minimum score required',
     'company.minScorePlaceholder': '10',
+    'company.descriptionTitle': 'Description title',
+    'company.descriptionTitlePlaceholder': 'Role overview',
     'company.description': 'Description',
     'company.descriptionPlaceholder': 'Describe the role, team, and expectations',
     'company.testType': 'Test type',
@@ -428,6 +430,7 @@ const translations = {
     'vacancy.defaults.company': 'Company',
     'vacancy.defaults.remote': 'Remote',
     'vacancy.defaults.notSpecified': 'Not specified',
+    'vacancy.defaults.descriptionTitle': 'Role overview',
     'vacancy.defaults.noDescription': 'No description added yet.',
   },
   ka: {
@@ -665,6 +668,8 @@ const translations = {
     'company.locationPlaceholder': 'თბილისი, GE',
     'company.minScore': 'საჭირო მინიმალური ქულა',
     'company.minScorePlaceholder': '10',
+    'company.descriptionTitle': 'აღწერის სათაური',
+    'company.descriptionTitlePlaceholder': 'როლის მიმოხილვა',
     'company.description': 'აღწერა',
     'company.descriptionPlaceholder': 'აღწერე როლი, გუნდი და მოლოდინები',
     'company.testType': 'ტესტის ტიპი',
@@ -775,6 +780,7 @@ const translations = {
     'vacancy.defaults.company': 'კომპანია',
     'vacancy.defaults.remote': 'დისტანციური',
     'vacancy.defaults.notSpecified': 'არ არის მითითებული',
+    'vacancy.defaults.descriptionTitle': 'როლის მიმოხილვა',
     'vacancy.defaults.noDescription': 'აღწერა ჯერ არ არის დამატებული.',
   },
 }
@@ -802,6 +808,7 @@ function App() {
   const [jobType, setJobType] = useState('')
   const [salary, setSalary] = useState('')
   const [location, setLocation] = useState('')
+  const [descriptionTitle, setDescriptionTitle] = useState('')
   const [description, setDescription] = useState('')
   const [minScore, setMinScore] = useState('10')
   const [testMode, setTestMode] = useState('ai')
@@ -1523,6 +1530,8 @@ function App() {
       location: location.trim() || t('vacancy.defaults.remote'),
       type: jobType.trim() || t('vacancy.defaults.notSpecified'),
       salary: salary.trim() || t('vacancy.defaults.notSpecified'),
+      descriptionTitle:
+        descriptionTitle.trim() || t('vacancy.defaults.descriptionTitle'),
       description: description.trim() || t('vacancy.defaults.noDescription'),
       minScore: Number.isFinite(normalizedMinScore) ? normalizedMinScore : 0,
       testMode,
@@ -2048,6 +2057,8 @@ function App() {
           setSalary={setSalary}
           location={location}
           setLocation={setLocation}
+          descriptionTitle={descriptionTitle}
+          setDescriptionTitle={setDescriptionTitle}
           description={description}
           setDescription={setDescription}
           minScore={minScore}

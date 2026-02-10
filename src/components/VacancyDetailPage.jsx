@@ -30,6 +30,9 @@ const VacancyDetailPage = ({
   const hasTest =
     vacancy.testMode !== 'none' && (vacancy.questionSets ?? []).length > 0
 
+  const descriptionTitle =
+    vacancy.descriptionTitle?.trim() || t('vacancy.defaults.descriptionTitle')
+
   const descriptionLines = vacancy.description
     ? vacancy.description
         .trim()
@@ -86,7 +89,7 @@ const VacancyDetailPage = ({
             </div>
           </div>
           <div className="vacancy-detail-description">
-            <h3>{t('vacancyDetail.description')}</h3>
+            <h3>{descriptionTitle}</h3>
             {descriptionLines.length > 0 ? (
               <p>
                 {descriptionLines.map((line, index) => (

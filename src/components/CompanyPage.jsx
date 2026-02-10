@@ -14,6 +14,8 @@ const CompanyPage = ({
   setSalary,
   location,
   setLocation,
+  descriptionTitle,
+  setDescriptionTitle,
   description,
   setDescription,
   minScore,
@@ -229,6 +231,15 @@ const CompanyPage = ({
                 placeholder={t('company.minScorePlaceholder')}
                 value={minScore}
                 onChange={(event) => setMinScore(event.target.value)}
+              />
+            </label>
+            <label className="full-width">
+              {t('company.descriptionTitle')}
+              <input
+                type="text"
+                placeholder={t('company.descriptionTitlePlaceholder')}
+                value={descriptionTitle}
+                onChange={(event) => setDescriptionTitle(event.target.value)}
               />
             </label>
             <label className="full-width">
