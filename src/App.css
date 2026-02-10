@@ -177,6 +177,14 @@
   box-shadow: 0 8px 18px rgba(8, 9, 12, 0.2);
 }
 
+[data-theme='light'] .language-toggle,
+[data-theme='light'] .language-toggle:hover,
+[data-theme='light'] .theme-toggle,
+[data-theme='light'] .theme-toggle:hover,
+[data-theme='light'] .nav-avatar-button {
+  box-shadow: none;
+}
+
 .nav-avatar-icon {
   width: 20px;
   height: 20px;
