@@ -12,6 +12,7 @@ import HomePage from './components/HomePage'
 import ProfilePage from './components/ProfilePage'
 import MessagesPage from './components/MessagesPage'
 import TestsPage from './components/TestsPage'
+import VacancyDetailPage from './components/VacancyDetailPage'
 import {
   TEST_DURATION_SECONDS,
   generateManualQuestionSets,
@@ -123,7 +124,7 @@ const translations = {
 
     'vacancies.eyebrow': 'Vacancies',
     'vacancies.title': 'Explore open roles',
-    'vacancies.subtitle': 'Tap a role to start the multiple-choice test.',
+    'vacancies.subtitle': 'Tap a role to view vacancy details.',
     'vacancies.myPage': 'My Page',
     'vacancies.logout': 'Log out',
     'vacancies.emptyTitle': 'No vacancies yet',
@@ -136,6 +137,16 @@ const translations = {
     'vacancies.filterAll': 'All categories',
     'vacancies.filterLabel': 'Filter by category',
     'vacancies.noTest': 'No test required',
+    'vacancies.moreDetails': 'For more details please press',
+
+    'vacancyDetail.eyebrow': 'Vacancy',
+    'vacancyDetail.title': 'Vacancy details',
+    'vacancyDetail.back': 'Back to vacancies',
+    'vacancyDetail.description': 'Description',
+    'vacancyDetail.hide': 'Hide vacancy',
+    'vacancyDetail.message': 'Message company',
+    'vacancyDetail.startTest': 'Start test',
+    'vacancyDetail.missing': 'This vacancy is no longer available.',
 
     'auth.titleLogin': 'Log in',
     'auth.titleRegister': 'Create account',
@@ -456,7 +467,7 @@ const translations = {
 
     'vacancies.eyebrow': 'ვაკანსიები',
     'vacancies.title': 'ნახე ღია პოზიციები',
-    'vacancies.subtitle': 'აირჩიე პოზიცია და დაიწყე ტესტი.',
+    'vacancies.subtitle': 'აირჩიე პოზიცია და ნახე ვაკანსიის დეტალები.',
     'vacancies.myPage': 'ჩემი გვერდი',
     'vacancies.logout': 'გასვლა',
     'vacancies.emptyTitle': 'ვაკანსიები ჯერ არ არის',
@@ -469,6 +480,16 @@ const translations = {
     'vacancies.filterAll': 'ყველა კატეგორია',
     'vacancies.filterLabel': 'კატეგორიის მიხედვით',
     'vacancies.noTest': 'ტესტი არ არის საჭირო',
+    'vacancies.moreDetails': 'დეტალებისთვის დააწექი',
+
+    'vacancyDetail.eyebrow': 'ვაკანსია',
+    'vacancyDetail.title': 'ვაკანსიის დეტალები',
+    'vacancyDetail.back': 'ვაკანსიებზე დაბრუნება',
+    'vacancyDetail.description': 'აღწერა',
+    'vacancyDetail.hide': 'ვაკანსიის დამალვა',
+    'vacancyDetail.message': 'კომპანიას მიწერა',
+    'vacancyDetail.startTest': 'ტესტის დაწყება',
+    'vacancyDetail.missing': 'ეს ვაკანსია აღარ არის ხელმისაწვდომი.',
 
     'auth.titleLogin': 'შესვლა',
     'auth.titleRegister': 'ანგარიშის შექმნა',
@@ -861,6 +882,7 @@ function App() {
   const [messageThreads, setMessageThreads] = useState([])
   const [isPublishing, setIsPublishing] = useState(false)
   const [deletingVacancyIds, setDeletingVacancyIds] = useState([])
+  const [hiddenVacancyIds, setHiddenVacancyIds] = useState([])
 
   useEffect(() => {
     localStorage.setItem('app_language', language)
@@ -877,6 +899,9 @@ function App() {
       Object.prototype.hasOwnProperty.call(vars, token) ? vars[token] : '',
     )
   }
+
+  const getHiddenVacancyStorageKey = (email) =>
+    `hidden_vacancies_${email || 'guest'}`
 
   const getRoleLabel = (role) =>
     role === 'company' ? t('role.company') : t('role.applicant')
@@ -909,6 +934,26 @@ function App() {
   )
 
   const currentUserEmail = authUser?.email?.toLowerCase() ?? ''
+
+  useEffect(() => {
+    const key = getHiddenVacancyStorageKey(currentUserEmail)
+    const stored = localStorage.getItem(key)
+    if (!stored) {
+      setHiddenVacancyIds([])
+      return
+    }
+    try {
+      const parsed = JSON.parse(stored)
+      setHiddenVacancyIds(Array.isArray(parsed) ? parsed : [])
+    } catch {
+      setHiddenVacancyIds([])
+    }
+  }, [currentUserEmail])
+
+  useEffect(() => {
+    const key = getHiddenVacancyStorageKey(currentUserEmail)
+    localStorage.setItem(key, JSON.stringify(hiddenVacancyIds))
+  }, [currentUserEmail, hiddenVacancyIds])
 
   const fetchThreads = async () => {
     try {
@@ -944,6 +989,11 @@ function App() {
         })),
     )
   }, [currentUserEmail, vacancies])
+
+  const visibleVacancies = useMemo(
+    () => vacancies.filter((job) => !hiddenVacancyIds.includes(job.id)),
+    [vacancies, hiddenVacancyIds],
+  )
 
   useEffect(() => {
     localStorage.setItem('user_role', userRole)
@@ -1036,6 +1086,23 @@ function App() {
       setAuthError(error?.message || 'Authentication failed.')
     } finally {
       setAuthLoading(false)
+    }
+  }
+
+  const openVacancyDetails = (jobId) => {
+    setSelectedJobId(jobId)
+    setPage('vacancy')
+  }
+
+  const handleHideVacancy = (jobId) => {
+    if (!jobId) {
+      return
+    }
+    setHiddenVacancyIds((prev) =>
+      prev.includes(jobId) ? prev : [...prev, jobId],
+    )
+    if (selectedJobId === jobId) {
+      setPage('vacancies')
     }
   }
 
@@ -1653,6 +1720,23 @@ function App() {
     return thread
   }
 
+  const handleMessageCompany = async (jobId) => {
+    const job = vacancies.find((item) => item.id === jobId)
+    if (!job || !authUser?.email) {
+      return
+    }
+    const thread = await ensureThread({
+      jobId,
+      jobTitle: job.title,
+      company: job.company,
+      candidateEmail: authUser.email,
+      companyEmail: job.createdBy?.email,
+    })
+    if (thread) {
+      setPage('messages')
+    }
+  }
+
   const handleSendMessage = async (threadId, message, sender) => {
     if (!message.trim()) {
       return
@@ -1820,10 +1904,8 @@ function App() {
       )}
       {page === 'vacancies' && (
         <VacanciesPage
-          vacancies={vacancies}
-          onOpenJobTest={(jobId) =>
-            requireAuth(t('require.startTest'), () => openJobTest(jobId))
-          }
+          vacancies={visibleVacancies}
+          onOpenVacancy={openVacancyDetails}
           onDeleteVacancy={(jobId) =>
             requireAuth(t('require.manageVacancies'), () =>
               handleDeleteVacancy(jobId),
@@ -1847,11 +1929,31 @@ function App() {
           getStatusLabel={getStatusLabel}
           getJobTitleLabel={getJobTitleLabel}
           deletingVacancyIds={deletingVacancyIds}
+          hiddenVacancyIds={hiddenVacancyIds}
+        />
+      )}
+      {page === 'vacancy' && (
+        <VacancyDetailPage
+          vacancy={selectedJob}
+          onBack={() => setPage('vacancies')}
+          onHideVacancy={() => handleHideVacancy(selectedJob?.id)}
+          onMessageCompany={() =>
+            requireAuth(t('require.useMessaging'), () =>
+              handleMessageCompany(selectedJob?.id),
+            )
+          }
+          onStartTest={() =>
+            requireAuth(t('require.startTest'), () =>
+              openJobTest(selectedJob?.id),
+            )
+          }
+          t={t}
+          getJobTitleLabel={getJobTitleLabel}
         />
       )}
       {page === 'tests' && (
         <TestsPage
-          vacancies={vacancies}
+          vacancies={visibleVacancies}
           applications={applications}
           onOpenJobTest={(jobId) =>
             requireAuth(t('require.takeTest'), () => openJobTest(jobId))

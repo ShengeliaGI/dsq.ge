@@ -470,6 +470,11 @@ input::placeholder {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.vacancy-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 300px));
+  justify-content: flex-start;
+}
+
 .job-card {
   text-align: left;
   padding: 22px;
@@ -482,6 +487,17 @@ input::placeholder {
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vacancy-card {
+  width: 300px;
+  max-width: 100%;
+  height: 300px;
+  padding: 18px;
+}
+
+.vacancy-card .job-main {
+  height: 100%;
 }
 
 .job-card:hover {
@@ -530,6 +546,42 @@ input::placeholder {
   margin: 0;
   color: rgba(214, 228, 255, 0.75);
   font-size: 0.95rem;
+}
+
+.vacancy-detail {
+  display: grid;
+  gap: 18px;
+}
+
+.vacancy-detail-card {
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 160, 255, 0.25);
+  background: rgba(9, 18, 40, 0.85);
+  display: grid;
+  gap: 16px;
+}
+
+.vacancy-detail-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: rgba(214, 228, 255, 0.75);
+}
+
+.vacancy-detail-description h3 {
+  margin: 0 0 8px;
+}
+
+.vacancy-detail-description p {
+  margin: 0;
+  color: rgba(214, 228, 255, 0.85);
+}
+
+.vacancy-detail-footer {
+  display: grid;
+  gap: 12px;
 }
 
 .meta {

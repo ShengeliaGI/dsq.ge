@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 
 const VacanciesPage = ({
   vacancies,
-  onOpenJobTest,
+  onOpenVacancy,
   onDeleteVacancy,
   onGoCompany,
   onLogout,
@@ -12,18 +12,25 @@ const VacanciesPage = ({
   getStatusLabel,
   getJobTitleLabel,
   deletingVacancyIds = [],
+  hiddenVacancyIds = [],
 }) => {
   const [activeCategory, setActiveCategory] = useState('all')
 
+  const visibleVacancies = vacancies.filter(
+    (job) => !hiddenVacancyIds.includes(job.id),
+  )
+
   const categories = useMemo(() => {
-    const unique = Array.from(new Set(vacancies.map((job) => job.title)))
+    const unique = Array.from(
+      new Set(visibleVacancies.map((job) => job.title)),
+    )
     return ['all', ...unique]
-  }, [vacancies])
+  }, [visibleVacancies])
 
   const filteredVacancies =
     activeCategory === 'all'
-      ? vacancies
-      : vacancies.filter((job) => job.title === activeCategory)
+      ? visibleVacancies
+      : visibleVacancies.filter((job) => job.title === activeCategory)
 
   return (
     <div className="page">
@@ -46,7 +53,7 @@ const VacanciesPage = ({
           )}
         </div>
       </header>
-      {vacancies.length === 0 ? (
+      {visibleVacancies.length === 0 ? (
         <div className="empty-state">
           <h3>{t('vacancies.emptyTitle')}</h3>
           <p className="muted">{t('vacancies.emptySubtitle')}</p>
@@ -80,7 +87,7 @@ const VacanciesPage = ({
               <p className="muted">{t('vacancies.emptySubtitle')}</p>
             </div>
           ) : (
-            <div className="grid">
+            <div className="grid vacancy-grid">
               {filteredVacancies.map((job) => {
                 const applicantResult = (job.testResults ?? []).find(
                   (result) =>
@@ -92,29 +99,25 @@ const VacanciesPage = ({
                 const hasTest =
                   job.testMode !== 'none' && (job.questionSets ?? []).length > 0
                 return (
-                  <div
-                    key={job.id}
-                    className={hasTest ? 'job-card' : 'job-card job-card-disabled'}
-                  >
+                  <div key={job.id} className="job-card vacancy-card">
                     <button
                       className="job-main"
                       type="button"
-                      onClick={() => onOpenJobTest(job.id)}
-                      disabled={!hasTest}
+                      onClick={() => onOpenVacancy(job.id)}
                     >
                       <div>
                         <h3>{getJobTitleLabel(job.title)}</h3>
                         <p className="muted">{job.company}</p>
                       </div>
-                      <p className="job-description">{job.description}</p>
                       <div className="meta">
                         <span>{job.location}</span>
                         <span>{job.type}</span>
                         <span>{job.salary}</span>
                       </div>
-                      <span className="cta">
-                        {hasTest ? t('vacancies.startTest') : t('vacancies.noTest')}
-                      </span>
+                      <span className="cta">{t('vacancies.moreDetails')}</span>
+                      {!hasTest && (
+                        <span className="muted">{t('vacancies.noTest')}</span>
+                      )}
                     </button>
                     {applicantResult?.status && (
                       <div className={`status-chip ${applicantResult.status}`}>
