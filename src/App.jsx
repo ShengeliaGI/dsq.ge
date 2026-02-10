@@ -310,6 +310,15 @@ const translations = {
     'company.recommended': 'Recommended',
     'company.noTest': 'No test is required for this vacancy type.',
     'company.aiTest': 'AI test (15 questions)',
+    'company.seeAiTests': 'See tests',
+    'company.aiModalTitle': 'AI tests (10 versions)',
+    'company.aiModalSubtitle': 'Edit any question before publishing the vacancy.',
+    'company.aiTestLabel': 'Test {index}',
+    'company.aiQuestionLabel': 'Question {index}',
+    'company.regenerateAi': 'Regenerate tests',
+    'company.aiEmpty': 'No AI tests yet.',
+    'company.close': 'Close',
+    'company.done': 'Done',
     'company.manualTest': 'Company written test',
     'company.manualQuestionCount': 'How many questions?',
     'company.manualQuestionLabel': 'Question {index}',
@@ -635,6 +644,15 @@ const translations = {
     'company.recommended': 'რეკომენდებული',
     'company.noTest': 'ამ ვაკანსიისთვის ტესტი საჭირო არ არის.',
     'company.aiTest': 'AI ტესტი (15 კითხვა)',
+    'company.seeAiTests': 'იხილე ტესტები',
+    'company.aiModalTitle': 'AI ტესტები (10 ვერსია)',
+    'company.aiModalSubtitle': 'გამოქვეყნებამდე შეგიძლია თითოეული კითხვა შეცვალო.',
+    'company.aiTestLabel': 'ტესტი {index}',
+    'company.aiQuestionLabel': 'კითხვა {index}',
+    'company.regenerateAi': 'ტესტების თავიდან გენერაცია',
+    'company.aiEmpty': 'AI ტესტები ჯერ არ არის შექმნილი.',
+    'company.close': 'დახურვა',
+    'company.done': 'მზადაა',
     'company.manualTest': 'კომპანიის მიერ დაწერილი ტესტი',
     'company.manualQuestionCount': 'რამდენი კითხვა გჭირდება?',
     'company.manualQuestionLabel': 'კითხვა {index}',
@@ -760,6 +778,7 @@ function App() {
   const [description, setDescription] = useState('')
   const [minScore, setMinScore] = useState('10')
   const [testMode, setTestMode] = useState('ai')
+  const [aiQuestionSets, setAiQuestionSets] = useState([])
   const [manualQuestionCount, setManualQuestionCount] = useState(15)
   const [manualQuestions, setManualQuestions] = useState(
     Array.from({ length: 15 }, () => ({
@@ -1397,6 +1416,15 @@ function App() {
     })
   }
 
+  const regenerateAiQuestionSets = (overrides = {}) => {
+    const companyLabel =
+      (overrides.companyName ?? companyName).trim() || t('vacancy.defaults.company')
+    const jobTitle = overrides.jobTitle ?? selectedJobType
+    const nextSets = generateQuestionSets(jobTitle, companyLabel)
+    setAiQuestionSets(nextSets)
+    return nextSets
+  }
+
   const handlePublish = async () => {
     if (isPublishing) {
       return
@@ -1405,9 +1433,12 @@ function App() {
     const normalizedManualQuestions = normalizeManualQuestions(manualQuestions)
     const normalizedMinScore = Number.parseInt(minScore, 10)
     const companyLabel = companyName.trim() || t('vacancy.defaults.company')
+    const aiSets = aiQuestionSets.length
+      ? aiQuestionSets
+      : generateQuestionSets(selectedJobType, companyLabel)
     const questionSets =
       testMode === 'ai'
-        ? generateQuestionSets(selectedJobType, companyLabel)
+        ? aiSets
         : testMode === 'manual'
           ? generateManualQuestionSets(normalizedManualQuestions)
           : []
@@ -1924,6 +1955,14 @@ function App() {
           setManualQuestionCount={setManualQuestionCount}
           manualQuestions={manualQuestions}
           setManualQuestions={setManualQuestions}
+          aiQuestionSets={aiQuestionSets}
+          setAiQuestionSets={setAiQuestionSets}
+          onRegenerateAiQuestionSets={() =>
+            regenerateAiQuestionSets({
+              companyName,
+              jobTitle: selectedJobType,
+            })
+          }
           onPublish={handlePublish}
           onBack={() => setPage('vacancies')}
           t={t}

@@ -24,6 +24,9 @@ const CompanyPage = ({
   setManualQuestionCount,
   manualQuestions,
   setManualQuestions,
+  aiQuestionSets,
+  setAiQuestionSets,
+  onRegenerateAiQuestionSets,
   onPublish,
   onBack,
   onUpdateResultStatus,
@@ -46,6 +49,15 @@ const CompanyPage = ({
   )
   const hasResults = vacancies.some((job) => (job.testResults ?? []).length > 0)
   const [expandedResultId, setExpandedResultId] = useState(null)
+  const [showAiModal, setShowAiModal] = useState(false)
+  const [activeAiSetIndex, setActiveAiSetIndex] = useState(0)
+
+  const aiSets = aiQuestionSets ?? []
+  const activeAiIndex = Math.max(
+    0,
+    Math.min(activeAiSetIndex, Math.max(0, aiSets.length - 1)),
+  )
+  const activeAiSet = aiSets[activeAiIndex] ?? []
 
   const handleQuestionCountChange = (event) => {
     const nextCount = Math.max(1, Math.min(30, Number(event.target.value) || 1))
@@ -72,6 +84,56 @@ const CompanyPage = ({
 
   const toggleResult = (resultId) => {
     setExpandedResultId((prev) => (prev === resultId ? null : resultId))
+  }
+
+  const handleOpenAiModal = () => {
+    if (aiSets.length === 0) {
+      const nextSets = onRegenerateAiQuestionSets?.()
+      if (nextSets?.length) {
+        setActiveAiSetIndex(0)
+      }
+    }
+    setShowAiModal(true)
+  }
+
+  const handleRegenerateAiSets = () => {
+    const nextSets = onRegenerateAiQuestionSets?.()
+    if (nextSets?.length) {
+      setActiveAiSetIndex(0)
+    }
+  }
+
+  const updateAiQuestion = (setIndex, questionIndex, updates) => {
+    setAiQuestionSets((prev) =>
+      prev.map((set, setIdx) =>
+        setIdx === setIndex
+          ? set.map((question, qIdx) =>
+              qIdx === questionIndex ? { ...question, ...updates } : question,
+            )
+          : set,
+      ),
+    )
+  }
+
+  const updateAiOption = (setIndex, questionIndex, optionIndex, value) => {
+    setAiQuestionSets((prev) =>
+      prev.map((set, setIdx) => {
+        if (setIdx !== setIndex) {
+          return set
+        }
+        return set.map((question, qIdx) => {
+          if (qIdx !== questionIndex) {
+            return question
+          }
+          const nextOptions = [...(question.options ?? [])]
+          while (nextOptions.length < 3) {
+            nextOptions.push('')
+          }
+          nextOptions[optionIndex] = value
+          return { ...question, options: nextOptions }
+        })
+      }),
+    )
   }
 
   return (
@@ -210,6 +272,13 @@ const CompanyPage = ({
                 </div>
               )}
             </label>
+            {testMode === 'ai' && !isOtherVacancy && (
+              <div className="full-width ai-test-row">
+                <button className="ghost" type="button" onClick={handleOpenAiModal}>
+                  {t('company.seeAiTests')}
+                </button>
+              </div>
+            )}
             {testMode === 'manual' && (
               <div className="full-width manual-builder">
                 <label className="manual-count">
@@ -462,6 +531,107 @@ const CompanyPage = ({
           </div>
         )}
       </div>
+
+      {showAiModal && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal ai-modal">
+            <div className="ai-modal-header">
+              <div>
+                <h3>{t('company.aiModalTitle')}</h3>
+                <p className="muted">{t('company.aiModalSubtitle')}</p>
+              </div>
+              <button className="ghost" type="button" onClick={() => setShowAiModal(false)}>
+                {t('company.close')}
+              </button>
+            </div>
+            <div className="ai-modal-body">
+              <div className="ai-tests-list">
+                {aiSets.length === 0 ? (
+                  <p className="muted">{t('company.aiEmpty')}</p>
+                ) : (
+                  aiSets.map((_, index) => (
+                    <button
+                      key={`ai-set-${index}`}
+                      className={
+                        index === activeAiIndex
+                          ? 'ai-test-button ai-test-button-active'
+                          : 'ai-test-button'
+                      }
+                      type="button"
+                      onClick={() => setActiveAiSetIndex(index)}
+                    >
+                      {t('company.aiTestLabel', { index: index + 1 })}
+                    </button>
+                  ))
+                )}
+                <button className="ghost" type="button" onClick={handleRegenerateAiSets}>
+                  {t('company.regenerateAi')}
+                </button>
+              </div>
+              <div className="ai-test-editor">
+                <p className="eyebrow">{t('company.aiTestLabel', { index: activeAiIndex + 1 })}</p>
+                <div className="ai-question-grid">
+                  {activeAiSet.map((question, questionIndex) => (
+                    <div key={question.id ?? `ai-q-${questionIndex}`} className="ai-question-card">
+                      <label>
+                        {t('company.aiQuestionLabel', { index: questionIndex + 1 })}
+                        <input
+                          type="text"
+                          value={question.prompt ?? ''}
+                          onChange={(event) =>
+                            updateAiQuestion(activeAiIndex, questionIndex, {
+                              prompt: event.target.value,
+                            })
+                          }
+                        />
+                      </label>
+                      <div className="ai-options">
+                        {['A', 'B', 'C'].map((label, optionIndex) => (
+                          <label key={`${questionIndex}-${label}`}>
+                            {t('company.optionLabel', { label })}
+                            <input
+                              type="text"
+                              value={question.options?.[optionIndex] ?? ''}
+                              onChange={(event) =>
+                                updateAiOption(
+                                  activeAiIndex,
+                                  questionIndex,
+                                  optionIndex,
+                                  event.target.value,
+                                )
+                              }
+                            />
+                          </label>
+                        ))}
+                      </div>
+                      <label>
+                        {t('company.correctAnswer')}
+                        <select
+                          value={question.correctIndex ?? 0}
+                          onChange={(event) =>
+                            updateAiQuestion(activeAiIndex, questionIndex, {
+                              correctIndex: Number(event.target.value),
+                            })
+                          }
+                        >
+                          <option value={0}>{t('company.correctOptionA')}</option>
+                          <option value={1}>{t('company.correctOptionB')}</option>
+                          <option value={2}>{t('company.correctOptionC')}</option>
+                        </select>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="ai-modal-footer">
+              <button className="primary" type="button" onClick={() => setShowAiModal(false)}>
+                {t('company.done')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
