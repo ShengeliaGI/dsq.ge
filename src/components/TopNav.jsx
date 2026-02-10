@@ -81,11 +81,25 @@ const TopNav = ({
                 {t('nav.tests')}
               </button>
               <button
-                className={page === 'profile' ? 'nav-button active' : 'nav-button'}
+                className={page === 'profile' ? 'nav-avatar-button active' : 'nav-avatar-button'}
                 type="button"
                 onClick={() => handleNavigate('profile')}
+                aria-label={t('nav.profile')}
+                title={t('nav.profile')}
               >
-                {t('nav.profile')}
+                <svg
+                  className="nav-avatar-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c1.5-3.5 5-6 8-6s6.5 2.5 8 6" />
+                </svg>
               </button>
               <button
                 className={page === 'messages' ? 'nav-button active' : 'nav-button'}
