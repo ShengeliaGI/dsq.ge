@@ -137,7 +137,7 @@ const translations = {
     'vacancies.filterAll': 'All categories',
     'vacancies.filterLabel': 'Filter by category',
     'vacancies.noTest': 'No test required',
-    'vacancies.moreDetails': 'For more details please press',
+    'vacancies.moreDetails': 'View More Details',
 
     'vacancyDetail.eyebrow': 'Vacancy',
     'vacancyDetail.title': 'Vacancy details',
