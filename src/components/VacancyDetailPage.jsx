@@ -30,6 +30,21 @@ const VacancyDetailPage = ({
   const hasTest =
     vacancy.testMode !== 'none' && (vacancy.questionSets ?? []).length > 0
 
+  const descriptionLines = vacancy.description
+    ? vacancy.description
+        .trim()
+        .split(/\s+/)
+        .reduce((lines, word, index) => {
+          const lineIndex = Math.floor(index / 6)
+          if (!lines[lineIndex]) {
+            lines[lineIndex] = []
+          }
+          lines[lineIndex].push(word)
+          return lines
+        }, [])
+        .map((line) => line.join(' '))
+    : []
+
   return (
     <div className="page">
       <header className="page-header">
@@ -37,7 +52,6 @@ const VacancyDetailPage = ({
           <div>
             <p className="eyebrow">{t('vacancyDetail.eyebrow')}</p>
             <h1>{getJobTitleLabel(vacancy.title)}</h1>
-            <p className="muted">{vacancy.company}</p>
           </div>
         </div>
         <div className="header-actions">
@@ -49,14 +63,42 @@ const VacancyDetailPage = ({
 
       <div className="vacancy-detail">
         <section className="vacancy-detail-card">
-          <div className="vacancy-detail-meta">
-            <span>{vacancy.location}</span>
-            <span>{vacancy.type}</span>
-            <span>{vacancy.salary}</span>
+          <div className="vacancy-detail-list">
+            <div className="vacancy-detail-row">
+              <span className="vacancy-detail-label">
+                {t('vacancyDetail.company')}
+              </span>
+              <span className="vacancy-detail-value">{vacancy.company}</span>
+            </div>
+            <div className="vacancy-detail-row">
+              <span className="vacancy-detail-label">
+                {t('vacancyDetail.location')}
+              </span>
+              <span className="vacancy-detail-value">{vacancy.location}</span>
+            </div>
+            <div className="vacancy-detail-row">
+              <span className="vacancy-detail-label">{t('vacancyDetail.type')}</span>
+              <span className="vacancy-detail-value">{vacancy.type}</span>
+            </div>
+            <div className="vacancy-detail-row">
+              <span className="vacancy-detail-label">{t('vacancyDetail.salary')}</span>
+              <span className="vacancy-detail-value">{vacancy.salary}</span>
+            </div>
           </div>
           <div className="vacancy-detail-description">
             <h3>{t('vacancyDetail.description')}</h3>
-            <p>{vacancy.description}</p>
+            {descriptionLines.length > 0 ? (
+              <p>
+                {descriptionLines.map((line, index) => (
+                  <span key={`${vacancy.id}-line-${index}`}>
+                    {line}
+                    {index < descriptionLines.length - 1 && <br />}
+                  </span>
+                ))}
+              </p>
+            ) : (
+              <p>{vacancy.description}</p>
+            )}
           </div>
           <div className="vacancy-detail-footer">
             {!hasTest && <p className="muted">{t('vacancies.noTest')}</p>}

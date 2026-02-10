@@ -569,12 +569,26 @@ input::placeholder {
   box-shadow: 0 14px 28px rgba(48, 36, 28, 0.12);
 }
 
-.vacancy-detail-meta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+.vacancy-detail-list {
+  display: grid;
+  gap: 10px;
+}
+
+.vacancy-detail-row {
+  display: grid;
+  gap: 6px;
+}
+
+.vacancy-detail-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: var(--text-soft);
+}
+
+.vacancy-detail-value {
+  font-size: 1rem;
+  color: var(--text-strong);
 }
 
 .vacancy-detail-description h3 {
