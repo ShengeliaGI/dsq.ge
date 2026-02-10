@@ -3,7 +3,6 @@ const VacancyDetailPage = ({
   onBack,
   onHideVacancy,
   onMessageCompany,
-  onStartTest,
   getJobTitleLabel,
   t,
 }) => {
@@ -67,14 +66,6 @@ const VacancyDetailPage = ({
               </button>
               <button className="ghost" type="button" onClick={onMessageCompany}>
                 {t('vacancyDetail.message')}
-              </button>
-              <button
-                className="primary"
-                type="button"
-                onClick={onStartTest}
-                disabled={!hasTest}
-              >
-                {t('vacancyDetail.startTest')}
               </button>
             </div>
           </div>

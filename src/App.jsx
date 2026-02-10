@@ -145,7 +145,6 @@ const translations = {
     'vacancyDetail.description': 'Description',
     'vacancyDetail.hide': 'Hide vacancy',
     'vacancyDetail.message': 'Message company',
-    'vacancyDetail.startTest': 'Start test',
     'vacancyDetail.missing': 'This vacancy is no longer available.',
 
     'auth.titleLogin': 'Log in',
@@ -488,7 +487,6 @@ const translations = {
     'vacancyDetail.description': 'აღწერა',
     'vacancyDetail.hide': 'ვაკანსიის დამალვა',
     'vacancyDetail.message': 'კომპანიას მიწერა',
-    'vacancyDetail.startTest': 'ტესტის დაწყება',
     'vacancyDetail.missing': 'ეს ვაკანსია აღარ არის ხელმისაწვდომი.',
 
     'auth.titleLogin': 'შესვლა',
@@ -1940,11 +1938,6 @@ function App() {
           onMessageCompany={() =>
             requireAuth(t('require.useMessaging'), () =>
               handleMessageCompany(selectedJob?.id),
-            )
-          }
-          onStartTest={() =>
-            requireAuth(t('require.startTest'), () =>
-              openJobTest(selectedJob?.id),
             )
           }
           t={t}
