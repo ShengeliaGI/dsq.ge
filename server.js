@@ -1,3 +1,34 @@
+import { normalizeSkills, calculateMatchScore } from './services/matchService.js';
+// Recommend jobs for candidate based on matchScore
+app.get('/api/jobs/recommended', requireAuth, async (req, res) => {
+  try {
+    // Fetch candidate CV
+    const cv = await CvSubmission.findOne({ 'createdBy.id': req.user.id });
+    if (!cv) {
+      return res.json({ jobs: [], message: 'Complete your profile to improve job matches.' });
+    }
+    const candidateSkills = normalizeSkills((cv.skills || '').split(','));
+    // Fetch all active vacancies
+    const vacancies = await Vacancy.find({ status: 'open' });
+    // Calculate matchScore for each vacancy
+    const recommended = vacancies
+      .map(vacancy => {
+        const requiredSkills = normalizeSkills(Array.isArray(vacancy.requiredSkills) ? vacancy.requiredSkills : []);
+        const matchScore = calculateMatchScore(candidateSkills, requiredSkills);
+        return { ...vacancy.toObject(), matchScore };
+      })
+      .filter(job => job.matchScore !== null && job.matchScore >= 30)
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 10);
+    if (recommended.length === 0) {
+      return res.json({ jobs: [], message: 'Complete your profile to improve job matches.' });
+    }
+    return res.json({ jobs: recommended });
+  } catch (error) {
+    console.error('Recommended jobs error:', error);
+    return res.status(500).json({ message: 'Failed to fetch recommended jobs.' });
+  }
+});
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
