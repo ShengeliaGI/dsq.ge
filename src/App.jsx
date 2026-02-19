@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import './App.css'
 import AuthScreen from './components/AuthScreen'
 import TopNav from './components/TopNav'
@@ -968,18 +968,6 @@ function App() {
     localStorage.setItem(key, JSON.stringify(hiddenVacancyIds))
   }, [currentUserEmail, hiddenVacancyIds])
 
-  const fetchThreads = async () => {
-    try {
-      const response = await authFetch('/api/messages/threads')
-      if (response.ok) {
-        const data = await response.json()
-        setMessageThreads(data)
-      }
-    } catch (error) {
-      console.error('Failed to load threads', error)
-    }
-  }
-
   const applications = useMemo(() => {
     if (!currentUserEmail) {
       return []
@@ -1016,38 +1004,20 @@ function App() {
     localStorage.setItem('notifications', JSON.stringify(notifications))
   }, [notifications])
 
-  useEffect(() => {
-    if (!isAuthed) {
-      setMessageThreads([])
-      return
-    }
-    fetchThreads()
-  }, [isAuthed])
-
-  useEffect(() => {
-    if (!isAuthed || page !== 'messages') {
-      return undefined
-    }
-
-    fetchThreads()
-    const interval = setInterval(fetchThreads, 5000)
-    return () => clearInterval(interval)
-  }, [isAuthed, page])
-
-  const getAuthHeaders = () => {
+  const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem('auth_token')
     return token ? { Authorization: `Bearer ${token}` } : {}
-  }
+  }, [])
 
-  const handleUnauthorized = () => {
+  const handleUnauthorized = useCallback(() => {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
     setIsAuthed(false)
     setAuthUser(null)
     setPage('home')
-  }
+  }, [])
 
-  const authFetch = async (url, options = {}) => {
+  const authFetch = useCallback(async (url, options = {}) => {
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -1059,7 +1029,37 @@ function App() {
       handleUnauthorized()
     }
     return response
-  }
+  }, [getAuthHeaders, handleUnauthorized])
+
+  const fetchThreads = useCallback(async () => {
+    try {
+      const response = await authFetch('/api/messages/threads')
+      if (response.ok) {
+        const data = await response.json()
+        setMessageThreads(data)
+      }
+    } catch (error) {
+      console.error('Failed to load threads', error)
+    }
+  }, [authFetch])
+
+  useEffect(() => {
+    if (!isAuthed) {
+      setMessageThreads([])
+      return
+    }
+    fetchThreads()
+  }, [isAuthed, fetchThreads])
+
+  useEffect(() => {
+    if (!isAuthed || page !== 'messages') {
+      return undefined
+    }
+
+    fetchThreads()
+    const interval = setInterval(fetchThreads, 5000)
+    return () => clearInterval(interval)
+  }, [isAuthed, page, fetchThreads])
 
   const handleAuthSubmit = async ({ name, email, password, role }) => {
     setAuthError('')

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const AuthScreen = ({
   authMode,
@@ -12,10 +12,6 @@ const AuthScreen = ({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('applicant')
-
-  useEffect(() => {
-    setPassword('')
-  }, [authMode])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -89,7 +85,14 @@ const AuthScreen = ({
                 : t('auth.registerContinue')}
           </button>
         </form>
-        <button className="link" type="button" onClick={onToggleMode}>
+        <button
+          className="link"
+          type="button"
+          onClick={() => {
+            setPassword('')
+            onToggleMode()
+          }}
+        >
           {authMode === 'login'
             ? t('auth.toggleToRegister')
             : t('auth.toggleToLogin')}

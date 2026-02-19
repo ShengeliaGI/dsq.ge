@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const MessagesPage = ({
   userRole,
@@ -28,12 +28,6 @@ const MessagesPage = ({
     visibleThreads.find((thread) => thread.id === activeThreadId) ??
     visibleThreads[0] ??
     null
-
-  useEffect(() => {
-    if (!activeThreadId && visibleThreads[0]?.id) {
-      setActiveThreadId(visibleThreads[0].id)
-    }
-  }, [activeThreadId, visibleThreads])
 
   const handleSend = () => {
     if (!activeThread) {

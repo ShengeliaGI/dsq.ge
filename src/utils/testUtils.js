@@ -122,7 +122,6 @@ export const parseManualQuestions = (raw) =>
 export const generateQuestionSets = (jobType, companyLabel) => {
   const sets = []
   const signatures = new Set()
-  let seed = Date.now() % 100000
 
   while (sets.length < 10) {
     const questions = generateAiQuestions(jobType, companyLabel)
@@ -131,7 +130,6 @@ export const generateQuestionSets = (jobType, companyLabel) => {
       signatures.add(signature)
       sets.push(questions)
     }
-    seed += 7
   }
 
   return sets

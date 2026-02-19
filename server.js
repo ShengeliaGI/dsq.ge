@@ -299,7 +299,7 @@ app.patch('/api/vacancies/:id', requireAuth, async (req, res) => {
       return res.status(403).json({ message: 'Forbidden.' })
     }
 
-    const { createdBy, ...updatePayload } = req.body || {}
+    const { createdBy: _createdBy, ...updatePayload } = req.body || {}
     const updated = await Vacancy.findOneAndUpdate(
       { id: req.params.id },
       { $set: updatePayload },
@@ -514,7 +514,10 @@ app.post('/api/messages/threads', requireAuth, async (req, res) => {
     return res.status(201).json(thread)
   } catch (error) {
     if (error.code === 11000) {
-      const existing = await MessageThread.findOne({ jobId, candidateEmail: req.body.candidateEmail?.toLowerCase() })
+      const existing = await MessageThread.findOne({
+        jobId: req.body?.jobId,
+        candidateEmail: req.body?.candidateEmail?.toLowerCase(),
+      })
       return res.json(existing)
     }
     console.error('Create thread error:', error)

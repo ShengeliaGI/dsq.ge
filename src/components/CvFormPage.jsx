@@ -99,6 +99,7 @@ const CvFormPage = ({
                 {t('cvForm.upload')}
               </label>
               <input id="cv-upload" type="file" onChange={onFileChange} />
+              {cvFileName && <p className="muted">{cvFileName}</p>}
             </div>
             <div className="cv-form-grid">
               <input
