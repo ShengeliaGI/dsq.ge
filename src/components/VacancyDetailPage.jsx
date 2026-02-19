@@ -14,17 +14,33 @@ const VacancyDetailPage = ({
   getStatusLabel,
   t,
 }) => {
+  const hasUploadedCv = useMemo(
+    () =>
+      Boolean(
+        currentUserEmail &&
+          (cvSubmissions ?? []).some(
+            (cv) =>
+              cv?.createdBy?.email?.toLowerCase() === currentUserEmail.toLowerCase() ||
+              cv?.personalInfo?.toLowerCase().includes(currentUserEmail.toLowerCase()),
+          ),
+      ),
+    [currentUserEmail, cvSubmissions],
+  )
+
   const matchInsight = useMemo(
     () =>
-      buildMatchInsight({
-        vacancy,
-        currentUserEmail,
-        cvSubmissions,
-        applications,
-        getStatusLabel,
-        t,
-      }),
+      hasUploadedCv
+        ? buildMatchInsight({
+            vacancy,
+            currentUserEmail,
+            cvSubmissions,
+            applications,
+            getStatusLabel,
+            t,
+          })
+        : null,
     [
+      hasUploadedCv,
       vacancy,
       currentUserEmail,
       cvSubmissions,
@@ -143,7 +159,7 @@ const VacancyDetailPage = ({
             </div>
           </div>
         </section>
-        {userRole === 'applicant' && currentUserEmail && matchInsight && (
+        {userRole === 'applicant' && currentUserEmail && hasUploadedCv && matchInsight && (
           <section className="vacancy-detail-card match-insight-card">
             <div className="match-insight-header">
               <div>
