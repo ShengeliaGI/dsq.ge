@@ -1020,6 +1020,10 @@ input::placeholder {
   overflow-y: auto;
 }
 
+.company-panel.cv-form-fixed::after {
+  display: none;
+}
+
 .cv-preview-pane {
   min-width: 0;
   position: sticky;
