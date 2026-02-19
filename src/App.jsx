@@ -1938,7 +1938,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={hideTopNav ? 'app-shell app-shell-no-nav' : 'app-shell'}>
       {!hideTopNav && (
         <TopNav
           page={page}

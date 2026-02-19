@@ -66,6 +66,11 @@ select option::-webkit-scrollbar-thumb {
   gap: 24px;
 }
 
+.app-shell-no-nav {
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: 32px;
+}
+
 .top-nav {
   position: sticky;
   top: 24px;
