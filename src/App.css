@@ -657,6 +657,72 @@ input::placeholder {
   gap: 12px;
 }
 
+.match-insight-card {
+  gap: 18px;
+}
+
+.match-insight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.match-insight-header h3 {
+  margin: 4px 0;
+}
+
+.match-score-badge {
+  min-width: 84px;
+  border-radius: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  display: grid;
+  justify-items: center;
+}
+
+.match-score-badge strong {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.match-score-badge span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.match-breakdown {
+  display: grid;
+  gap: 8px;
+}
+
+.match-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-1);
+  background: var(--bg-2);
+  font-size: 0.92rem;
+}
+
+.match-keyword-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.match-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: var(--text);
+}
+
 .meta {
   display: flex;
   gap: 12px;

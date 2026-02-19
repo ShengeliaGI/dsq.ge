@@ -1970,7 +1970,12 @@ function App() {
             )
           }
           t={t}
+          currentUserEmail={currentUserEmail}
+          userRole={userRole}
+          cvSubmissions={cvSubmissions}
+          applications={applications}
           getJobTitleLabel={getJobTitleLabel}
+          getStatusLabel={getStatusLabel}
         />
       )}
       {page === 'tests' && (
