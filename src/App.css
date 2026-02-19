@@ -1,3 +1,48 @@
+/* Custom select dropdown pop-down for dark/light mode */
+select {
+  /* Keep button default, but style pop-down via pseudo-elements and browser support */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: var(--bg-2);
+  color: var(--text-strong);
+  border-radius: 12px;
+  border: 1px solid var(--border-1);
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--border-2);
+  box-shadow: 0 0 0 2px var(--border-2);
+}
+
+select option {
+  background: var(--bg-2);
+  color: var(--text-strong);
+  font-size: 0.97rem;
+  border-radius: 0;
+}
+
+[data-theme='light'] select,
+[data-theme='light'] select option {
+  background: #fff;
+  color: #1a223a;
+  border-color: #e0e6f0;
+}
+
+/* Custom scrollbar for dropdowns (Webkit browsers) */
+select option::-webkit-scrollbar {
+  width: 8px;
+  background: var(--bg-1);
+}
+select option::-webkit-scrollbar-thumb {
+  background: var(--border-1);
+  border-radius: 8px;
+}
 
 #root {
   min-height: 100vh;
