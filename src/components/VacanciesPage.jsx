@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { hasUserCv, matchesVacancyByCv } from '../utils/cvVacancyFilter'
 
 const VacanciesPage = ({
@@ -20,6 +20,8 @@ const VacanciesPage = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState('all')
   const [onlyMyCvMatches, setOnlyMyCvMatches] = useState(false)
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false)
+  const categoryMenuRef = useRef(null)
 
   const visibleVacancies = vacancies.filter(
     (job) => !hiddenVacancyIds.includes(job.id),
@@ -61,6 +63,21 @@ const VacanciesPage = ({
     currentUserEmail,
   ])
 
+  useEffect(() => {
+    if (!isCategoryMenuOpen) {
+      return undefined
+    }
+
+    const handleClickOutside = (event) => {
+      if (!categoryMenuRef.current?.contains(event.target)) {
+        setIsCategoryMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isCategoryMenuOpen])
+
   return (
     <div className="page">
       <header className="page-header">
@@ -92,21 +109,48 @@ const VacanciesPage = ({
           <div className="vacancy-filters">
             <p className="muted">{t('vacancies.filterLabel')}</p>
             <div className="filter-row vacancy-filter-toolbar">
-              <label className="vacancy-filter-select">
+              <div className="vacancy-category-menu" ref={categoryMenuRef}>
                 <span>{t('vacancies.categoryButton')}</span>
-                <select
-                  value={activeCategory}
-                  onChange={(event) => setActiveCategory(event.target.value)}
+                <button
+                  type="button"
+                  className="category-trigger"
+                  onClick={() => setIsCategoryMenuOpen((prev) => !prev)}
+                  aria-expanded={isCategoryMenuOpen}
+                  aria-haspopup="listbox"
                 >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category === 'all'
-                        ? t('vacancies.filterAll')
-                        : getJobTitleLabel(category)}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  <span>
+                    {activeCategory === 'all'
+                      ? t('vacancies.filterAll')
+                      : getJobTitleLabel(activeCategory)}
+                  </span>
+                  <span className="category-trigger-caret" aria-hidden="true">
+                    {isCategoryMenuOpen ? '▲' : '▼'}
+                  </span>
+                </button>
+                {isCategoryMenuOpen && (
+                  <div className="category-menu-list" role="listbox">
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        type="button"
+                        className={
+                          category === activeCategory
+                            ? 'category-menu-item active'
+                            : 'category-menu-item'
+                        }
+                        onClick={() => {
+                          setActiveCategory(category)
+                          setIsCategoryMenuOpen(false)
+                        }}
+                      >
+                        {category === 'all'
+                          ? t('vacancies.filterAll')
+                          : getJobTitleLabel(category)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               {isAuthed && userRole === 'applicant' && (
                 <button
                   type="button"
