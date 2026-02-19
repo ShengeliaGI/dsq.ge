@@ -1,3 +1,9 @@
+.primary:hover {
+  /* Remove orange shadow in dark mode */
+}
+[data-theme='dark'] .primary:hover {
+  box-shadow: 0 12px 25px rgba(77, 123, 255, 0.35) !important;
+}
 /* Custom select dropdown pop-down for dark/light mode */
 select {
   /* Keep button default, but style pop-down via pseudo-elements and browser support */
