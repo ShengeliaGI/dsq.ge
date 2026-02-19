@@ -1,29 +1,4 @@
-/* Custom role select for AuthScreen */
-.custom-role-select {
-  border-radius: 16px;
-  padding: 14px 18px;
-  border: 2px solid #f2c48a;
-  background: linear-gradient(120deg, #1a223a 60%, #f2c48a 100%);
-  color: #f2c48a;
-  font-size: 1.05rem;
-  font-weight: 600;
-  box-shadow: 0 2px 12px rgba(242, 196, 138, 0.08);
-  transition: border 0.2s, box-shadow 0.2s;
-  margin-top: 6px;
-  margin-bottom: 6px;
-}
 
-.custom-role-select:focus {
-  outline: none;
-  border-color: #f08d7e;
-  box-shadow: 0 0 0 2px #f08d7e44;
-}
-
-.custom-role-select option {
-  color: #1a223a;
-  background: #f2c48a;
-  font-weight: 500;
-}
 #root {
   min-height: 100vh;
 }

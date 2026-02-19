@@ -47,7 +47,6 @@ const AuthScreen = ({
             <label>
               {t('auth.accountType')}
               <select
-                className="custom-role-select"
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
               >
