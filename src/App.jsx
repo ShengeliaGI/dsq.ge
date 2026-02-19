@@ -150,6 +150,32 @@ const translations = {
     'vacancyDetail.hide': 'Hide vacancy',
     'vacancyDetail.message': 'Message company',
     'vacancyDetail.missing': 'This vacancy is no longer available.',
+    'matchInsight.title': 'Match Insight',
+    'matchInsight.subtitle':
+      'Personalized score for this vacancy based on your CV and test history.',
+    'matchInsight.scoreAria': 'Match score {score}',
+    'matchInsight.currentStatus': 'Current application status',
+    'matchInsight.pointsLabel': '{points} pts',
+    'matchInsight.keywordOverlap': 'Keyword overlap',
+    'matchInsight.improveTitle': 'How to improve quickly',
+    'matchInsight.levelStrong': 'Strong fit',
+    'matchInsight.levelPromising': 'Promising fit',
+    'matchInsight.levelImprove': 'Needs improvement',
+    'matchInsight.breakdownCompleteness': 'Profile completeness',
+    'matchInsight.breakdownOverlap': 'Role skill overlap',
+    'matchInsight.breakdownTests': 'Test track record',
+    'matchInsight.tipNoCv':
+      'Publish your CV to unlock a stronger match score for this role.',
+    'matchInsight.tipCompleteness':
+      'Fill more CV sections (work, skills, certificates, and trainings).',
+    'matchInsight.tipKeywords':
+      'Add role-specific keywords and skills aligned with this vacancy description.',
+    'matchInsight.tipTests':
+      'Improve test performance to increase trust with employers.',
+    'matchInsight.tipApplyEarly':
+      'Take the role test early to appear in the company review queue.',
+    'matchInsight.tipStrong':
+      'Your profile is well aligned. Apply now and message the company after submission.',
 
     'auth.titleLogin': 'Log in',
     'auth.titleRegister': 'Create account',
@@ -499,6 +525,32 @@ const translations = {
     'vacancyDetail.hide': 'ვაკანსიის დამალვა',
     'vacancyDetail.message': 'კომპანიას მიწერა',
     'vacancyDetail.missing': 'ეს ვაკანსია აღარ არის ხელმისაწვდომი.',
+    'matchInsight.title': 'შესაბამისობის ანალიზი',
+    'matchInsight.subtitle':
+      'პერსონალური ქულა ამ ვაკანსიისთვის თქვენი CV-სა და ტესტების ისტორიაზე დაყრდნობით.',
+    'matchInsight.scoreAria': 'შესაბამისობის ქულა {score}',
+    'matchInsight.currentStatus': 'მიმდინარე განაცხადის სტატუსი',
+    'matchInsight.pointsLabel': '{points} ქულა',
+    'matchInsight.keywordOverlap': 'საკვანძო სიტყვების თანხვედრა',
+    'matchInsight.improveTitle': 'როგორ გააუმჯობესოთ სწრაფად',
+    'matchInsight.levelStrong': 'ძლიერი შესაბამისობა',
+    'matchInsight.levelPromising': 'კარგი პოტენციალი',
+    'matchInsight.levelImprove': 'გასაუმჯობესებელია',
+    'matchInsight.breakdownCompleteness': 'პროფილის სისრულე',
+    'matchInsight.breakdownOverlap': 'უნარების თანხვედრა პოზიციასთან',
+    'matchInsight.breakdownTests': 'ტესტების შედეგების ისტორია',
+    'matchInsight.tipNoCv':
+      'გამოაქვეყნეთ CV, რომ ამ პოზიციაზე უფრო მაღალი შესაბამისობის ქულა მიიღოთ.',
+    'matchInsight.tipCompleteness':
+      'შეავსეთ მეტი CV-ს სექცია (გამოცდილება, უნარები, სერტიფიკატები, ტრენინგები).',
+    'matchInsight.tipKeywords':
+      'დაამატეთ პოზიციასთან შესაბამისი საკვანძო სიტყვები და უნარები.',
+    'matchInsight.tipTests':
+      'გააუმჯობესეთ ტესტების შედეგები, რომ დამსაქმებელთან ნდობა გაიზარდოს.',
+    'matchInsight.tipApplyEarly':
+      'ტესტი დროულად ჩააბარეთ, რომ კომპანიის განხილვის სიაში ადრე მოხვდეთ.',
+    'matchInsight.tipStrong':
+      'თქვენი პროფილი კარგად ემთხვევა პოზიციას. ახლა გააგზავნეთ განაცხადი და მიწერეთ კომპანიას.',
 
     'auth.titleLogin': 'შესვლა',
     'auth.titleRegister': 'ანგარიშის შექმნა',

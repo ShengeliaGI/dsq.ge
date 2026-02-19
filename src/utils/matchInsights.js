@@ -45,6 +45,7 @@ export const buildMatchInsight = ({
   cvSubmissions = [],
   applications = [],
   getStatusLabel,
+  t,
 }) => {
   if (!vacancy || !currentUserEmail) {
     return null
@@ -119,26 +120,30 @@ export const buildMatchInsight = ({
   const tips = []
 
   if (!latestCv) {
-    tips.push('Publish your CV to unlock a stronger match score for this role.')
+    tips.push(t('matchInsight.tipNoCv'))
   }
   if (completenessRatio < 0.6) {
-    tips.push('Fill more CV sections (work, skills, certificates, and trainings).')
+    tips.push(t('matchInsight.tipCompleteness'))
   }
   if (overlapRatio < 0.25) {
-    tips.push('Add role-specific keywords and skills aligned with this vacancy description.')
+    tips.push(t('matchInsight.tipKeywords'))
   }
   if (avgScoreRatio < 0.65) {
-    tips.push('Improve test performance to increase trust with employers.')
+    tips.push(t('matchInsight.tipTests'))
   }
   if (!currentApplication) {
-    tips.push('Take the role test early to appear in the company review queue.')
+    tips.push(t('matchInsight.tipApplyEarly'))
   }
   if (tips.length === 0) {
-    tips.push('Your profile is well aligned. Apply now and message the company after submission.')
+    tips.push(t('matchInsight.tipStrong'))
   }
 
   const fitLevel =
-    score >= 80 ? 'Strong fit' : score >= 60 ? 'Promising fit' : 'Needs improvement'
+    score >= 80
+      ? t('matchInsight.levelStrong')
+      : score >= 60
+        ? t('matchInsight.levelPromising')
+        : t('matchInsight.levelImprove')
 
   return {
     score,
@@ -146,9 +151,21 @@ export const buildMatchInsight = ({
     highlights: overlaps.slice(0, 6),
     tips: tips.slice(0, 4),
     breakdown: [
-      { label: 'Profile completeness', value: toPercent(completenessRatio), points: completenessPoints },
-      { label: 'Role skill overlap', value: toPercent(overlapRatio), points: overlapPoints },
-      { label: 'Test track record', value: toPercent(avgScoreRatio), points: performancePoints },
+      {
+        label: t('matchInsight.breakdownCompleteness'),
+        value: toPercent(completenessRatio),
+        points: completenessPoints,
+      },
+      {
+        label: t('matchInsight.breakdownOverlap'),
+        value: toPercent(overlapRatio),
+        points: overlapPoints,
+      },
+      {
+        label: t('matchInsight.breakdownTests'),
+        value: toPercent(avgScoreRatio),
+        points: performancePoints,
+      },
     ],
     applicationStatus: currentApplication
       ? getStatusLabel?.(currentApplication.status) || currentApplication.status

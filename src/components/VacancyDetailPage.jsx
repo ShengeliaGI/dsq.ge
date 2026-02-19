@@ -22,6 +22,7 @@ const VacancyDetailPage = ({
         cvSubmissions,
         applications,
         getStatusLabel,
+        t,
       }),
     [
       vacancy,
@@ -29,6 +30,7 @@ const VacancyDetailPage = ({
       cvSubmissions,
       applications,
       getStatusLabel,
+      t,
     ],
   )
 
@@ -145,13 +147,16 @@ const VacancyDetailPage = ({
           <section className="vacancy-detail-card match-insight-card">
             <div className="match-insight-header">
               <div>
-                <p className="eyebrow">Match Insight</p>
+                <p className="eyebrow">{t('matchInsight.title')}</p>
                 <h3>{matchInsight.fitLevel}</h3>
                 <p className="muted">
-                  Personalized score for this vacancy based on your CV and test history.
+                  {t('matchInsight.subtitle')}
                 </p>
               </div>
-              <div className="match-score-badge" aria-label={`Match score ${matchInsight.score}`}>
+              <div
+                className="match-score-badge"
+                aria-label={t('matchInsight.scoreAria', { score: matchInsight.score })}
+              >
                 <strong>{matchInsight.score}</strong>
                 <span>/100</span>
               </div>
@@ -159,7 +164,7 @@ const VacancyDetailPage = ({
 
             {matchInsight.applicationStatus && (
               <p className="muted">
-                Current application status: <strong>{matchInsight.applicationStatus}</strong>
+                {t('matchInsight.currentStatus')}: <strong>{matchInsight.applicationStatus}</strong>
               </p>
             )}
 
@@ -167,14 +172,16 @@ const VacancyDetailPage = ({
               {matchInsight.breakdown.map((row) => (
                 <div key={row.label} className="match-breakdown-row">
                   <span>{row.label}</span>
-                  <span>{row.value}% ({row.points} pts)</span>
+                  <span>
+                    {row.value}% ({t('matchInsight.pointsLabel', { points: row.points })})
+                  </span>
                 </div>
               ))}
             </div>
 
             {matchInsight.highlights.length > 0 && (
               <div>
-                <p className="vacancy-detail-label">Keyword overlap</p>
+                <p className="vacancy-detail-label">{t('matchInsight.keywordOverlap')}</p>
                 <div className="match-keyword-list">
                   {matchInsight.highlights.map((keyword) => (
                     <span key={keyword} className="cv-tag">{keyword}</span>
@@ -184,7 +191,7 @@ const VacancyDetailPage = ({
             )}
 
             <div>
-              <p className="vacancy-detail-label">How to improve quickly</p>
+              <p className="vacancy-detail-label">{t('matchInsight.improveTitle')}</p>
               <ul className="match-tip-list">
                 {matchInsight.tips.map((tip) => (
                   <li key={tip}>{tip}</li>
