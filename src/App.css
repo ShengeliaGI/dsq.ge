@@ -1048,6 +1048,15 @@ input::placeholder {
   border-bottom: 1px solid var(--border-1);
 }
 
+.cv-preview-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-2);
+  margin-bottom: 4px;
+}
+
 .cv-preview-header h2 {
   margin: 0;
   font-size: clamp(1.4rem, 2.2vw, 2rem);
@@ -1240,6 +1249,12 @@ input::placeholder {
   border-radius: 50%;
   background: rgba(214, 228, 255, 0.12);
   border: 1px solid rgba(120, 160, 255, 0.35);
+}
+
+.cv-avatar-circle.has-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .cv-avatar input[type='file'] {
@@ -1437,6 +1452,22 @@ input::placeholder {
   border-radius: 18px;
   border: 1px solid rgba(120, 160, 255, 0.25);
   background: rgba(10, 18, 40, 0.82);
+}
+
+.cv-list-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cv-card-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .cv-actions {

@@ -1,6 +1,6 @@
 const CvFormPage = ({
   onBack,
-  cvFileName,
+  cvImageData,
   onFileChange,
   cvProfile,
   setCvProfile,
@@ -56,6 +56,9 @@ const CvFormPage = ({
       <aside className="cv-preview-pane">
         <div className="cv-preview-sheet">
           <header className="cv-preview-header">
+            {cvImageData && (
+              <img className="cv-preview-photo" src={cvImageData} alt="Profile" />
+            )}
             <h2>
               {`${cvProfile.firstName || ''} ${cvProfile.lastName || ''}`.trim() ||
                 t('profile.titleFallback')}
@@ -216,12 +219,14 @@ const CvFormPage = ({
           </div>
           <div className="cv-personal">
             <div className="cv-avatar">
-              <div className="cv-avatar-circle" />
+              <div
+                className={cvImageData ? 'cv-avatar-circle has-image' : 'cv-avatar-circle'}
+                style={cvImageData ? { backgroundImage: `url(${cvImageData})` } : undefined}
+              />
               <label className="file-button" htmlFor="cv-upload">
                 {t('cvForm.upload')}
               </label>
-              <input id="cv-upload" type="file" onChange={onFileChange} />
-              {cvFileName && <p className="muted">{cvFileName}</p>}
+              <input id="cv-upload" type="file" accept="image/*" onChange={onFileChange} />
             </div>
             <div className="cv-form-grid">
               <input

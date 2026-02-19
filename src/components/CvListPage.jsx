@@ -13,6 +13,15 @@ const CvListPage = ({
     setExpandedCvId((prev) => (prev === cvId ? null : cvId))
   }
 
+  const getDisplayName = (cv) => {
+    const personalInfo = cv?.personalInfo || ''
+    const namePart = personalInfo
+      .split('â€¢')[0]
+      .split('•')[0]
+      .trim()
+    return namePart || t('profile.titleFallback')
+  }
+
   return (
     <div className="page">
       <header className="page-header">
@@ -40,8 +49,18 @@ const CvListPage = ({
           <div className="grid">
             {cvSubmissions.map((cv) => (
               <div key={cv.id} className="cv-card">
+                <div className="cv-list-head">
+                  {cv.profileImage ? (
+                    <img className="cv-card-avatar" src={cv.profileImage} alt="Profile" />
+                  ) : (
+                    <div className="cv-card-avatar" aria-hidden="true" />
+                  )}
+                  <div>
+                    <h4>{getDisplayName(cv)}</h4>
+                    <p className="muted">{cv.fileName}</p>
+                  </div>
+                </div>
                 <div>
-                  <h4>{cv.fileName}</h4>
                   <p className="muted">{cv.summary}...</p>
                 </div>
                 <div className="cv-actions">

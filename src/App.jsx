@@ -889,6 +889,7 @@ function App() {
   const [answers, setAnswers] = useState([])
   const [activeQuestions, setActiveQuestions] = useState([])
   const [cvFileName, setCvFileName] = useState('')
+  const [cvImageData, setCvImageData] = useState('')
   const [cvSubmissions, setCvSubmissions] = useState([])
   const [cvProfile, setCvProfile] = useState({
     firstName: '',
@@ -1498,6 +1499,7 @@ function App() {
     const submission = {
       id: `cv-${Date.now()}`,
       fileName: cvFileName || t('cv.defaults.noFile'),
+      profileImage: cvImageData || '',
       summary: summaryText.slice(0, 160) || t('cv.defaults.noDetails'),
       personalInfo: personalParts.join(' • '),
       workExperience: workText,
@@ -2187,10 +2189,21 @@ function App() {
       {page === 'cv' && (
         <CvFormPage
           onBack={() => setPage('vacancies')}
-          cvFileName={cvFileName}
-          onFileChange={(event) =>
-            setCvFileName(event.target.files?.[0]?.name ?? '')
-          }
+          cvImageData={cvImageData}
+          onFileChange={(event) => {
+            const file = event.target.files?.[0]
+            setCvFileName(file?.name ?? '')
+            if (!file || !file.type.startsWith('image/')) {
+              setCvImageData('')
+              return
+            }
+            const reader = new FileReader()
+            reader.onload = () => {
+              setCvImageData(typeof reader.result === 'string' ? reader.result : '')
+            }
+            reader.onerror = () => setCvImageData('')
+            reader.readAsDataURL(file)
+          }}
           cvProfile={cvProfile}
           setCvProfile={setCvProfile}
           socialLinkInput={socialLinkInput}

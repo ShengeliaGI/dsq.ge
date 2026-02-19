@@ -4,6 +4,7 @@ const cvSchema = new mongoose.Schema(
   {
     id: { type: String, required: true, unique: true },
     fileName: { type: String, default: 'No file uploaded' },
+    profileImage: { type: String, default: '' },
     createdBy: {
       id: { type: String },
       email: { type: String },
