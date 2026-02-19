@@ -1,7 +1,5 @@
-import RecommendedJobs from './RecommendedJobs.jsx';
 const HomePage = ({ onStart, onViewProfile, onRegister, isAuthed, t }) => (
   <div className="page">
-    <RecommendedJobs />
     <header className="page-header hero">
       <div>
         <p className="eyebrow">dsq.ge</p>
