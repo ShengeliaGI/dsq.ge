@@ -527,6 +527,25 @@ input::placeholder {
   justify-content: flex-start;
 }
 
+.vacancy-filter-toolbar {
+  align-items: end;
+}
+
+.vacancy-filter-select {
+  display: grid;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.vacancy-filter-select span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.vacancy-filter-select select {
+  min-width: 220px;
+}
+
 .job-card {
   text-align: left;
   padding: 22px;

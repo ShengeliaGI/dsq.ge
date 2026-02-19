@@ -136,6 +136,10 @@ const translations = {
     'vacancies.deleting': 'Deleting...',
     'vacancies.filterAll': 'All categories',
     'vacancies.filterLabel': 'Filter by category',
+    'vacancies.categoryButton': 'Category',
+    'vacancies.byMyCv': 'By My CV',
+    'vacancies.byMyCvHint': 'Upload your CV to enable CV-based vacancy matching.',
+    'vacancies.byMyCvEmpty': 'No vacancies currently match your CV profile.',
     'vacancies.noTest': 'No test required',
     'vacancies.moreDetails': 'View More Details',
 
@@ -836,6 +840,13 @@ const translations = {
     'vacancy.defaults.noDescription': 'აღწერა ჯერ არ არის დამატებული.',
   },
 }
+
+Object.assign(translations.ka, {
+  'vacancies.categoryButton': 'კატეგორია',
+  'vacancies.byMyCv': 'ჩემი CV-ით',
+  'vacancies.byMyCvHint': 'CV ატვირთეთ, რომ CV-ზე დაფუძნებული ფილტრი ჩაირთოს.',
+  'vacancies.byMyCvEmpty': 'ამ ეტაპზე თქვენი CV-ს შესაბამისი ვაკანსიები ვერ მოიძებნა.',
+})
 
 function App() {
   const [authMode, setAuthMode] = useState('login')
@@ -2002,6 +2013,8 @@ function App() {
             setPage('home')
           }}
           currentUserEmail={currentUserEmail}
+          cvSubmissions={cvSubmissions}
+          userRole={userRole}
           isAuthed={isAuthed}
           isAdmin={isAdmin}
           t={t}

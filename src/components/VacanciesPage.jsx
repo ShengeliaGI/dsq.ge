@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { hasUserCv, matchesVacancyByCv } from '../utils/cvVacancyFilter'
 
 const VacanciesPage = ({
   vacancies,
@@ -7,6 +8,8 @@ const VacanciesPage = ({
   onGoCompany,
   onLogout,
   currentUserEmail,
+  cvSubmissions,
+  userRole,
   isAuthed,
   isAdmin,
   t,
@@ -16,9 +19,15 @@ const VacanciesPage = ({
   hiddenVacancyIds = [],
 }) => {
   const [activeCategory, setActiveCategory] = useState('all')
+  const [onlyMyCvMatches, setOnlyMyCvMatches] = useState(false)
 
   const visibleVacancies = vacancies.filter(
     (job) => !hiddenVacancyIds.includes(job.id),
+  )
+
+  const userHasCv = useMemo(
+    () => hasUserCv(cvSubmissions, currentUserEmail),
+    [cvSubmissions, currentUserEmail],
   )
 
   const categories = useMemo(() => {
@@ -32,6 +41,25 @@ const VacanciesPage = ({
     activeCategory === 'all'
       ? visibleVacancies
       : visibleVacancies.filter((job) => job.title === activeCategory)
+
+  const cvMatchedVacancies = useMemo(() => {
+    if (!onlyMyCvMatches || userRole !== 'applicant') {
+      return filteredVacancies
+    }
+    return filteredVacancies.filter((job) =>
+      matchesVacancyByCv({
+        vacancy: job,
+        cvSubmissions,
+        currentUserEmail,
+      }),
+    )
+  }, [
+    onlyMyCvMatches,
+    userRole,
+    filteredVacancies,
+    cvSubmissions,
+    currentUserEmail,
+  ])
 
   return (
     <div className="page">
@@ -63,33 +91,51 @@ const VacanciesPage = ({
         <>
           <div className="vacancy-filters">
             <p className="muted">{t('vacancies.filterLabel')}</p>
-            <div className="filter-row">
-              {categories.map((category) => (
+            <div className="filter-row vacancy-filter-toolbar">
+              <label className="vacancy-filter-select">
+                <span>{t('vacancies.categoryButton')}</span>
+                <select
+                  value={activeCategory}
+                  onChange={(event) => setActiveCategory(event.target.value)}
+                >
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category === 'all'
+                        ? t('vacancies.filterAll')
+                        : getJobTitleLabel(category)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {isAuthed && userRole === 'applicant' && (
                 <button
-                  key={category}
                   type="button"
                   className={
-                    category === activeCategory
-                      ? 'filter-chip filter-chip-active'
-                      : 'filter-chip'
+                    onlyMyCvMatches ? 'filter-chip filter-chip-active' : 'filter-chip'
                   }
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => setOnlyMyCvMatches((prev) => !prev)}
+                  disabled={!userHasCv}
                 >
-                  {category === 'all'
-                    ? t('vacancies.filterAll')
-                    : getJobTitleLabel(category)}
+                  {t('vacancies.byMyCv')}
                 </button>
-              ))}
+              )}
             </div>
+            {isAuthed && userRole === 'applicant' && !userHasCv && (
+              <p className="muted">{t('vacancies.byMyCvHint')}</p>
+            )}
           </div>
-          {filteredVacancies.length === 0 ? (
+          {cvMatchedVacancies.length === 0 ? (
             <div className="empty-state">
               <h3>{t('vacancies.emptyTitle')}</h3>
-              <p className="muted">{t('vacancies.emptySubtitle')}</p>
+              <p className="muted">
+                {onlyMyCvMatches
+                  ? t('vacancies.byMyCvEmpty')
+                  : t('vacancies.emptySubtitle')}
+              </p>
             </div>
           ) : (
             <div className="grid vacancy-grid">
-              {filteredVacancies.map((job) => {
+              {cvMatchedVacancies.map((job) => {
                 const applicantResult = (job.testResults ?? []).find(
                   (result) =>
                     result.candidateEmail?.toLowerCase() ===
