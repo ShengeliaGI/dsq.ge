@@ -38,7 +38,8 @@ const CvFormPage = ({
   onClearTrainingEntry,
   onSave,
   t,
-}) => (
+}) => {
+  return (
   <div className="page cv-page">
     <header className="page-header">
       <div>
@@ -51,7 +52,128 @@ const CvFormPage = ({
       </button>
     </header>
 
-    <div className="company-panel cv-form">
+    <div className="cv-builder-layout">
+      <aside className="cv-preview-pane">
+        <div className="cv-preview-sheet">
+          <header className="cv-preview-header">
+            <h2>
+              {`${cvProfile.firstName || ''} ${cvProfile.lastName || ''}`.trim() ||
+                t('profile.titleFallback')}
+            </h2>
+            <p className="muted">{cvProfile.profession || t('cvForm.professionPlaceholder')}</p>
+            <p className="muted">
+              {[cvProfile.email, cvProfile.phone].filter(Boolean).join(' | ') ||
+                t('cvList.notProvided')}
+            </p>
+            <p className="muted">
+              {[cvProfile.city, cvProfile.country].filter(Boolean).join(', ') ||
+                t('cvList.notProvided')}
+            </p>
+          </header>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.personalInfo')}</h4>
+            <p>{cvProfile.about || t('cvList.notProvided')}</p>
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.workExperience')}</h4>
+            {workEntries.length > 0 ? (
+              <ul className="cv-preview-list">
+                {workEntries.map((entry, index) => (
+                  <li key={`${entry.position}-${index}`}>
+                    <strong>{entry.position || t('cvForm.roleFallback')}</strong>
+                    <span>{entry.company || t('cvForm.companyFallback')}</span>
+                    <span className="muted">
+                      {entry.current
+                        ? `${entry.startDate || t('cvForm.startFallback')} - ${t('cvForm.present')}`
+                        : [entry.startDate, entry.endDate].filter(Boolean).join(' - ')}
+                    </span>
+                    {entry.description && <p>{entry.description}</p>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>{t('cvList.notProvided')}</p>
+            )}
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.education')}</h4>
+            {educationEntries.length > 0 ? (
+              <ul className="cv-preview-list">
+                {educationEntries.map((entry, index) => (
+                  <li key={`${entry.degree}-${index}`}>
+                    <strong>{entry.degree || t('cvForm.degreePlaceholder')}</strong>
+                    <span>{entry.school || t('cvForm.schoolPlaceholder')}</span>
+                    {entry.faculty && <span>{entry.faculty}</span>}
+                    <span className="muted">
+                      {[entry.startDate, entry.endDate].filter(Boolean).join(' - ')}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>{t('cvList.notProvided')}</p>
+            )}
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.languages')}</h4>
+            <p>
+              {languageEntries.length > 0
+                ? languageEntries.map((entry) => `${entry.name} (${entry.level})`).join(', ')
+                : t('cvList.notProvided')}
+            </p>
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.skills')}</h4>
+            <p>{skillsList.length > 0 ? skillsList.join(', ') : t('cvList.notProvided')}</p>
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.certificates')}</h4>
+            <p>
+              {certificateEntries.length > 0
+                ? certificateEntries
+                    .map((entry) =>
+                      [entry.title, entry.organization, entry.issueDate]
+                        .filter(Boolean)
+                        .join(' - '),
+                    )
+                    .join(', ')
+                : t('cvList.notProvided')}
+            </p>
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.trainings')}</h4>
+            <p>
+              {trainingEntries.length > 0
+                ? trainingEntries
+                    .map((entry) =>
+                      [
+                        entry.title,
+                        entry.organization,
+                        [entry.startDate, entry.endDate].filter(Boolean).join(' - '),
+                      ]
+                        .filter(Boolean)
+                        .join(' - '),
+                    )
+                    .join(', ')
+                : t('cvList.notProvided')}
+            </p>
+          </section>
+
+          <section className="cv-preview-section">
+            <h4>{t('cvList.socialNetworks')}</h4>
+            <p>{socialLinks.length > 0 ? socialLinks.join(', ') : t('cvList.notProvided')}</p>
+          </section>
+        </div>
+      </aside>
+
+      <div className="company-panel cv-form cv-form-fixed">
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">
@@ -560,8 +682,10 @@ const CvFormPage = ({
           {t('cvForm.publish')}
         </button>
       </div>
+      </div>
     </div>
   </div>
 )
+}
 
 export default CvFormPage
