@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import AuthScreen from './components/AuthScreen'
 import TopNav from './components/TopNav'
@@ -19,6 +19,7 @@ import {
   generateQuestionSets,
   normalizeManualQuestions,
 } from './utils/testUtils'
+import { PUBLIC_PAGES, buildPath, parseRoute } from './utils/routes'
 
 const JOB_TYPE_LABELS = {
   en: {
@@ -849,12 +850,17 @@ Object.assign(translations.ka, {
 })
 
 function App() {
-  const [authMode, setAuthMode] = useState('login')
+  const initialRouteState = useMemo(
+    () => parseRoute(window.location.pathname),
+    [],
+  )
+  const [authMode, setAuthMode] = useState(initialRouteState.authMode)
   const [isAuthed, setIsAuthed] = useState(false)
   const [authError, setAuthError] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
   const [authUser, setAuthUser] = useState(null)
-  const [page, setPage] = useState('home')
+  const [authReady, setAuthReady] = useState(false)
+  const [page, setPage] = useState(initialRouteState.page)
   const [authModal, setAuthModal] = useState({ open: false, message: '' })
   const [language, setLanguage] = useState(() => {
     const stored = localStorage.getItem('app_language')
@@ -862,9 +868,11 @@ function App() {
   })
   const [theme, setTheme] = useState(() => {
     const stored = localStorage.getItem('app_theme')
-    return stored || 'dark'
+    return stored || 'light'
   })
-  const [selectedJobId, setSelectedJobId] = useState(null)
+  const [selectedJobId, setSelectedJobId] = useState(
+    initialRouteState.selectedJobId,
+  )
   const [selectedJobType, setSelectedJobType] = useState('Frontend Developer')
   const [vacancies, setVacancies] = useState([])
   const [companyName, setCompanyName] = useState('')
@@ -960,6 +968,7 @@ function App() {
   const [isPublishing, setIsPublishing] = useState(false)
   const [deletingVacancyIds, setDeletingVacancyIds] = useState([])
   const [hiddenVacancyIds, setHiddenVacancyIds] = useState([])
+  const activeTestJobIdRef = useRef(null)
 
   useEffect(() => {
     localStorage.setItem('app_language', language)
@@ -970,31 +979,38 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  const t = (key, vars = {}) => {
+  const t = useCallback((key, vars = {}) => {
     const template = translations[language]?.[key] ?? translations.en?.[key] ?? key
     return template.replace(/\{(\w+)\}/g, (_, token) =>
       Object.prototype.hasOwnProperty.call(vars, token) ? vars[token] : '',
     )
-  }
+  }, [language])
 
   const getHiddenVacancyStorageKey = (email) =>
     `hidden_vacancies_${email || 'guest'}`
 
-  const getRoleLabel = (role) =>
-    role === 'company' ? t('role.company') : t('role.applicant')
+  const getRoleLabel = useCallback(
+    (role) => (role === 'company' ? t('role.company') : t('role.applicant')),
+    [t],
+  )
 
-  const getRoleModeLabel = (role) =>
-    role === 'company' ? t('nav.companyMode') : t('nav.applicantMode')
+  const getRoleModeLabel = useCallback(
+    (role) =>
+      role === 'company' ? t('nav.companyMode') : t('nav.applicantMode'),
+    [t],
+  )
 
-  const getStatusLabel = (status) => {
+  const getStatusLabel = useCallback((status) => {
     if (!status) {
       return ''
     }
     return t(`status.${status}`)
-  }
+  }, [t])
 
-  const getJobTitleLabel = (title) =>
-    JOB_TYPE_LABELS[language]?.[title] ?? title
+  const getJobTitleLabel = useCallback(
+    (title) => JOB_TYPE_LABELS[language]?.[title] ?? title,
+    [language],
+  )
 
   const formatTime = (seconds) =>
     `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
@@ -1011,6 +1027,55 @@ function App() {
   )
 
   const currentUserEmail = authUser?.email?.toLowerCase() ?? ''
+
+  const syncRouteState = useCallback((routeState) => {
+    setPage(routeState.page)
+    setAuthMode(routeState.authMode ?? 'login')
+    setSelectedJobId(routeState.selectedJobId ?? null)
+  }, [])
+
+  const navigateTo = useCallback(
+    (nextRoute, { replace = false, resetScroll = true } = {}) => {
+      const nextPage = nextRoute.page ?? page
+      const routeState = {
+        page: nextPage,
+        authMode: nextRoute.authMode ?? authMode,
+        selectedJobId:
+          nextPage === 'vacancy' || nextPage === 'test'
+            ? nextRoute.selectedJobId ?? selectedJobId ?? null
+            : null,
+      }
+      const nextPath = buildPath(routeState)
+
+      syncRouteState(routeState)
+
+      if (window.location.pathname !== nextPath) {
+        window.history[replace ? 'replaceState' : 'pushState']({}, '', nextPath)
+      }
+
+      if (resetScroll) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      }
+    },
+    [authMode, page, selectedJobId, syncRouteState],
+  )
+
+  useEffect(() => {
+    const normalizedPath = buildPath(initialRouteState)
+    if (window.location.pathname !== normalizedPath) {
+      window.history.replaceState({}, '', normalizedPath)
+    }
+  }, [initialRouteState])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      syncRouteState(parseRoute(window.location.pathname))
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [syncRouteState])
 
   useEffect(() => {
     const key = getHiddenVacancyStorageKey(currentUserEmail)
@@ -1073,13 +1138,18 @@ function App() {
     return token ? { Authorization: `Bearer ${token}` } : {}
   }, [])
 
-  const handleUnauthorized = useCallback(() => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
     setIsAuthed(false)
     setAuthUser(null)
-    setPage('home')
-  }, [])
+    activeTestJobIdRef.current = null
+    navigateTo({ page: 'home' }, { replace: true })
+  }, [navigateTo])
+
+  const handleUnauthorized = useCallback(() => {
+    handleLogout()
+  }, [handleLogout])
 
   const authFetch = useCallback(async (url, options = {}) => {
     const response = await fetch(url, {
@@ -1158,7 +1228,7 @@ function App() {
       }
 
       setIsAuthed(true)
-      setPage('home')
+      navigateTo({ page: 'home' }, { replace: true })
     } catch (error) {
       setAuthError(error?.message || 'Authentication failed.')
     } finally {
@@ -1167,8 +1237,7 @@ function App() {
   }
 
   const openVacancyDetails = (jobId) => {
-    setSelectedJobId(jobId)
-    setPage('vacancy')
+    navigateTo({ page: 'vacancy', selectedJobId: jobId })
   }
 
   const handleHideVacancy = (jobId) => {
@@ -1179,23 +1248,30 @@ function App() {
       prev.includes(jobId) ? prev : [...prev, jobId],
     )
     if (selectedJobId === jobId) {
-      setPage('vacancies')
+      navigateTo({ page: 'vacancies' }, { replace: true })
     }
   }
 
-  const openJobTest = (jobId) => {
+  const initializeTestSession = useCallback((jobId) => {
     const job = vacancies.find((item) => item.id === jobId)
     if (!job?.questionSets?.length || job.testMode === 'none') {
-      return
+      return false
     }
-    setSelectedJobId(jobId)
-    setPage('test')
     setTimeLeft(TEST_DURATION_SECONDS)
     setShowTimeUp(false)
     setAnswers([])
     const randomSet =
       job.questionSets[Math.floor(Math.random() * job.questionSets.length)]
     setActiveQuestions(randomSet)
+    activeTestJobIdRef.current = jobId
+    return true
+  }, [vacancies])
+
+  const openJobTest = (jobId) => {
+    if (!initializeTestSession(jobId)) {
+      return
+    }
+    navigateTo({ page: 'test', selectedJobId: jobId })
   }
 
   const handleDeleteVacancy = (jobId) => {
@@ -1223,7 +1299,7 @@ function App() {
         }
         setVacancies((prev) => prev.filter((job) => job.id !== jobId))
         if (selectedJobId === jobId) {
-          setSelectedJobId(null)
+          navigateTo({ page: 'vacancies' }, { replace: true })
         }
       } catch (error) {
         console.error(error)
@@ -1280,11 +1356,13 @@ function App() {
     }).catch((error) => {
       console.error('Failed to save test result', error)
     })
-    setPage('vacancies')
+    activeTestJobIdRef.current = null
+    navigateTo({ page: 'vacancies' })
   }
 
   const handleAbandonTest = () => {
-    setPage('vacancies')
+    activeTestJobIdRef.current = null
+    navigateTo({ page: 'vacancies' })
   }
 
   const handleTimeUpOk = () => {
@@ -1303,7 +1381,8 @@ function App() {
       })
     }
     setShowTimeUp(false)
-    setPage('vacancies')
+    activeTestJobIdRef.current = null
+    navigateTo({ page: 'vacancies' }, { replace: true })
   }
 
   const addSocialLink = () => {
@@ -1527,7 +1606,7 @@ function App() {
       console.error('Failed to save CV', error)
       setCvSubmissions((prev) => [submission, ...prev])
     }
-    setPage('cvs')
+    navigateTo({ page: 'cvs' })
   }
 
   const handleDeleteCv = (cvId) => {
@@ -1637,11 +1716,32 @@ function App() {
     } finally {
       setIsPublishing(false)
     }
-    setPage('vacancies')
+    navigateTo({ page: 'vacancies' })
   }
 
   useEffect(() => {
-    if (page !== 'test' || !selectedJob || showTimeUp) {
+    if (page !== 'test') {
+      activeTestJobIdRef.current = null
+      return undefined
+    }
+
+    if (!selectedJob || showTimeUp) {
+      return undefined
+    }
+
+    const hasTest =
+      selectedJob.testMode !== 'none' && (selectedJob.questionSets ?? []).length > 0
+
+    if (!hasTest) {
+      navigateTo({ page: 'tests' }, { replace: true })
+      return undefined
+    }
+
+    if (
+      activeTestJobIdRef.current !== selectedJob.id ||
+      activeQuestions.length === 0
+    ) {
+      initializeTestSession(selectedJob.id)
       return undefined
     }
 
@@ -1657,7 +1757,14 @@ function App() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [page, selectedJob, showTimeUp])
+  }, [
+    activeQuestions.length,
+    initializeTestSession,
+    navigateTo,
+    page,
+    selectedJob,
+    showTimeUp,
+  ])
 
   useEffect(() => {
     if (page !== 'test') {
@@ -1666,7 +1773,8 @@ function App() {
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        setPage('vacancies')
+        activeTestJobIdRef.current = null
+        navigateTo({ page: 'vacancies' }, { replace: true, resetScroll: false })
       }
     }
 
@@ -1675,7 +1783,7 @@ function App() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [page])
+  }, [navigateTo, page])
 
   useEffect(() => {
     const existingToken = localStorage.getItem('auth_token')
@@ -1704,6 +1812,7 @@ function App() {
         localStorage.removeItem('auth_user')
       }
     }
+    setAuthReady(true)
   }, [])
 
   useEffect(() => {
@@ -1734,16 +1843,35 @@ function App() {
   const isAdmin = authUser?.email?.toLowerCase() === 'dtbkyroxxx@gmail.com'
 
   useEffect(() => {
-    if (page === 'admin' && !isAdmin) {
-      setPage('vacancies')
+    if (authReady && page === 'admin' && isAuthed && !isAdmin) {
+      navigateTo({ page: 'vacancies' }, { replace: true })
     }
-  }, [page, isAdmin])
+  }, [authReady, isAdmin, isAuthed, navigateTo, page])
 
   useEffect(() => {
-    if (!isAuthed && !['home', 'vacancies', 'auth'].includes(page)) {
-      setPage('home')
+    if (authReady && !isAuthed && !PUBLIC_PAGES.has(page)) {
+      navigateTo({ page: 'home' }, { replace: true })
     }
-  }, [isAuthed, page])
+  }, [authReady, isAuthed, navigateTo, page])
+
+  useEffect(() => {
+    const pageTitleMap = {
+      home: 'dsq.ge',
+      vacancies: t('nav.vacancies'),
+      vacancy: selectedJob ? getJobTitleLabel(selectedJob.title) : t('vacancyDetail.title'),
+      auth: authMode === 'register' ? t('auth.titleRegister') : t('auth.titleLogin'),
+      tests: t('nav.tests'),
+      test: selectedJob ? getJobTitleLabel(selectedJob.title) : t('test.titleFallback'),
+      profile: t('nav.profile'),
+      messages: t('nav.messages'),
+      company: t('nav.company'),
+      admin: t('nav.admin'),
+      cv: t('cvForm.title'),
+      cvs: t('nav.cvs'),
+    }
+
+    document.title = `${pageTitleMap[page] ?? 'dsq.ge'} | dsq.ge`
+  }, [authMode, getJobTitleLabel, page, selectedJob, t])
 
   const unreadNotifications = notifications.filter(
     (item) =>
@@ -1824,7 +1952,8 @@ function App() {
       companyEmail: job.createdBy?.email,
     })
     if (thread) {
-      setPage('messages')
+      handleNotificationRead()
+      navigateTo({ page: 'messages' })
     }
   }
 
@@ -1912,8 +2041,6 @@ function App() {
     }
   }
 
-  const hideTopNav = page === 'cv'
-
   const requireAuth = (message, action) => {
     if (!isAuthed) {
       setAuthModal({
@@ -1926,7 +2053,7 @@ function App() {
   }
 
   const handleNavigate = (next) => {
-    if (!isAuthed && !['home', 'vacancies', 'auth'].includes(next)) {
+    if (!isAuthed && !PUBLIC_PAGES.has(next)) {
       setAuthModal({
         open: true,
         message: t('require.accessArea'),
@@ -1936,45 +2063,46 @@ function App() {
     if (next === 'messages') {
       handleNotificationRead()
     }
-    setPage(next)
+    navigateTo({ page: next })
   }
 
   return (
-    <div className={hideTopNav ? 'app-shell app-shell-no-nav' : 'app-shell'}>
-      {!hideTopNav && (
-        <TopNav
-          page={page}
-          onNavigate={handleNavigate}
-          showAdmin={isAdmin}
-          userRole={userRole}
-          notificationCount={unreadNotifications.length}
-          isAuthed={isAuthed}
-          language={language}
-          onToggleLanguage={handleToggleLanguage}
-          theme={theme}
-          onToggleTheme={handleToggleTheme}
-          t={t}
-          getRoleModeLabel={getRoleModeLabel}
-          onAuthRegister={() => {
-            setAuthMode('register')
-            setPage('auth')
-          }}
-          onAuthLogin={() => {
-            setAuthMode('login')
-            setPage('auth')
-          }}
-        />
-      )}
+    <div className="app-shell">
+      <TopNav
+        page={page}
+        authMode={authMode}
+        onNavigate={handleNavigate}
+        showAdmin={isAdmin}
+        userRole={userRole}
+        notificationCount={unreadNotifications.length}
+        isAuthed={isAuthed}
+        language={language}
+        onToggleLanguage={handleToggleLanguage}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        t={t}
+        getRoleModeLabel={getRoleModeLabel}
+        onAuthRegister={() => {
+          setAuthError('')
+          navigateTo({ page: 'auth', authMode: 'register' })
+        }}
+        onAuthLogin={() => {
+          setAuthError('')
+          navigateTo({ page: 'auth', authMode: 'login' })
+        }}
+      />
       <main className="main-content" id="main-content">
       {page === 'home' && (
         <HomePage
-          onStart={() => setPage('vacancies')}
+          onStart={() => navigateTo({ page: 'vacancies' })}
           onViewProfile={() =>
-            requireAuth(t('require.viewProfile'), () => setPage('profile'))
+            requireAuth(t('require.viewProfile'), () =>
+              navigateTo({ page: 'profile' }),
+            )
           }
           onRegister={() => {
-            setAuthMode('register')
-            setPage('auth')
+            setAuthError('')
+            navigateTo({ page: 'auth', authMode: 'register' })
           }}
           isAuthed={isAuthed}
           t={t}
@@ -1988,7 +2116,10 @@ function App() {
           onSubmit={handleAuthSubmit}
           onToggleMode={() => {
             setAuthError('')
-            setAuthMode(authMode === 'login' ? 'register' : 'login')
+            navigateTo({
+              page: 'auth',
+              authMode: authMode === 'login' ? 'register' : 'login',
+            })
           }}
           t={t}
         />
@@ -2004,16 +2135,10 @@ function App() {
           }
           onGoCompany={() =>
             requireAuth(t('require.companyTools'), () =>
-              setPage('company'),
+              navigateTo({ page: 'company' }),
             )
           }
-          onLogout={() => {
-            localStorage.removeItem('auth_token')
-            localStorage.removeItem('auth_user')
-            setIsAuthed(false)
-            setAuthUser(null)
-            setPage('home')
-          }}
+          onLogout={handleLogout}
           currentUserEmail={currentUserEmail}
           cvSubmissions={cvSubmissions}
           userRole={userRole}
@@ -2029,7 +2154,7 @@ function App() {
       {page === 'vacancy' && (
         <VacancyDetailPage
           vacancy={selectedJob}
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           onHideVacancy={() => handleHideVacancy(selectedJob?.id)}
           onMessageCompany={() =>
             requireAuth(t('require.useMessaging'), () =>
@@ -2053,7 +2178,7 @@ function App() {
             requireAuth(t('require.takeTest'), () => openJobTest(jobId))
           }
           currentUserEmail={currentUserEmail}
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           t={t}
           getJobTitleLabel={getJobTitleLabel}
         />
@@ -2064,16 +2189,13 @@ function App() {
           userRole={userRole}
           applications={applications}
           notifications={notifications}
-          onViewMessages={() => setPage('messages')}
-          onBrowseJobs={() => setPage('vacancies')}
-          onRoleChange={setUserRole}
-          onLogout={() => {
-            localStorage.removeItem('auth_token')
-            localStorage.removeItem('auth_user')
-            setIsAuthed(false)
-            setAuthUser(null)
-            setPage('home')
+          onViewMessages={() => {
+            handleNotificationRead()
+            navigateTo({ page: 'messages' })
           }}
+          onBrowseJobs={() => navigateTo({ page: 'vacancies' })}
+          onRoleChange={setUserRole}
+          onLogout={handleLogout}
           t={t}
           getRoleLabel={getRoleLabel}
           getStatusLabel={getStatusLabel}
@@ -2089,7 +2211,7 @@ function App() {
           vacancies={vacancies}
           onStartThread={ensureThread}
           onSendMessage={handleSendMessage}
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           t={t}
           getJobTitleLabel={getJobTitleLabel}
         />
@@ -2098,7 +2220,7 @@ function App() {
         <AdminPage
           vacancies={vacancies}
           cvSubmissions={cvSubmissions}
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           t={t}
           getJobTitleLabel={getJobTitleLabel}
         />
@@ -2128,7 +2250,10 @@ function App() {
                 company: job.company,
                 candidateEmail: result.candidateEmail,
                 companyEmail: job?.createdBy?.email,
-              }).then(() => setPage('messages'))
+              }).then(() => {
+                handleNotificationRead()
+                navigateTo({ page: 'messages' })
+              })
             })
           }
           selectedJobType={selectedJobType}
@@ -2162,7 +2287,7 @@ function App() {
             })
           }
           onPublish={handlePublish}
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           t={t}
           getStatusLabel={getStatusLabel}
           getJobTitleLabel={getJobTitleLabel}
@@ -2180,7 +2305,7 @@ function App() {
           onFinish={handleFinishTest}
           onAbandon={handleAbandonTest}
           onTimeUpOk={handleTimeUpOk}
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           t={t}
           getJobTitleLabel={getJobTitleLabel}
           formatTime={formatTime}
@@ -2188,7 +2313,7 @@ function App() {
       )}
       {page === 'cv' && (
         <CvFormPage
-          onBack={() => setPage('vacancies')}
+          onBack={() => navigateTo({ page: 'vacancies' })}
           cvImageData={cvImageData}
           onFileChange={(event) => {
             const file = event.target.files?.[0]
@@ -2245,8 +2370,10 @@ function App() {
       {page === 'cvs' && (
         <CvListPage
           cvSubmissions={cvSubmissions}
-          onAddCv={() => requireAuth(t('require.addCv'), () => setPage('cv'))}
-          onBackVacancies={() => setPage('vacancies')}
+          onAddCv={() =>
+            requireAuth(t('require.addCv'), () => navigateTo({ page: 'cv' }))
+          }
+          onBackVacancies={() => navigateTo({ page: 'vacancies' })}
           onDeleteCv={(cvId) =>
             requireAuth(t('require.manageCvs'), () => handleDeleteCv(cvId))
           }
@@ -2265,8 +2392,8 @@ function App() {
                 type="button"
                 onClick={() => {
                   setAuthModal({ open: false, message: '' })
-                  setAuthMode('register')
-                  setPage('auth')
+                  setAuthError('')
+                  navigateTo({ page: 'auth', authMode: 'register' })
                 }}
               >
                 {t('modal.register')}

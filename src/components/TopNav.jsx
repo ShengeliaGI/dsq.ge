@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const TopNav = ({
   page,
+  authMode,
   onNavigate,
   showAdmin,
   userRole,
@@ -38,7 +39,19 @@ const TopNav = ({
   return (
     <nav className="top-nav">
       <div className="nav-header">
-        <span className="nav-brand">dsq.ge</span>
+        <button
+          className="nav-brand-button"
+          type="button"
+          onClick={() => handleNavigate('home')}
+        >
+          <span className="nav-brand-mark">DSQ</span>
+          <span className="nav-brand-copy">
+            <span className="nav-brand">dsq.ge</span>
+            <span className="nav-brand-subtle">
+              {isAuthed ? getRoleModeLabel(userRole) : t('nav.vacancies')}
+            </span>
+          </span>
+        </button>
         <button
           className="nav-burger"
           type="button"
@@ -118,11 +131,23 @@ const TopNav = ({
             </>
           ) : (
             <div className="nav-auth">
-              <button className="ghost" type="button" onClick={handleAuthLogin}>
+              <button
+                className={
+                  page === 'auth' && authMode === 'login'
+                    ? 'ghost nav-auth-button active'
+                    : 'ghost nav-auth-button'
+                }
+                type="button"
+                onClick={handleAuthLogin}
+              >
                 {t('nav.login')}
               </button>
               <button
-                className="primary"
+                className={
+                  page === 'auth' && authMode === 'register'
+                    ? 'primary nav-auth-button active'
+                    : 'primary nav-auth-button'
+                }
                 type="button"
                 onClick={handleAuthRegister}
               >
@@ -132,11 +157,7 @@ const TopNav = ({
           )}
         </div>
         <div className="nav-footer">
-          {isAuthed && (
-            <span className="nav-role">
-              {getRoleModeLabel(userRole)}
-            </span>
-          )}
+          {isAuthed && <span className="nav-role">{getRoleModeLabel(userRole)}</span>}
           <div className="nav-actions">
             {isAuthed && (
               <button
