@@ -2722,7 +2722,7 @@ input::placeholder {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 18px;
-  height: auto;
+  min-height: 92px;
   margin: 0;
   padding: 16px 20px;
   border-radius: 24px;
@@ -2735,6 +2735,7 @@ input::placeholder {
 .nav-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
 }
 
@@ -2788,6 +2789,7 @@ input::placeholder {
   justify-content: space-between;
   gap: 18px;
   flex: 1;
+  min-width: 0;
   overflow: visible;
 }
 
@@ -2801,15 +2803,18 @@ input::placeholder {
 }
 
 .nav-items {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
   padding-right: 0;
 }
 
 .nav-auth {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .nav-button {
+  flex: 0 0 auto;
   width: auto;
   min-height: 42px;
   justify-content: center;
@@ -2820,6 +2825,7 @@ input::placeholder {
   color: var(--text);
   font-size: 0.92rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .nav-button:hover,
@@ -2839,6 +2845,7 @@ input::placeholder {
   justify-content: flex-end;
   margin-top: 0;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .nav-role {
@@ -2869,6 +2876,26 @@ input::placeholder {
   box-shadow: none;
 }
 
+.nav-burger {
+  display: none;
+}
+
+.nav-burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.nav-items::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-items {
+  scrollbar-width: none;
+}
+
 .theme-toggle:hover,
 .language-toggle:hover,
 .nav-avatar-button:hover,
@@ -2896,6 +2923,11 @@ input::placeholder {
 
 .nav-auth-button.active {
   box-shadow: inset 0 0 0 1px var(--border-3);
+}
+
+.nav-auth-button,
+.nav-role {
+  white-space: nowrap;
 }
 
 .language-flag {
@@ -4218,14 +4250,16 @@ textarea:focus,
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1320px) {
   .top-nav {
     grid-template-columns: 1fr;
     padding: 14px 16px;
+    min-height: auto;
   }
 
   .nav-burger {
     display: inline-flex;
+    gap: 4px;
   }
 
   .nav-content {
@@ -4253,6 +4287,9 @@ textarea:focus,
     margin-left: 0;
     justify-content: space-between;
   }
+}
+
+@media (max-width: 960px) {
 
   .home-feature-grid,
   .platform-role-grid,
