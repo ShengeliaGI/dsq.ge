@@ -2705,6 +2705,7 @@ input::placeholder {
   padding: 28px clamp(18px, 4vw, 40px) 48px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   gap: clamp(14px, 2vw, 24px);
 }
 
