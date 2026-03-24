@@ -1609,6 +1609,52 @@ function App() {
     navigateTo({ page: 'cvs' })
   }
 
+  const handleAskCvAssistant = useCallback(async ({ message, history = [] }) => {
+    const response = await authFetch('/api/ai/assistant', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        surface: 'cv',
+        message,
+        history,
+        cvForm: {
+          profile: cvProfile,
+          socialLinks,
+          workEntries,
+          educationEntries,
+          languageEntries,
+          skillsList,
+          certificateEntries,
+          trainingEntries,
+        },
+      }),
+    })
+
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new Error(data?.message || 'AI assistant request failed.')
+    }
+
+    return {
+      reply:
+        typeof data?.reply === 'string' && data.reply.trim()
+          ? data.reply.trim()
+          : 'I could not generate a useful answer yet. Please try again.',
+      suggestions: Array.isArray(data?.suggestions) ? data.suggestions : [],
+    }
+  }, [
+    authFetch,
+    cvProfile,
+    socialLinks,
+    workEntries,
+    educationEntries,
+    languageEntries,
+    skillsList,
+    certificateEntries,
+    trainingEntries,
+  ])
+
   const handleDeleteCv = (cvId) => {
     const removeCv = async () => {
       try {
@@ -2334,6 +2380,7 @@ function App() {
           socialLinkInput={socialLinkInput}
           setSocialLinkInput={setSocialLinkInput}
           socialLinks={socialLinks}
+          setSocialLinks={setSocialLinks}
           onAddSocialLink={addSocialLink}
           workEntry={workEntry}
           setWorkEntry={setWorkEntry}
@@ -2352,6 +2399,7 @@ function App() {
           skillInput={skillInput}
           setSkillInput={setSkillInput}
           skillsList={skillsList}
+          setSkillsList={setSkillsList}
           onAddSkill={addSkill}
           certificateEntry={certificateEntry}
           setCertificateEntry={setCertificateEntry}
@@ -2363,6 +2411,7 @@ function App() {
           trainingEntries={trainingEntries}
           onAddTrainingEntry={addTrainingEntry}
           onClearTrainingEntry={clearTrainingEntry}
+          onAskAssistant={handleAskCvAssistant}
           onSave={handleSaveCv}
           t={t}
         />

@@ -1,3 +1,5 @@
+import CvAssistantPanel from './CvAssistantPanel'
+
 const CvFormPage = ({
   onBack,
   cvImageData,
@@ -7,6 +9,7 @@ const CvFormPage = ({
   socialLinkInput,
   setSocialLinkInput,
   socialLinks,
+  setSocialLinks,
   onAddSocialLink,
   workEntry,
   setWorkEntry,
@@ -25,6 +28,7 @@ const CvFormPage = ({
   skillInput,
   setSkillInput,
   skillsList,
+  setSkillsList,
   onAddSkill,
   certificateEntry,
   setCertificateEntry,
@@ -36,6 +40,7 @@ const CvFormPage = ({
   trainingEntries,
   onAddTrainingEntry,
   onClearTrainingEntry,
+  onAskAssistant,
   onSave,
   t,
 }) => {
@@ -177,6 +182,21 @@ const CvFormPage = ({
       </aside>
 
       <div className="company-panel cv-form cv-form-fixed">
+      <CvAssistantPanel
+        cvProfile={cvProfile}
+        socialLinks={socialLinks}
+        skillsList={skillsList}
+        setCvProfile={setCvProfile}
+        setSocialLinks={setSocialLinks}
+        setSkillsList={setSkillsList}
+        setWorkEntry={setWorkEntry}
+        setEducationEntry={setEducationEntry}
+        setLanguageEntry={setLanguageEntry}
+        setCertificateEntry={setCertificateEntry}
+        setTrainingEntry={setTrainingEntry}
+        onAskAssistant={onAskAssistant}
+      />
+
       <div className="panel-section">
         <div className="cv-section-card">
           <div className="cv-section-header">

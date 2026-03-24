@@ -8,6 +8,7 @@ import { registerAuthRoutes } from './routes/authRoutes.js'
 import { registerVacancyRoutes } from './routes/vacancyRoutes.js'
 import { registerCvRoutes } from './routes/cvRoutes.js'
 import { registerMessageRoutes } from './routes/messageRoutes.js'
+import { registerAiRoutes } from './routes/aiRoutes.js'
 
 dotenv.config()
 
@@ -45,6 +46,7 @@ registerAuthRoutes(app, authService)
 registerVacancyRoutes(app, authService)
 registerCvRoutes(app, authService)
 registerMessageRoutes(app, authService)
+registerAiRoutes(app, authService)
 
 if (!process.env.VERCEL) {
   connectToDatabase(mongoUri)
