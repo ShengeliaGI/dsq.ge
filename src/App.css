@@ -3057,6 +3057,38 @@ input::placeholder {
   align-self: flex-start;
 }
 
+.vacancies-page {
+  gap: 18px;
+}
+
+.vacancies-intro {
+  display: grid;
+  gap: 14px;
+  max-width: min(100%, 980px);
+}
+
+.vacancies-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: flex-start;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.vacancies-header .header-left {
+  flex: initial;
+}
+
+.vacancies-header-actions {
+  margin-left: 0;
+  justify-content: flex-start;
+}
+
+.vacancies-empty-state {
+  max-width: min(100%, 980px);
+  padding: 24px 28px;
+}
+
 .page-header h1,
 .page-header h2 {
   margin: 0;
@@ -3594,6 +3626,7 @@ textarea:focus,
   border: 1px solid var(--border-1);
   background: var(--bg-1);
   box-shadow: var(--shadow-sm);
+  max-width: min(100%, 980px);
 }
 
 .filter-row,
@@ -4423,6 +4456,16 @@ textarea:focus,
 }
 
 @media (max-width: 960px) {
+  .vacancies-intro,
+  .vacancies-empty-state,
+  .vacancy-filters {
+    max-width: 100%;
+  }
+
+  .vacancies-header-actions {
+    width: 100%;
+  }
+
   .nav-button,
   .nav-auth-button,
   .nav-role {
@@ -4479,6 +4522,16 @@ textarea:focus,
   .top-nav {
     top: 8px;
     padding: 12px;
+  }
+
+  .vacancies-header {
+    gap: 12px;
+    padding-top: 0;
+  }
+
+  .vacancies-empty-state,
+  .vacancy-filters {
+    padding: 18px;
   }
 
   .nav-brand-button {

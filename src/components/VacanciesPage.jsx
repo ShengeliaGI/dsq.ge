@@ -79,33 +79,29 @@ const VacanciesPage = ({
   }, [isCategoryMenuOpen])
 
   return (
-    <div className="page">
-      <header className="page-header">
-        <div className="header-left">
-          <div>
-            <p className="eyebrow">{t('vacancies.eyebrow')}</p>
-            <h1>{t('vacancies.title')}</h1>
-            <p className="muted">{t('vacancies.subtitle')}</p>
+    <div className="page vacancies-page">
+      <section className="vacancies-intro">
+        <header className="page-header vacancies-header">
+          <div className="header-left">
+            <div>
+              <p className="eyebrow">{t('vacancies.eyebrow')}</p>
+              <h1>{t('vacancies.title')}</h1>
+              <p className="muted">{t('vacancies.subtitle')}</p>
+            </div>
           </div>
-        </div>
-        <div className="header-actions">
-          <button className="ghost" type="button" onClick={onGoCompany}>
-            {t('vacancies.myPage')}
-          </button>
-          {isAuthed && (
-            <button className="ghost" type="button" onClick={onLogout}>
-              {t('vacancies.logout')}
+          <div className="header-actions vacancies-header-actions">
+            <button className="ghost" type="button" onClick={onGoCompany}>
+              {t('vacancies.myPage')}
             </button>
-          )}
-        </div>
-      </header>
-      {visibleVacancies.length === 0 ? (
-        <div className="empty-state">
-          <h3>{t('vacancies.emptyTitle')}</h3>
-          <p className="muted">{t('vacancies.emptySubtitle')}</p>
-        </div>
-      ) : (
-        <>
+            {isAuthed && (
+              <button className="ghost" type="button" onClick={onLogout}>
+                {t('vacancies.logout')}
+              </button>
+            )}
+          </div>
+        </header>
+
+        {visibleVacancies.length > 0 && (
           <div className="vacancy-filters">
             <p className="muted">{t('vacancies.filterLabel')}</p>
             <div className="filter-row vacancy-filter-toolbar">
@@ -123,9 +119,7 @@ const VacanciesPage = ({
                       ? t('vacancies.filterAll')
                       : getJobTitleLabel(activeCategory)}
                   </span>
-                  <span className="category-trigger-caret" aria-hidden="true">
-                    {isCategoryMenuOpen ? '▲' : '▼'}
-                  </span>
+                  <span className="category-trigger-caret" aria-hidden="true" />
                 </button>
                 {isCategoryMenuOpen && (
                   <div className="category-menu-list" role="listbox">
@@ -168,8 +162,18 @@ const VacanciesPage = ({
               <p className="muted">{t('vacancies.byMyCvHint')}</p>
             )}
           </div>
+        )}
+      </section>
+
+      {visibleVacancies.length === 0 ? (
+        <div className="empty-state vacancies-empty-state">
+          <h3>{t('vacancies.emptyTitle')}</h3>
+          <p className="muted">{t('vacancies.emptySubtitle')}</p>
+        </div>
+      ) : (
+        <>
           {cvMatchedVacancies.length === 0 ? (
-            <div className="empty-state">
+            <div className="empty-state vacancies-empty-state">
               <h3>{t('vacancies.emptyTitle')}</h3>
               <p className="muted">
                 {onlyMyCvMatches
@@ -194,6 +198,7 @@ const VacanciesPage = ({
                   (isAuthed &&
                     job.createdBy?.email?.toLowerCase() ===
                       currentUserEmail?.toLowerCase())
+
                 return (
                   <div key={job.id} className="job-card vacancy-card">
                     <button
